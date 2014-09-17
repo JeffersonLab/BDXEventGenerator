@@ -1,0 +1,169 @@
+
+Using ExRootAnalysis package for PGS data analysis
+==================================================
+
+
+Author: Pavel Demin
+
+
+
+
+Introductory remarks
+====================
+
+
+The ExRootAnalysis is a package designed to simplify ROOT tree production and
+analysis. The purpose of this tutorial is to present current functionality of
+this software.
+
+
+
+
+Quick start with ExRootAnalysis
+===============================
+
+Make sure that ROOT is installed and ROOTSYS, PATH, LD_LIBRARY_PATH,
+DYLD_LIBRARY_PATH are configured correctly.
+
+Command to unpack the source code:
+
+   tar -zxf ExRootAnalysis.tar.gz
+
+Commands to create shared library for interactive ROOT session:
+
+   cd ExRootAnalysis
+
+   make
+
+Commands to create static library for linking with PGS:
+
+   cd ExRootAnalysis
+
+   make static
+
+
+
+
+Simple analysis using TTree::Draw
+=================================
+
+
+Now we can start ROOT and look at the data stored in the ROOT tree.
+
+Start ROOT and load shared library:
+
+   root
+   gSystem->Load("lib/libExRootAnalysis.so");
+
+Open ROOT tree file and do some basic analysis using Draw or TBrowser:
+
+   TFile::Open("pgs_events.root");
+   LHCO->Draw("Electron.PT");
+   TBrowser browser;
+
+Note 1: LHCO - tree name, it can be learnt e.g. from TBrowser
+
+Note 2: Electron - branch name; PT - variable (leaf) of this branch
+
+Complete description of all branches can be found in
+
+   ExRootAnalysis/doc/RootTreeDescription.html
+
+
+
+
+Macro-based analysis
+====================
+
+
+Analysis macro consists of histogram booking, event loop (histogram filling),
+histogram display
+
+Basic analysis macro:
+
+{
+  // Load shared library
+  gSystem->Load("lib/libExRootAnalysis.so");
+  gSystem->Load("libPhysics");
+
+  // Create chain of root trees
+  TChain chain("LHCO");
+  chain.Add("pgs_events.root");
+  
+  // Create object of class ExRootTreeReader
+  ExRootTreeReader *treeReader = new ExRootTreeReader(&chain);
+  Long64_t numberOfEntries = treeReader->GetEntries();
+  
+  // Get pointers to branches used in this analysis
+  TClonesArray *branchJet = treeReader->UseBranch("Jet");
+  TClonesArray *branchElectron = treeReader->UseBranch("Electron");
+  
+  // Book histograms
+  TH1 *histJetPT = new TH1F("jet_pt", "jet P_{T}", 100, 0.0, 100.0);
+  TH1 *histMass = new TH1F("mass", "M_{inv}(e_{1}, e_{2})", 100, 40.0, 140.0);
+
+  // Loop over all events
+  for(Int_t entry = 0; entry < numberOfEntries; ++entry) {
+
+    // Load selected branches with data from specified event
+    treeReader->ReadEntry(entry);
+  
+    // If event contains at least 1 jet
+    if(branchJet->GetEntries() > 0) {
+
+      // Take first jet
+      TRootJet *jet = (TRootJet*) branchJet->At(0);
+      
+      // Plot jet transverse momentum
+      histJetPT->Fill(jet->PT);
+      
+      // Print jet transverse momentum
+      cout << jet->PT << endl;
+    }
+
+    TRootElectron *elec1, *elec2;
+    TLorentzVector vec1, vec2;
+
+    // If event contains at least 2 electrons
+    if(branchElectron->GetEntries() > 1) {
+
+      // Take first two electrons
+      elec1 = (TRootElectron *) branchElectron->At(0);
+      elec2 = (TRootElectron *) branchElectron->At(1);
+
+      // Create two 4-vectors for the electrons
+      vec1.SetPtEtaPhiM(elec1->PT, elec1->Eta, elec1->Phi, 0.0);
+      vec2.SetPtEtaPhiM(elec2->PT, elec2->Eta, elec2->Phi, 0.0);
+
+      // Plot their invariant mass
+      histMass->Fill((vec1 + vec2).M());
+    }
+  }
+
+  // Show resulting histograms
+  histJetPT->Draw();
+  histMass->Draw();
+}
+
+
+
+
+More advanced macro-based analysis
+==================================
+
+
+ExRootAnalysis/test contains macro Example.C using class ExRootTreeReader to
+access data and class ExRootResult to manage histograms booking and output
+
+Here are commands to run this macro:
+
+   cd ExRootAnalysis/test
+   $EDITOR test.list
+   root
+   gSystem->Load("../lib/libExRootAnalysis.so");
+   .X Example.C("test.list");
+
+Note: file test.list should contain list of root files that you would like to
+analyse (one root file per line)
+
+
