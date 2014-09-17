@@ -1,0 +1,7 @@
+./doc/genMakefile.tcl > Makefile
+make
+
+make static
+cd test
+g77 test.f -o test.exe -L../lib -l ExRootAnalysisPGS -l stdc++ `root-config --libs`
+./test.exe

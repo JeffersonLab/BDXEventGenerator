@@ -1,0 +1,476 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+  <meta NAME="keywords" CONTENT="root, tree, ntuple, format, description">
+  <title>root tree description</title>
+</head>
+<body>
+<H1>root tree description</H1>
+<hr>
+<H2>Branches</H2>
+<hr>
+<table style="border: 1px dotted;" align="center" border="0" cellpadding="7" cellspacing="3" widt="95%">
+<tr><td><b>Branch</b></td>
+<td><b>Definition</b></td>
+<td><b>Class</b></td></tr>
+<tr bgcolor="#eeeeee">
+  <td>Event</td>
+  <td>generated event from LHEF</td>
+  <td><a href="#TRootLHEFEvent">TRootLHEFEvent</a></td>
+</tr>
+<tr bgcolor="#ffffff">
+  <td>Particle</td>
+  <td>generated partons from LHEF</td>
+  <td><a href="#TRootLHEFParticle">TRootLHEFParticle</a></td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>Event</td>
+  <td>information about generated event</td>
+  <td><a href="#TRootGenEvent">TRootGenEvent</a></td>
+</tr>
+<tr bgcolor="#ffffff">
+  <td>GenParticle</td>
+  <td>generated particles from HEPEVT</td>
+  <td><a href="#TRootGenParticle">TRootGenParticle</a></td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>Event</td>
+  <td>information about reconstructed event</td>
+  <td><a href="#TRootEvent">TRootEvent</a></td>
+</tr>
+<tr bgcolor="#ffffff">
+  <td>Photon</td>
+  <td>reconstructed photons</td>
+  <td><a href="#TRootPhoton">TRootPhoton</a></td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>Electron</td>
+  <td>reconstructed electrons</td>
+  <td><a href="#TRootElectron">TRootElectron</a></td>
+</tr>
+<tr bgcolor="#ffffff">
+  <td>Muon</td>
+  <td>reconstructed muons</td>
+  <td><a href="#TRootMuon">TRootMuon</a></td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>Tau</td>
+  <td>reconstructed hadronically-decaying tau leptons</td>
+  <td><a href="#TRootTau">TRootTau</a></td>
+</tr>
+<tr bgcolor="#ffffff">
+  <td>Jet</td>
+  <td>reconstructed jets</td>
+  <td><a href="#TRootJet">TRootJet</a></td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>MissingET</td>
+  <td>missing transverse energy</td>
+  <td><a href="#TRootMissingET">TRootMissingET</a></td>
+</tr>
+</table>
+<hr>
+<H2>Classes</H2>
+<hr>
+<table style="border: 1px dotted;" align="center" border="0" cellpadding="7" cellspacing="3" widt="95%">
+<tr><td><b>Parameter</b></td>
+<td><b>Definition</b></td>
+<td><b>How it was calculated</b></td></tr>
+<tr bgcolor="#ffffff"><td colspan=3><hr><a name="TRootLHEFEvent"><H3>TRootLHEFEvent</H3><hr></td></tr>
+<tr bgcolor="#ffffff">
+  <td>Number</td>
+  <td>event number</td>
+  <td></td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>Nparticles</td>
+  <td>number of particles in the event </td>
+  <td> hepup.NUP</td>
+</tr>
+<tr bgcolor="#ffffff">
+  <td>ProcessID</td>
+  <td>subprocess code for the event </td>
+  <td> hepup.IDPRUP</td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>Weight</td>
+  <td>weight for the event </td>
+  <td> hepup.XWGTUP</td>
+</tr>
+<tr bgcolor="#ffffff">
+  <td>ScalePDF</td>
+  <td>scale in GeV used in the calculation of the PDFs in the event </td>
+  <td> hepup.SCALUP</td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>CouplingQED</td>
+  <td>value of the QED coupling used in the event </td>
+  <td> hepup.AQEDUP</td>
+</tr>
+<tr bgcolor="#ffffff">
+  <td>CouplingQCD</td>
+  <td>value of the QCD coupling used in the event </td>
+  <td> hepup.AQCDUP</td>
+</tr>
+<tr bgcolor="#ffffff"><td colspan=3><hr><a name="TRootLHEFParticle"><H3>TRootLHEFParticle</H3><hr></td></tr>
+<tr bgcolor="#ffffff">
+  <td>PID</td>
+  <td>particle HEP ID number </td>
+  <td> hepup.IDUP[number]</td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>Status</td>
+  <td>particle status code </td>
+  <td> hepup.ISTUP[number]</td>
+</tr>
+<tr bgcolor="#ffffff">
+  <td>Mother1</td>
+  <td>index for the particle first mother </td>
+  <td> hepup.MOTHUP[number][0]</td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>Mother2</td>
+  <td>index for the particle last mother </td>
+  <td> hepup.MOTHUP[number][1]</td>
+</tr>
+<tr bgcolor="#ffffff">
+  <td>ColorLine1</td>
+  <td>index for the particle color-line </td>
+  <td> hepup.ICOLUP[number][0]</td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>ColorLine2</td>
+  <td>index for the particle anti-color-line </td>
+  <td> hepup.ICOLUP[number][1]</td>
+</tr>
+<tr bgcolor="#ffffff">
+  <td>Px</td>
+  <td>particle momentum vector (x component) </td>
+  <td> hepup.PUP[number][0]</td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>Py</td>
+  <td>particle momentum vector (y component) </td>
+  <td> hepup.PUP[number][1]</td>
+</tr>
+<tr bgcolor="#ffffff">
+  <td>Pz</td>
+  <td>particle momentum vector (z component) </td>
+  <td> hepup.PUP[number][2]</td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>E</td>
+  <td>particle energy </td>
+  <td> hepup.PUP[number][3]</td>
+</tr>
+<tr bgcolor="#ffffff">
+  <td>M</td>
+  <td>particle mass </td>
+  <td> hepup.PUP[number][4]</td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>PT</td>
+  <td>particle transverse momentum</td>
+  <td></td>
+</tr>
+<tr bgcolor="#ffffff">
+  <td>Eta</td>
+  <td>particle pseudorapidity</td>
+  <td></td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>Phi</td>
+  <td>particle azimuthal angle</td>
+  <td></td>
+</tr>
+<tr bgcolor="#ffffff">
+  <td>LifeTime</td>
+  <td>particle invariant lifetime (c*tau, distance from production to decay in mm) </td>
+  <td> hepup.VTIMUP[number]</td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>Spin</td>
+  <td>cosine of the angle between the particle spin vector and the decaying particle 3-momentum, specified in the lab frame. </td>
+  <td> hepup.SPINUP[number]</td>
+</tr>
+<tr bgcolor="#ffffff"><td colspan=3><hr><a name="TRootGenEvent"><H3>TRootGenEvent</H3><hr></td></tr>
+<tr bgcolor="#ffffff">
+  <td>Number</td>
+  <td>event number </td>
+  <td> hepevt.nevhep</td>
+</tr>
+<tr bgcolor="#ffffff"><td colspan=3><hr><a name="TRootGenParticle"><H3>TRootGenParticle</H3><hr></td></tr>
+<tr bgcolor="#ffffff">
+  <td>PID</td>
+  <td>particle HEP ID number </td>
+  <td> hepevt.idhep[number]</td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>Status</td>
+  <td>particle status </td>
+  <td> hepevt.isthep[number]</td>
+</tr>
+<tr bgcolor="#ffffff">
+  <td>M1</td>
+  <td>particle 1st mother </td>
+  <td> hepevt.jmohep[number][0] - 1</td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>M2</td>
+  <td>particle 2nd mother </td>
+  <td> hepevt.jmohep[number][1] - 1</td>
+</tr>
+<tr bgcolor="#ffffff">
+  <td>D1</td>
+  <td>particle 1st daughter </td>
+  <td> hepevt.jdahep[number][0] - 1</td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>D2</td>
+  <td>particle 2nd daughter </td>
+  <td> hepevt.jdahep[number][1] - 1</td>
+</tr>
+<tr bgcolor="#ffffff">
+  <td>E</td>
+  <td>particle energy </td>
+  <td> hepevt.phep[number][3]</td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>Px</td>
+  <td>particle momentum vector (x component) </td>
+  <td> hepevt.phep[number][0]</td>
+</tr>
+<tr bgcolor="#ffffff">
+  <td>Py</td>
+  <td>particle momentum vector (y component) </td>
+  <td> hepevt.phep[number][1]</td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>Pz</td>
+  <td>particle momentum vector (z component) </td>
+  <td> hepevt.phep[number][2]</td>
+</tr>
+<tr bgcolor="#ffffff">
+  <td>PT</td>
+  <td>particle transverse momentum</td>
+  <td></td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>Eta</td>
+  <td>particle pseudorapidity</td>
+  <td></td>
+</tr>
+<tr bgcolor="#ffffff">
+  <td>Phi</td>
+  <td>particle azimuthal angle</td>
+  <td></td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>T</td>
+  <td>particle vertex position (t component) </td>
+  <td> hepevt.vhep[number][3]</td>
+</tr>
+<tr bgcolor="#ffffff">
+  <td>X</td>
+  <td>particle vertex position (x component) </td>
+  <td> hepevt.vhep[number][0]</td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>Y</td>
+  <td>particle vertex position (y component) </td>
+  <td> hepevt.vhep[number][1]</td>
+</tr>
+<tr bgcolor="#ffffff">
+  <td>Z</td>
+  <td>particle vertex position (z component) </td>
+  <td> hepevt.vhep[number][2]</td>
+</tr>
+<tr bgcolor="#ffffff"><td colspan=3><hr><a name="TRootEvent"><H3>TRootEvent</H3><hr></td></tr>
+<tr bgcolor="#ffffff">
+  <td>Number</td>
+  <td>event number</td>
+  <td></td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>Trigger</td>
+  <td>trigger word</td>
+  <td></td>
+</tr>
+<tr bgcolor="#ffffff"><td colspan=3><hr><a name="TRootMissingET"><H3>TRootMissingET</H3><hr></td></tr>
+<tr bgcolor="#ffffff">
+  <td>MET</td>
+  <td>mising transverse energy</td>
+  <td></td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>Phi</td>
+  <td>mising energy azimuthal angle</td>
+  <td></td>
+</tr>
+<tr bgcolor="#ffffff"><td colspan=3><hr><a name="TRootPhoton"><H3>TRootPhoton</H3><hr></td></tr>
+<tr bgcolor="#ffffff">
+  <td>PT</td>
+  <td>photon transverse momentum</td>
+  <td></td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>Eta</td>
+  <td>photon pseudorapidity</td>
+  <td></td>
+</tr>
+<tr bgcolor="#ffffff">
+  <td>Phi</td>
+  <td>photon azimuthal angle</td>
+  <td></td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>EhadOverEem</td>
+  <td>ratio of the hadronic versus electromagnetic energy deposited in the calorimeter</td>
+  <td></td>
+</tr>
+<tr bgcolor="#ffffff"><td colspan=3><hr><a name="TRootElectron"><H3>TRootElectron</H3><hr></td></tr>
+<tr bgcolor="#ffffff">
+  <td>PT</td>
+  <td>electron transverse momentum</td>
+  <td></td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>Eta</td>
+  <td>electron pseudorapidity</td>
+  <td></td>
+</tr>
+<tr bgcolor="#ffffff">
+  <td>Phi</td>
+  <td>electron azimuthal angle</td>
+  <td></td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>Charge</td>
+  <td>electron charge</td>
+  <td></td>
+</tr>
+<tr bgcolor="#ffffff">
+  <td>Ntrk</td>
+  <td>number of tracks associated with the electron</td>
+  <td></td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>EhadOverEem</td>
+  <td>ratio of the hadronic versus electromagnetic energy deposited in the calorimeter</td>
+  <td></td>
+</tr>
+<tr bgcolor="#ffffff"><td colspan=3><hr><a name="TRootMuon"><H3>TRootMuon</H3><hr></td></tr>
+<tr bgcolor="#ffffff">
+  <td>PT</td>
+  <td>muon transverse momentum</td>
+  <td></td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>Eta</td>
+  <td>muon pseudorapidity</td>
+  <td></td>
+</tr>
+<tr bgcolor="#ffffff">
+  <td>Phi</td>
+  <td>muon azimuthal angle</td>
+  <td></td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>Charge</td>
+  <td>muon charge</td>
+  <td></td>
+</tr>
+<tr bgcolor="#ffffff">
+  <td>Ntrk</td>
+  <td>number of tracks associated with the muon</td>
+  <td></td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>PTiso</td>
+  <td>sum of tracks transverse momentum within a cone of radius R=0.4 centered on the muon (excluding the muon itself)</td>
+  <td></td>
+</tr>
+<tr bgcolor="#ffffff">
+  <td>ETiso</td>
+  <td>ratio of ET in a 3x3 calorimeter cells array around the muon (including the muon's cell) to the muon PT</td>
+  <td></td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>JetIndex</td>
+  <td>index of the closest jet</td>
+  <td></td>
+</tr>
+<tr bgcolor="#ffffff"><td colspan=3><hr><a name="TRootTau"><H3>TRootTau</H3><hr></td></tr>
+<tr bgcolor="#ffffff">
+  <td>PT</td>
+  <td>tau transverse momentum</td>
+  <td></td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>Eta</td>
+  <td>tau pseudorapidity</td>
+  <td></td>
+</tr>
+<tr bgcolor="#ffffff">
+  <td>Phi</td>
+  <td>tau azimuthal angle</td>
+  <td></td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>Charge</td>
+  <td>tau charge</td>
+  <td></td>
+</tr>
+<tr bgcolor="#ffffff">
+  <td>Ntrk</td>
+  <td>number of charged tracks associated with the tau</td>
+  <td></td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>EhadOverEem</td>
+  <td>ratio of the hadronic versus electromagnetic energy deposited in the calorimeter</td>
+  <td></td>
+</tr>
+<tr bgcolor="#ffffff"><td colspan=3><hr><a name="TRootJet"><H3>TRootJet</H3><hr></td></tr>
+<tr bgcolor="#ffffff">
+  <td>PT</td>
+  <td>jet transverse momentum</td>
+  <td></td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>Eta</td>
+  <td>jet pseudorapidity</td>
+  <td></td>
+</tr>
+<tr bgcolor="#ffffff">
+  <td>Phi</td>
+  <td>jet azimuthal angle</td>
+  <td></td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>Mass</td>
+  <td>jet invariant mass</td>
+  <td></td>
+</tr>
+<tr bgcolor="#ffffff">
+  <td>Ntrk</td>
+  <td>number of tracks associated with the jet</td>
+  <td></td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>BTag</td>
+  <td>1 or 2 for a jet that has been tagged as containing a heavy quark</td>
+  <td></td>
+</tr>
+<tr bgcolor="#ffffff">
+  <td>EhadOverEem</td>
+  <td>ratio of the hadronic versus electromagnetic energy deposited in the calorimeter</td>
+  <td></td>
+</tr>
+<tr bgcolor="#eeeeee">
+  <td>Index</td>
+  <td>jet index in the LHC Olympics file</td>
+  <td></td>
+</tr>
+</table>
+</body></html>
