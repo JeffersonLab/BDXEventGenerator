@@ -1,0 +1,279 @@
+
+#include <iostream>
+#include <map>
+
+#include "TChain.h"
+#include "TString.h"
+#include "TApplication.h"
+
+#include "TH2.h"
+#include "THStack.h"
+#include "TLegend.h"
+#include "TPaveText.h"
+#include "TLorentzVector.h"
+
+#include "ExRootAnalysis/ExRootClasses.h"
+
+#include "ExRootAnalysis/ExRootConfReader.h"
+#include "ExRootAnalysis/ExRootTreeReader.h"
+#include "ExRootAnalysis/ExRootTreeWriter.h"
+#include "ExRootAnalysis/ExRootTreeBranch.h"
+#include "ExRootAnalysis/ExRootClassifier.h"
+#include "ExRootAnalysis/ExRootUtilities.h"
+#include "ExRootAnalysis/ExRootFilter.h"
+#include "ExRootAnalysis/ExRootResult.h"
+
+using namespace std;
+
+//------------------------------------------------------------------------------
+
+class TParticleClassifier: public ExRootClassifier
+{
+public:
+  TParticleClassifier() {}
+
+  void AddParticleID(Int_t category, Int_t pid)
+  {
+    fMap[pid] = category;
+  }
+
+  Int_t GetCategory(TObject *object) const
+  {
+    TRootGenParticle *particle = (TRootGenParticle*) object;
+    Int_t pid = particle->PID;
+    std::map<Int_t, Int_t>::const_iterator itMap = fMap.find(pid);
+    return itMap != fMap.end() ? itMap->second : -1;
+  }
+
+private:
+  std::map<Int_t, Int_t> fMap;
+};
+
+//------------------------------------------------------------------------------
+
+struct MyPlots
+{
+  TH1 *fParticlePT;
+  TH1 *fJetPT[2];
+  TH1 *fMissingET;
+  TH1 *fElectronPT;
+};
+
+//------------------------------------------------------------------------------
+
+void BookHistograms(ExRootResult *result, MyPlots *plots, Int_t classIndex)
+{
+  THStack *stack;
+  TLegend *legend;
+  TPaveText *comment;
+
+  // book 1 histogram for (PT(track) - PT(particle))/(PT(track) + PT(particle))
+
+  plots->fParticlePT = result->AddHist1D("particle_pt",
+           "particle P_{T}",
+           "particle P_{T}, GeV/c",
+           "number of particles", 50, 0.0, 100.0);
+
+  // book 2 histograms for PT of 1st and 2nd leading jets
+
+  plots->fJetPT[0] = result->AddHist1D("jet_pt_0", "leading jet P_{T}",
+                                       "jet P_{T}, GeV/c", "number of jets",
+                                       50, 0.0, 100.0);
+
+  plots->fJetPT[1] = result->AddHist1D("jet_pt_1", "2nd leading jet P_{T}",
+                                       "jet P_{T}, GeV/c", "number of jets",
+                                       50, 0.0, 100.0);
+
+  plots->fJetPT[0]->SetLineColor(kRed);
+  plots->fJetPT[1]->SetLineColor(kBlue);
+
+  // book 1 stack of 2 histograms
+
+  stack = result->AddHistStack("jet_pt_all", "1st and 2nd jets P_{T}");
+  stack->Add(plots->fJetPT[0]);
+  stack->Add(plots->fJetPT[1]);
+
+  // book legend for stack of 2 histograms
+
+  legend = result->AddLegend(0.72, 0.86, 0.98, 0.98);
+  legend->AddEntry(plots->fJetPT[0], "leading jet", "l");
+  legend->AddEntry(plots->fJetPT[1], "second jet", "l");
+
+  // attach legend to stack (legend will be printed over stack in .eps file)
+
+  result->Attach(stack, legend);
+
+  // book more histograms
+
+  plots->fMissingET = result->AddHist1D("missing_et", "Missing E_{T}",
+                                        "Missing E_{T}, GeV",
+                                        "number of events",
+                                        60, 0.0, 30.0);
+
+  plots->fElectronPT = result->AddHist1D("electron_pt", "electron P_{T}",
+                                         "electron P_{T}, GeV/c",
+                                         "number of electrons",
+                                         50, 0.0, 100.0);
+
+  // book general comment
+
+  comment = result->AddComment(0.54, 0.72, 0.98, 0.98);
+  comment->AddText("demonstration plot");
+  comment->AddText("produced by Example.C");
+
+  // attach comment to single histograms
+
+  result->Attach(plots->fParticlePT, comment);
+  result->Attach(plots->fJetPT[0], comment);
+  result->Attach(plots->fJetPT[1], comment);
+  result->Attach(plots->fMissingET, comment);
+  result->Attach(plots->fElectronPT, comment);
+}
+
+//------------------------------------------------------------------------------
+
+void AnalyseEvents(ExRootTreeReader *treeReader,  TParticleClassifier *classifier,  MyPlots *plots)
+{
+  TClonesArray *branchGenParticle = treeReader->UseBranch("GenParticle");
+
+  TRootGenParticle *particle;
+
+  ExRootFilter *filterGenParticle = new ExRootFilter(branchGenParticle);
+
+  const TObjArray *particles;
+
+  Long64_t entry;
+  Int_t particleIndex, classIndex;
+
+  // Loop over all events
+  while(treeReader->ReadEntry(entry++))
+  {
+    if(entry % 1000 == 0) cout << "event " << entry << endl;
+
+    filterGenParticle->Reset();
+
+    // Loop over all classes
+    for(classIndex = 0; classIndex < 1; ++classIndex)
+    {
+      particles = filterGenParticle->GetSubArray(classifier, classIndex);
+
+      if(!particles) continue;
+
+      // sort particles by PT
+      TRootGenParticle::fgCompare = TComparePT<TRootGenParticle>::Instance();
+      particles->Sort();
+
+      TIter itParticles(particles);
+  
+      // Loop over all generated particles
+      counterParticle = 0;
+      itParticles.Reset();
+      while(particle = (TRootGenParticle*) itParticles.Next())
+      {
+        ++counterParticle;
+        if(counterParticle > plots->counterMax)
+        {
+          BookHistograms(classIndex);
+        }
+        plots->fParticlePT->Fill(particle->PT);
+      }
+    }
+  }
+
+  delete filterGenParticle;
+}
+
+//------------------------------------------------------------------------------
+
+void PrintHistograms(ExRootResult *result, MyPlots *plots)
+{
+  result->Print();
+}
+
+//------------------------------------------------------------------------------
+
+int main(int argc, char *argv[])
+{
+
+  int appargc = 2;
+  char appName[] = "JetsSim";
+  char *appargv[] = {appName, "-b"};
+  TApplication app(appName, &appargc, appargv);
+
+  if(argc != 2)
+  {
+    cout << " Usage: " << argv[0] << " input_file" << endl;
+    cout << " input_file - configuration file in Tcl format." << endl;
+    return 1;
+  }
+
+  TString inputFile(argv[1]);
+  
+  ExRootConfReader *confReader = new ExRootConfReader();
+
+  confReader->ReadFile(inputFile);
+
+  TObjArray *chains = new TObjArray();
+  chains->SetOwner();
+
+  ExRootConfParam param = confReader->GetParam("::InputCollection");
+  TString name;
+  Long_t i, sizeChains, sizeClasses, sizeParticles;
+  TChain *chain, *firstChain;
+  sizeChains = param.GetSize();
+  for(i = 0; i < sizeChains; ++i)
+  {
+    chain = new TChain("", "");
+    chains->Add(chain);
+    name = param[i][0].GetString();
+    chain->SetName(name);
+    FillChain(chain, param[i][1].GetString());
+    if(i == 0)
+    {
+      firstChain = chain;
+    }
+    else
+    {
+      firstChain->AddFriend(chain, name + i);
+    }
+  }
+
+  TParticleClassifier *classifier = new TParticleClassifier();
+
+  param = confReader->GetParam("::ParticleClasses");
+  sizeClasses = param.GetSize();
+  for(i = 0; i < sizeClasses; ++i)
+  {
+    name = param[i][0].GetString();
+
+    sizeParticles = param[i][1].GetSize();
+    for(j = 0; j < sizeParticles; ++j)
+    {
+      pid = param[i][1][j].GetInt();
+      classifierGenParticle->AddParticleID(i, pid);
+    }
+  }
+  
+  ExRootTreeReader *treeReader = new ExRootTreeReader(chain);
+  ExRootResult *result = new ExRootResult();
+
+  MyPlots *plots = new MyPlots();
+
+  BookHistograms(result, plots);
+
+  AnalyseEvents(treeReader, classifier, plots);
+
+  PrintHistograms(result, plots);
+
+  cout << "** Exiting..." << endl;
+
+  delete plots;
+  delete result;
+  delete treeReader;
+  delete classifierGenParticle;
+  delete chains;
+  delete confReader;
+}
+
+//------------------------------------------------------------------------------
+
