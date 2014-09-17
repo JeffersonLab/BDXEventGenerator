@@ -149,7 +149,7 @@ proc stdhepExecutableDeps {} {
 
   global prefix suffix objSuf exeSuf
    
-  set executable [glob -nocomplain {test/ExRootSTDHEPConverter.cpp}]
+  set executable [glob -nocomplain {srcExecutables/ExRootSTDHEPConverter.cpp}]
 
   set exeFiles {}
   
@@ -184,12 +184,12 @@ proc executableDeps {} {
 
   global prefix suffix objSuf exeSuf
    
-  set executable [glob -nocomplain {test/*.cpp}]
+  set executable [glob -nocomplain {srcExecutables/*.cpp}]
   
   set exeFiles {}
   
   foreach fileName $executable {
-    if {$fileName == "test/ExRootSTDHEPConverter.cpp"} continue
+    if {$fileName == "srcExecutables/ExRootSTDHEPConverter.cpp"} continue
     regsub {\.cpp} $fileName {} exeObjName
     set exeObjName $prefix$exeObjName
     set exeName [file tail $exeObjName]

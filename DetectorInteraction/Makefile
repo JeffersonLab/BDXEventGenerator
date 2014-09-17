@@ -4,7 +4,7 @@
 #
 # Author: P. Demin - UCL, Louvain-la-Neuve
 #
-# multi-platform configuration is taken from ROOT (root/test/Makefile)
+# multi-platform configuration is taken from ROOT (root/srcExecutables/Makefile)
 #
 
 include doc/Makefile.arch
@@ -28,10 +28,10 @@ all:
 
 
 ExRootSTDHEPConverter$(ExeSuf): \
-	tmp/test/ExRootSTDHEPConverter.$(ObjSuf)
+	tmp/srcExecutables/ExRootSTDHEPConverter.$(ObjSuf)
 
-tmp/test/ExRootSTDHEPConverter.$(ObjSuf): \
-	test/ExRootSTDHEPConverter.cpp \
+tmp/srcExecutables/ExRootSTDHEPConverter.$(ObjSuf): \
+	srcExecutables/ExRootSTDHEPConverter.cpp \
 	ExRootAnalysis/ExRootClasses.h \
 	ExRootAnalysis/ExRootTreeWriter.h \
 	ExRootAnalysis/ExRootTreeBranch.h \
@@ -41,49 +41,49 @@ STDHEP_EXECUTABLE =  \
 	ExRootSTDHEPConverter$(ExeSuf)
 
 STDHEP_EXECUTABLE_OBJ =  \
-	tmp/test/ExRootSTDHEPConverter.$(ObjSuf)
+	tmp/srcExecutables/ExRootSTDHEPConverter.$(ObjSuf)
 
 ExRootMain$(ExeSuf): \
-	tmp/test/ExRootMain.$(ObjSuf)
+	tmp/srcExecutables/ExRootMain.$(ObjSuf)
 
-tmp/test/ExRootMain.$(ObjSuf): \
-	test/ExRootMain.cpp \
+tmp/srcExecutables/ExRootMain.$(ObjSuf): \
+	srcExecutables/ExRootMain.cpp \
 	ExRootAnalysis/ExRootAnalysis.h
 DetectorInteraction$(ExeSuf): \
-	tmp/test/DetectorInteraction.$(ObjSuf)
+	tmp/srcExecutables/DetectorInteraction.$(ObjSuf)
 
-tmp/test/DetectorInteraction.$(ObjSuf): \
-	test/DetectorInteraction.cpp \
+tmp/srcExecutables/DetectorInteraction.$(ObjSuf): \
+	srcExecutables/DetectorInteraction.cpp \
 	ExRootAnalysis/ExRootClasses.h \
 	ExRootAnalysis/ExRootTreeWriter.h \
 	ExRootAnalysis/ExRootTreeBranch.h \
 	ExRootAnalysis/ExRootUtilities.h \
 	ExRootAnalysis/ExRootProgressBar.h
 ExRootLHCOlympicsConverter$(ExeSuf): \
-	tmp/test/ExRootLHCOlympicsConverter.$(ObjSuf)
+	tmp/srcExecutables/ExRootLHCOlympicsConverter.$(ObjSuf)
 
-tmp/test/ExRootLHCOlympicsConverter.$(ObjSuf): \
-	test/ExRootLHCOlympicsConverter.cpp \
+tmp/srcExecutables/ExRootLHCOlympicsConverter.$(ObjSuf): \
+	srcExecutables/ExRootLHCOlympicsConverter.cpp \
 	ExRootAnalysis/ExRootClasses.h \
 	ExRootAnalysis/ExRootTreeWriter.h \
 	ExRootAnalysis/ExRootTreeBranch.h \
 	ExRootAnalysis/ExRootUtilities.h \
 	ExRootAnalysis/ExRootProgressBar.h
 ExRootHEPEVTConverter$(ExeSuf): \
-	tmp/test/ExRootHEPEVTConverter.$(ObjSuf)
+	tmp/srcExecutables/ExRootHEPEVTConverter.$(ObjSuf)
 
-tmp/test/ExRootHEPEVTConverter.$(ObjSuf): \
-	test/ExRootHEPEVTConverter.cpp \
+tmp/srcExecutables/ExRootHEPEVTConverter.$(ObjSuf): \
+	srcExecutables/ExRootHEPEVTConverter.cpp \
 	ExRootAnalysis/ExRootClasses.h \
 	ExRootAnalysis/ExRootTreeReader.h \
 	ExRootAnalysis/ExRootTreeWriter.h \
 	ExRootAnalysis/ExRootTreeBranch.h \
 	ExRootAnalysis/ExRootUtilities.h
 Example$(ExeSuf): \
-	tmp/test/Example.$(ObjSuf)
+	tmp/srcExecutables/Example.$(ObjSuf)
 
-tmp/test/Example.$(ObjSuf): \
-	test/Example.cpp \
+tmp/srcExecutables/Example.$(ObjSuf): \
+	srcExecutables/Example.cpp \
 	ExRootAnalysis/ExRootClasses.h \
 	ExRootAnalysis/ExRootTreeReader.h \
 	ExRootAnalysis/ExRootTreeWriter.h \
@@ -98,11 +98,11 @@ EXECUTABLE =  \
 	Example$(ExeSuf)
 
 EXECUTABLE_OBJ =  \
-	tmp/test/ExRootMain.$(ObjSuf) \
-	tmp/test/DetectorInteraction.$(ObjSuf) \
-	tmp/test/ExRootLHCOlympicsConverter.$(ObjSuf) \
-	tmp/test/ExRootHEPEVTConverter.$(ObjSuf) \
-	tmp/test/Example.$(ObjSuf)
+	tmp/srcExecutables/ExRootMain.$(ObjSuf) \
+	tmp/srcExecutables/DetectorInteraction.$(ObjSuf) \
+	tmp/srcExecutables/ExRootLHCOlympicsConverter.$(ObjSuf) \
+	tmp/srcExecutables/ExRootHEPEVTConverter.$(ObjSuf) \
+	tmp/srcExecutables/Example.$(ObjSuf)
 
 tmp/src/ExRootAnalysisDict.$(SrcSuf): \
 	src/ExRootAnalysisLinkDef.h \
@@ -960,7 +960,7 @@ $(EXECUTABLE_OBJ): tmp/%.$(ObjSuf): %.cpp
 $(EXECUTABLE): %$(ExeSuf): $(DICT_OBJ) $(SOURCE_OBJ) $(TCL_OBJ)
 	@echo ">> Building $@"
 	@$(LD) $(LDFLAGS) $^ $(LIBS) $(OutPutOpt)$@
-
+	mv $@ bin/
 ###
 
 
