@@ -21,7 +21,3 @@
 *.exe
 *.out
 *.app
-
-#Root dictionary files to be generated!
-ExRootAnalysis/src/ExRootAnalysisDict.cc
-ExRootAnalysis/include/ExRootAnalysisDict.h
