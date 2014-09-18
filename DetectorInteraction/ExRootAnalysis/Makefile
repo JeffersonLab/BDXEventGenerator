@@ -8,7 +8,7 @@ SRC=$(wildcard src/*.cc)
 OBJ_DIR=obj
 OBJS=$(patsubst src/%,$(OBJ_DIR)/%,$(SRC:.cc=.o))
 
-all: src/ExRootAnalysisDict.cc  $(OBJS)
+all: prepare src/ExRootAnalysisDict.cc  $(OBJS)
 
 $(OBJ_DIR)/%.o: src/%.cc
 	$(CC) -c -o $@ $^ $(ROOT_INC) $(INC_PATH)
@@ -25,3 +25,6 @@ src/ExRootAnalysisDict.cc:
 clean:
 	rm -f $(OBJ_DIR)/*.o
 	rm src/ExRootAnalysisDict.cc
+
+prepare:
+	@mkdir -p obj
