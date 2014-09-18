@@ -22,10 +22,11 @@ src/ExRootAnalysisDict.cc:
 	cat src/ExRootAnalysisDict.cc.arch include/ExRootAnalysisLinkDef.h src/ExRootAnalysisDict.cc.base > src/ExRootAnalysisDict.cc
 	rm src/ExRootAnalysisDict.cc.arch src/ExRootAnalysisDict.cc.base
 	$(CC) -c -o obj/ExRootAnalysisDict.o src/ExRootAnalysisDict.cc $(ROOT_INC) $(INC_PATH)
+	rm src/ExRootAnalysisDict.cc
 
 clean:
 	rm -f $(OBJ_DIR)/*.o
-	rm src/ExRootAnalysisDict.cc
-
+	rm -f src/ExRootAnalysisDict.cc
+	rm -f dict/ExRootAnalysisDict.o
 prepare:
 	@mkdir -p obj
