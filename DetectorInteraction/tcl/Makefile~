@@ -1,0 +1,15 @@
+CC = g++
+
+INC_PATH = -I./include 
+
+SRC=$(wildcard src/*.cc)
+OBJ_DIR=obj
+OBJS=$(patsubst src/%,$(OBJ_DIR)/%,$(SRC:.cc=.o))
+
+all: $(OBJS)
+
+$(OBJ_DIR)/%.o: src/%.cc
+	$(CC) -c -o $@ $^ $(INC_PATH)
+
+clean:
+	rm -f $(OBJ_DIR)/*.o

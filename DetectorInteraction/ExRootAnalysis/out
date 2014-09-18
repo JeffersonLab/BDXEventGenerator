@@ -1,0 +1,1 @@
+g++ -c -o obj/ExRootAnalysisDict.o src/ExRootAnalysisDict.cc `root-config --cflags` -I./include -I../tcl/include

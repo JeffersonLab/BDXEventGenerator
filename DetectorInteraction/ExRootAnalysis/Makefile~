@@ -1,0 +1,17 @@
+CC = g++
+
+ROOT_INC = `root-config --cflags`
+
+INC_PATH = -I../include -I../
+
+SRC=$(wildcard *.cc)
+OBJ_DIR=../obj
+OBJS=$(patsubst %,$(OBJ_DIR)/%,$(SRC:.cc=.o))
+
+all: $(OBJS)
+
+$(OBJ_DIR)/%.o: %.cc
+	$(CC) -c -o $@ $^ $(ROOT_INC) $(INC_PATH)
+
+clean:
+	rm -f $(OBJ_DIR)/*.o
