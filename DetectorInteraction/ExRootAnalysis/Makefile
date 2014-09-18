@@ -21,6 +21,7 @@ src/ExRootAnalysisDict.cc:
 	echo "#define protected public" >> src/ExRootAnalysisDict.cc.arch
 	cat src/ExRootAnalysisDict.cc.arch include/ExRootAnalysisLinkDef.h src/ExRootAnalysisDict.cc.base > src/ExRootAnalysisDict.cc
 	rm src/ExRootAnalysisDict.cc.arch src/ExRootAnalysisDict.cc.base
+	$(CC) -c -o obj/ExRootAnalysisDict.o src/ExRootAnalysisDict.cc $(ROOT_INC) $(INC_PATH)
 
 clean:
 	rm -f $(OBJ_DIR)/*.o
