@@ -96,30 +96,30 @@ c*********************************************************************
       call get_real   (npara,param,value,"thetafmin ", thetafmin , 0d0)
       call get_real   (npara,param,value,"thetaxfmin ", thetaxfmin, 0d0)
       call get_real   (npara,param,value,"thetayfmin ", thetayfmin, 0d0)
-c      call get_real   (npara,param,value,"xthetaxfmin ",xthetaxfmin, 0d0)
-c      call get_real   (npara,param,value,"xthetayfmin ",xthetayfmin, 0d0)
+      call get_real   (npara,param,value,"xthetaxfmin ",xthetaxfmin, 0d0)
+      call get_real   (npara,param,value,"xthetayfmin ",xthetayfmin, 0d0)
       call get_real   (npara,param,value,"efmax "    , efmax   , 100d0)
       call get_real   (npara,param,value,"thetafmax ", thetafmax, 100d0)
       call get_real   (npara,param,value,"thetaxfmax ", thetaxfmax,100d0)
       call get_real   (npara,param,value,"thetayfmax ", thetayfmax,100d0)
-c     call get_real   (npara,param,value,"xthetaxfmax ",xthetaxfmax,100d0)
-c     call get_real   (npara,param,value,"xthetayfmax ",xthetayfmax,100d0)
+      call get_real   (npara,param,value,"xthetaxfmax ",xthetaxfmax,100d0)
+      call get_real   (npara,param,value,"xthetayfmax ",xthetayfmax,100d0)
       call get_real   (npara,param,value,"mmff "     , mmff      , 0d0)
       call get_real   (npara,param,value,"mmffmax " , mmffmax  , 1000d0)
       call get_real   (npara,param,value,"xef "      , xef       , 0d0)
       call get_real   (npara,param,value,"xthetaf "  , xthetaf   , 0d0)
       call get_real   (npara,param,value,"eftot"    , efTot     , 0d0)
       call get_real   (npara,param,value,"efrat"    , efRat     , 0d0)
-c Andrea
+c Andrea. These are used ONLY later!!
       call get_real   (npara,param,value,"ldet", ldet, 0d0)
       call get_real   (npara,param,value," fiduciallx", lx, 0d0)
       call get_real   (npara,param,value," fiducially", ly, 0d0)
       call get_real   (npara,param,value," fiduciallz", lz, 0d0)
 
-      xthetaxfmin = 0.
-      xthetayfmin = 0.
-      xthetaxfmax = dabs(datan(lx/(2*ldet))) 
-      xthetayfmax = dabs(datan(ly/(2*ldet)))  
+c      xthetaxfmin = 0.
+c      xthetayfmin = 0.
+c      xthetaxfmax = dabs(datan(lx/(2*ldet))) 
+c      xthetayfmax = dabs(datan(ly/(2*ldet)))  
 
 c*********************************************************************
 c     Minimum pt's                                                   *

@@ -6,12 +6,20 @@
 #define PI 3.14156
 #define Me 0.511E-3
 #define Mn 0.9383
+#define GeVm2cm2 3.9204E-28       //This is the conversion factor for the cross section, from GeV^-2 to cm2
 
 #include "TLorentzVector.h"
 #include "TVector3.h"
 #include "TF1.h"
 #include "TRandom3.h"
 
+enum ProcID{
+	Proc_nothing=0,
+	Proc_Pelastic=1,
+	Proc_Eelastic=2,
+	Proc_Pinelastic=3,
+	Proc_Einelastic=4
+};
 
 class KinUtils{
 
@@ -21,17 +29,49 @@ class KinUtils{
 
 		double Ebeam;
 		double Mchi,Maprime,Msplit; //chi and aprime mass in GeV
-		double pTHR,eTHR; //the two thresholds in GeV for the recoil proton kinetic energy and the recoil electron kinetic energy.
+		double Epsilon,AlphaDark,Alpha;
+
+		double Pthr,Ethr; //the two thresholds in GeV for the recoil proton kinetic energy and the recoil electron kinetic energy.
 		int Seed;
 		TRandom3 Rand;
 
+		//I use a nested class for the electron elastic recoil cross-section,
+		class ElectronElasticRecoil{
+		private:
+				KinUtils *utils;
+		public:
+				ElectronElasticRecoil(KinUtils *m_utils);
+				double operator() (double *x,double *par);
+		};
+
+		class ProtonElasticRecoil{
+		private:
+			KinUtils	 *utils;
+		public:
+			ProtonElasticRecoil(KinUtils m_utils);
+			double operator() (double *x,double *par);
+		};
+
+
+
 	public:
-		KinUtils(const double &m_Ebeam,const double &m_Mchi,const double &m_Maprime,const double &m_Msplit,const int &m_Seed);
-		int doProtonRecoil(const TLorentzVector &chi,TLorentzVector &proton,TLorentzVector &chiPrime);
-		int doElectronRecoil(const TLorentzVector &chi,TLorentzVector &electron,TLorentzVector &chiPrime);
+
+
+		KinUtils(const double &m_Ebeam,const double &m_Mchi,const double &m_Maprime,const double &m_Msplit,const double &m_Epsilon,const int &m_Seed);
+		void PrintParameters();
+		void setAlpha(double m_Alpha){Alpha=m_Alpha;};
+		void setAlphaD(double m_AlphaDark){AlphaDark=m_AlphaDark;};
+		void setEpsilon(double m_Epsilon){Epsilon=m_Epsilon;};
+
+		int doElasticRecoil(const TLorentzVector &chi,TLorentzVector &proton,TLorentzVector &chiPrime,const int &procID);
 		int findInteractionPoint(const TLorentzVector &chi,const TVector3 &fiducialV,const TVector3 &vin,TVector3 &vhit);
 		double Er_chipXsection(double *x,double *par);
 		double Er_chieXsection(double *x,double *par);
+
+
+
+
+
 
 
 };

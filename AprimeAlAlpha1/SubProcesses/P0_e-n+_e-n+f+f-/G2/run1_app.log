@@ -118,7 +118,7 @@
 Enter number of events and iterations: 
  Number of events and iterations  2000 9
 Enter desired fractional accuracy: 
- Desired fractional accuracy:  -61819.583
+ Desired fractional accuracy:  -61367.728
 Enter 0 for fixed, 2 for adjustable grid: 
 Suppress amplitude (0 no, 1 yes)? 
  Using suppressed amplitude.
@@ -148,8 +148,8 @@ Running Configuration Number:    2
  Masses: 0.511E-03 0.251E+02 0.511E-03 0.251E+02 0.100E-01 0.100E-01
    2   1   2   3   4   5   6   7   8
 Using random seed offsets     2 :      1
-  with seed 305
- Ranmar initialization seeds 2109 9374
+  with seed 306
+ Ranmar initialization seeds 2110 9374
   Particle       3       4       5       6
       Et >     0.0     0.0     0.0     0.0
        E >     0.0     0.0     0.0     0.0
@@ -166,109 +166,119 @@ xqcutij # 4>     0.0     0.0     0.0     0.0
 xqcutij # 5>     0.0     0.0     0.0     0.0
  No cut BW  -1 1
  alpha_s for scale   0. is   0.118
- Iteration  1   Mean: 0.1482E+11   Fluctuation:  0.146E+10   0.124E+13    76.9%
-  1   0.1482E+11 +- 0.1456E+10      4.39
- Writing out events  1070860.16  4.39498295
- Iteration  2   Mean: 0.1772E+11   Fluctuation:  0.114E+10   0.110E+13    76.8%
-  2   0.1772E+11 +- 0.1137E+10      4.06
- Found  351 events.
- Wrote  86 events.
+ Iteration  1   Mean: 0.1698E+11   Fluctuation:  0.213E+10   0.246E+13    76.0%
+  1   0.1698E+11 +- 0.2131E+10      5.61
+ Writing out events  1242193.88  5.61045801
+ Iteration  2   Mean: 0.1550E+11   Fluctuation:  0.101E+10   0.114E+13    77.4%
+  2   0.1550E+11 +- 0.1014E+10      4.14
+ Found  314 events.
+ Wrote  65 events.
  Correct xsec   0.
  Event xsec   0.
  Events wgts > 1:  0
  % Cross section > 1:   0.  NAN
- Iteration  3   Mean: 0.1588E+11   Fluctuation:  0.785E+09   0.309E+13    76.9%
-  3   0.1588E+11 +- 0.7845E+09      4.42
- No improvement in events 44 86
- Checking number of events -61819.583 86
- No improvement in events 42 86
- Iteration  4   Mean: 0.1613E+11   Fluctuation:  0.557E+09   0.327E+13    77.2%
-  4   0.1613E+11 +- 0.5566E+09      4.37
- Found  1320 events.
- Wrote  189 events.
- Correct xsec   1.63187347E+10
- Event xsec   1.63187347E+10
- Events wgts > 1:  3
- % Cross section > 1:   114641366.  0.702513814
- Checking number of events -61819.583 189
- No improvement in events 154 189
- Iteration  5   Mean: 0.1604E+11   Fluctuation:  0.374E+09   0.228E+13    77.2%
-  5   0.1604E+11 +- 0.3742E+09      4.17
- Found  2706 events.
- Wrote  534 events.
- Correct xsec   1.60432788E+10
- Event xsec   1.60432788E+10
- Events wgts > 1:  13
- % Cross section > 1:   149133687.  0.929571125
- Checking number of events -61819.583 534
- No improvement in events 501 534
- Iteration  6   Mean: 0.1567E+11   Fluctuation:  0.254E+09   0.309E+13    77.2%
-  6   0.1567E+11 +- 0.2537E+09      4.10
- Found  5303 events.
- Wrote  1035 events.
- Correct xsec   1.58346088E+10
- Event xsec   1.58346088E+10
- Events wgts > 1:  27
- % Cross section > 1:   159099625.  1.0047588
- Checking number of events -61819.583 1035
- Found  5303 events.
- Wrote  1056 events.
- Correct xsec   1.58346088E+10
- Event xsec   1.58346088E+10
- Events wgts > 1:  27
- % Cross section > 1:   155966876.  0.984974605
- Iteration  7   Mean: 0.1628E+11   Fluctuation:  0.194E+09   0.306E+13    77.1%
-  7   0.1628E+11 +- 0.1944E+09      4.27
- Found  10905 events.
- Wrote  1701 events.
- Correct xsec   1.60623668E+10
- Event xsec   1.60623668E+10
- Events wgts > 1:  44
- % Cross section > 1:   157234146.  0.978897739
- Checking number of events -61819.583 1701
- Found  10905 events.
- Wrote  1713 events.
- Correct xsec   1.60623668E+10
- Event xsec   1.60623668E+10
- Events wgts > 1:  44
- % Cross section > 1:   156143388.  0.972106973
- Iteration  8   Mean: 0.1626E+11   Fluctuation:  0.137E+09   0.358E+13    77.1%
-  8   0.1626E+11 +- 0.1368E+09      4.26
- Found  21290 events.
- Wrote  3827 events.
- Correct xsec   1.61767293E+10
- Event xsec   1.61767293E+10
- Events wgts > 1:  110
- % Cross section > 1:   161342015.  0.997371053
- Checking number of events -61819.583 3827
- No improvement in events 3812 3827
- Iteration  9   Mean: 0.1617E+11   Fluctuation:  0.101E+09   0.153E+14    77.1%
-  9   0.1617E+11 +- 0.1014E+09      4.49
- Found  42492 events.
- Wrote  6564 events.
- Correct xsec   1.62133035E+10
- Event xsec   1.62133035E+10
- Events wgts > 1:  141
- % Cross section > 1:   162631890.  1.00307682
- Checking number of events -61819.583 6564
- No improvement in events 6542 6564
+ Iteration  3   Mean: 0.1669E+11   Fluctuation:  0.766E+09   0.119E+13    78.1%
+  3   0.1669E+11 +- 0.7660E+09      4.11
+ Found  697 events.
+ Wrote  180 events.
+ Correct xsec   1.63530975E+10
+ Event xsec   1.63530975E+10
+ Events wgts > 1:  10
+ % Cross section > 1:   147419714.  0.901478843
+ Checking number of events -61367.728 180
+ No improvement in events 176 180
+ Iteration  4   Mean: 0.1530E+11   Fluctuation:  0.515E+09   0.251E+13    78.3%
+  4   0.1530E+11 +- 0.5154E+09      4.26
+ Found  1255 events.
+ Wrote  242 events.
+ Correct xsec   1.57454601E+10
+ Event xsec   1.57454601E+10
+ Events wgts > 1:  6
+ % Cross section > 1:   123103318.  0.78183373
+ Checking number of events -61367.728 242
+ No improvement in events 219 242
+ Iteration  5   Mean: 0.1562E+11   Fluctuation:  0.378E+09   0.246E+13    77.7%
+  5   0.1562E+11 +- 0.3784E+09      4.33
+ Found  2637 events.
+ Wrote  387 events.
+ Correct xsec   1.56934209E+10
+ Event xsec   1.56934209E+10
+ Events wgts > 1:  12
+ % Cross section > 1:   143841608.  0.916572678
+ Checking number of events -61367.728 387
+ No improvement in events 372 387
+ Iteration  6   Mean: 0.1591E+11   Fluctuation:  0.267E+09   0.365E+13    77.7%
+  6   0.1591E+11 +- 0.2672E+09      4.25
+ Found  5313 events.
+ Wrote  886 events.
+ Correct xsec   1.5740415E+10
+ Event xsec   1.5740415E+10
+ Events wgts > 1:  21
+ % Cross section > 1:   164036732.  1.04213727
+ Checking number of events -61367.728 886
+ Found  5313 events.
+ Wrote  947 events.
+ Correct xsec   1.5740415E+10
+ Event xsec   1.5740415E+10
+ Events wgts > 1:  21
+ % Cross section > 1:   153573571.  0.975664053
+ Iteration  7   Mean: 0.1583E+11   Fluctuation:  0.186E+09   0.228E+13    77.6%
+  7   0.1583E+11 +- 0.1857E+09      4.20
+ Found  10706 events.
+ Wrote  1932 events.
+ Correct xsec   1.58256221E+10
+ Event xsec   1.58256221E+10
+ Events wgts > 1:  60
+ % Cross section > 1:   156634337.  0.989751528
+ Checking number of events -61367.728 1932
+ No improvement in events 1915 1932
+ Iteration  8   Mean: 0.1578E+11   Fluctuation:  0.137E+09   0.682E+13    77.6%
+  8   0.1578E+11 +- 0.1372E+09      4.40
+ Found  21236 events.
+ Wrote  3180 events.
+ Correct xsec   1.58145958E+10
+ Event xsec   1.58145958E+10
+ Events wgts > 1:  58
+ % Cross section > 1:   155268475.  0.981804891
+ Checking number of events -61367.728 3180
+ Found  21236 events.
+ Wrote  3202 events.
+ Correct xsec   1.58145958E+10
+ Event xsec   1.58145958E+10
+ Events wgts > 1:  58
+ % Cross section > 1:   154212073.  0.975124977
+ Iteration  9   Mean: 0.1581E+11   Fluctuation:  0.961E+08   0.827E+13    77.6%
+  9   0.1581E+11 +- 0.9607E+08      4.35
+ Found  42595 events.
+ Wrote  6739 events.
+ Correct xsec   1.58043441E+10
+ Event xsec   1.58043441E+10
+ Events wgts > 1:  150
+ % Cross section > 1:   156911372.  0.992836981
+ Checking number of events -61367.728 6739
+ Found  42595 events.
+ Wrote  6780 events.
+ Correct xsec   1.58043441E+10
+ Event xsec   1.58043441E+10
+ Events wgts > 1:  150
+ % Cross section > 1:   155971863.  0.986892351
 
  -------------------------------------------------------------------------------
- Accumulated results:   Integral =  0.1617E+11
-                        Std dev  =  0.6969E+08
-             Chi**2 per DoF.     =      0.9546
+ Accumulated results:   Integral =  0.1580E+11
+                        Std dev  =  0.6772E+08
+             Chi**2 per DoF.     =      0.4065
  -------------------------------------------------------------------------------
  &&&&&&&& end do 99
  &&&&&&&& xxxxd
 -----------------------------------------------------
 ---------------------------
- Results Last 3 iters:  Integral =   0.1621E+11
-                         Std dev =   0.7512E+08
-                 Chi**2 per DoF. =      0.2232
+ Results Last 3 iters:  Integral =   0.1580E+11
+                         Std dev =   0.7246E+08
+                 Chi**2 per DoF. =      0.0310
 -----------------------------------------------------
 ---------------------------
  &&&&&&&& xxxxe
- Status -61819.583 10 9
+ Status -61367.728 10 9
  &&&&&&&& xxxxf
  Trying w/ fresh grid
  &&&&&&&& xxxxg
@@ -283,8 +293,8 @@ xqcutij # 5>     0.0     0.0     0.0     0.0
  Using uniform alpha  1.
  Grid defined OK
  &&&&&&&& call_clear_events
- Found  42492 events.
- Wrote  6655 events.
+ Found  42595 events.
+ Wrote  6880 events.
  Correct xsec   0.
  Event xsec   0.
  Events wgts > 1:  0
@@ -299,49 +309,50 @@ Setting grid   2    0.38025E-05    0.21162E-09   1
 Setting grid   3    0.38025E-05    0.00000E+00   1
  &&&&&&&& (done)
  &&&&&&&& start do L286
- Iteration  1   Mean: 0.9150E+10   Fluctuation:  0.350E+10   0.243E+14    14.4%
-  1   0.9150E+10 +- 0.3503E+10     34.24
- No improvement in events 4 6655
- Iteration  2   Mean: 0.6686E+10   Fluctuation:  0.930E+09   0.857E+13    54.9%
-  2   0.6686E+10 +- 0.9300E+09     17.59
- No improvement in events 9 6655
- Iteration  3   Mean: 0.1235E+11   Fluctuation:  0.163E+10   0.404E+14    76.1%
-  3   0.1235E+11 +- 0.1635E+10     23.67
- No improvement in events 13 6655
- Checking number of events -61819.583 6655
- No improvement in events 10 6655
- Iteration  4   Mean: 0.1886E+11   Fluctuation:  0.298E+10   0.141E+15    84.5%
-  4   0.1886E+11 +- 0.2975E+10     39.90
- No improvement in events 8 6655
- Checking number of events -61819.583 6655
- No improvement in events 6 6655
- Iteration  5   Mean: 0.1509E+11   Fluctuation:  0.465E+09   0.187E+14    83.7%
-  5   0.1509E+11 +- 0.4647E+09     11.02
- Exceeded boost 2 2  128000.
- No improvement in events 169 6655
- Checking number of events -61819.583 6655
- No improvement in events 170 6655
+ Iteration  1   Mean: 0.8692E+10   Fluctuation:  0.257E+10   0.117E+14    14.1%
+  1   0.8692E+10 +- 0.2574E+10     26.48
+ No improvement in events 7 6880
+ Iteration  2   Mean: 0.1103E+11   Fluctuation:  0.218E+10   0.283E+14    55.7%
+  2   0.1103E+11 +- 0.2177E+10     24.97
+ No improvement in events 6 6880
+ Iteration  3   Mean: 0.1227E+11   Fluctuation:  0.179E+10   0.467E+14    78.7%
+  3   0.1227E+11 +- 0.1787E+10     26.04
+ No improvement in events 14 6880
+ Checking number of events -61367.728 6880
+ No improvement in events 7 6880
+ Iteration  4   Mean: 0.1451E+11   Fluctuation:  0.827E+09   0.281E+14    83.9%
+  4   0.1451E+11 +- 0.8267E+09     14.41
+ No improvement in events 37 6880
+ Checking number of events -61367.728 6880
+ No improvement in events 40 6880
+ Iteration  5   Mean: 0.1510E+11   Fluctuation:  0.401E+09   0.163E+14    86.0%
+  5   0.1510E+11 +- 0.4008E+09      9.49
+ Exceeded boost 2 95  128000.
+ Exceeded boost 3 95  128000.
+ No improvement in events 213 6880
+ Checking number of events -61367.728 6880
+ No improvement in events 221 6880
  Fixing grid
- Iteration  6   Mean: 0.1580E+11   Fluctuation:  0.243E+09   0.200E+14    84.1%
-  6   0.1580E+11 +- 0.2427E+09      7.77
- No improvement in events 495 6655
- Checking number of events -61819.583 6655
- No improvement in events 489 6655
- Iteration  7   Mean: 0.1630E+11   Fluctuation:  0.226E+09   0.403E+14    84.2%
-  7   0.1630E+11 +- 0.2258E+09      9.91
- No improvement in events 556 6655
- Checking number of events -61819.583 6655
- No improvement in events 535 6655
- Iteration  8   Mean: 0.1655E+11   Fluctuation:  0.581E+09   0.564E+15    84.2%
-  8   0.1655E+11 +- 0.5811E+09     35.52
- No improvement in events 33 6655
- Checking number of events -61819.583 6655
- No improvement in events 32 6655
+ Iteration  6   Mean: 0.1619E+11   Fluctuation:  0.273E+09   0.254E+14    84.5%
+  6   0.1619E+11 +- 0.2727E+09      8.52
+ No improvement in events 385 6880
+ Checking number of events -61367.728 6880
+ No improvement in events 410 6880
+ Iteration  7   Mean: 0.1594E+11   Fluctuation:  0.178E+09   0.278E+14    84.5%
+  7   0.1594E+11 +- 0.1779E+09      7.99
+ No improvement in events 846 6880
+ Checking number of events -61367.728 6880
+ No improvement in events 877 6880
+ Iteration  8   Mean: 0.1629E+11   Fluctuation:  0.141E+09   0.504E+14    84.4%
+  8   0.1629E+11 +- 0.1409E+09      8.75
+ No improvement in events 1589 6880
+ Checking number of events -61367.728 6880
+ No improvement in events 1542 6880
 
  -------------------------------------------------------------------------------
- Accumulated results:   Integral =  0.1597E+11
-                        Std dev  =  0.1491E+09
-             Chi**2 per DoF.     =      4.2855
+ Accumulated results:   Integral =  0.1607E+11
+                        Std dev  =  0.9829E+08
+             Chi**2 per DoF.     =      2.6956
  -------------------------------------------------------------------------------
  &&&&&&&& ended loop 199
  &&&&&&&& ended loop L337
@@ -349,10 +360,10 @@ Setting grid   3    0.38025E-05    0.00000E+00   1
  &&&&&&&& ended loop L364
 -----------------------------------------------------
 ---------------------------
- Results Last 3 iters:  Integral =   0.1612E+11
-                         Std dev =   0.1591E+09
-                 Chi**2 per DoF. =      1.4780
+ Results Last 3 iters:  Integral =   0.1616E+11
+                         Std dev =   0.1024E+09
+                 Chi**2 per DoF. =      1.2103
 -----------------------------------------------------
 ---------------------------
  &&&&&&&& leaving sample_full
- No improvement in events 0 6655
+ No improvement in events 0 6880

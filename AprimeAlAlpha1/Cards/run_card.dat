@@ -114,15 +114,19 @@
 #        |______|                |    volume   |
 #                                |_____________|
 #
-# These cuts are actually used in MadGraph,
-# when the chi is generated, and also after,
+# These cuts are not used in MadGraph,
+# when the chi is generated, but ONLY after,
 # when the interaction with the proton/electron/inelastic
 # is considered.
 # However, they're here to keep them inside the run_card.dat file,
 # and to have them in the .lhe files.
+# MADGRAPH does use the following:
+#  xthetaxfmin, xthetaxfmax, xthetayfmin, ythetayfmax 
 #
-# To have consistency, xthetaxfmin, xthetaxfmax, xthetayfmin, ythetayfmax are re-defined in the MADGRAPH
-# program according to the following values.
+# However, it is highly recommended that these are left as they're before, because MADGRAPH 
+# can have problems handling a tight cut with the process kinematics.
+# 
+# 
 
 #*******************                                                 
 #<BDX> DO NOT TOUCH THIS TAG

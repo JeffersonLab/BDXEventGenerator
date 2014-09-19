@@ -37,25 +37,26 @@ KinUtils *m_utils;
 void AnalyseParticles(LHEF::Reader *reader) {
 	LHEF::HEPEUP &hepeup = reader->hepeup;
 	const LHEF::HEPRUP &heprup = reader->heprup;
-
-	Int_t particle, n_inside;
 	long PID;
-	Double_t signPz, cosTheta, M;
+	Int_t particle, n_inside;
 
+	Double_t signPz, cosTheta, M;
 	Double_t xthetaxfmin, xthetaxfmax, xthetayfmin, xthetayfmax;
-	TLorentzVector chi, recoil_chi, recoil_p, recoil_e;
+	TLorentzVector chi, recoil_chi, recoil_elastic;
 	TVector3 vin, vhit, fiducialV;
 	vector<double> tmp_v;
 
 	n_inside = 0;
 	xthetaxfmin = xthetayfmin = 0;
-
 	xthetaxfmax = (heprup.lx / (2 * heprup.ldet)); //ok without ATAN for this check
 	xthetayfmax = (heprup.ly / (2 * heprup.ldet)); //ok without ATAN for this check
 
-	fiducialV.SetXYZ(heprup.lx, heprup.ly, heprup.lz);
+	//set the fiducial volume "box", with respect to the z axis.
+	fiducialV.SetXYZ(heprup.lx/2, heprup.ly/2, heprup.lz);
 
 	for (particle = 0; particle < hepeup.NUP; ++particle) {
+
+		m_utils->setAlpha(hepeup.AQEDUP); //set alpha_EM. It is saved evnt by evnt (but we have it fixed!)
 
 		PID = hepeup.IDUP[particle];
 		if ((PID != -611) && (PID != 611)){
@@ -66,7 +67,7 @@ void AnalyseParticles(LHEF::Reader *reader) {
 				hepeup.PUP[particle][2], hepeup.PUP[particle][3]);
 		cosTheta = TMath::Abs(chi.CosTheta());
 		signPz = (chi.Pz() >= 0.0) ? 1.0 : -1.0;
-		/*In MADGRAPH, the fiducial volume cut was inclusive, i.e. the event was considered "good" if at least one of the two chi were inside.
+		/* I need now to apply the fiducial cuts.
 		 Now, I need to find which of the two are inside, and use that for the interaction.
 		 If both are inside, I take only one.
 		 If none is inside, there is an error!*/
@@ -88,10 +89,11 @@ void AnalyseParticles(LHEF::Reader *reader) {
 		//See which interaction to consider
 
 		switch (heprup.procid) {
-		case 0: //nothing to do
+		case Proc_nothing: //nothing to do
 			break;
-		case 1: //proton elastic
-			m_utils->doProtonRecoil(chi, recoil_p, recoil_chi);
+		case Proc_Pelastic: //proton elastic
+		case Proc_Eelastic: //electron elastic
+			m_utils->doElasticRecoil(chi, recoil_elastic, recoil_chi,heprup.procid);
 			m_utils->findInteractionPoint(chi, fiducialV, vin, vhit);
 			//add particles to hepeup
 			//final state chi
@@ -108,58 +110,24 @@ void AnalyseParticles(LHEF::Reader *reader) {
 			hepeup.PUP.push_back(tmp_v);
 			hepeup.VTIMUP.push_back(0);
 			hepeup.SPINUP.push_back(0);
-			//final state proton
-			hepeup.IDUP.push_back(92212);
+			//final state recoil
+			(heprup.procid == Proc_Pelastic ? hepeup.IDUP.push_back(92212) : hepeup.IDUP.push_back(911));
 			hepeup.ISTUP.push_back(1);
 			hepeup.MOTHUP.push_back(std::make_pair(particle + 1, particle + 1));
 			hepeup.ICOLUP.push_back(std::make_pair(0, 0));
 			tmp_v.clear();
-			tmp_v.push_back(recoil_p.Px());
-			tmp_v.push_back(recoil_p.Py());
-			tmp_v.push_back(recoil_p.Pz());
-			tmp_v.push_back(recoil_p.E());
-			tmp_v.push_back(recoil_p.M());
+			tmp_v.push_back(recoil_elastic.Px());
+			tmp_v.push_back(recoil_elastic.Py());
+			tmp_v.push_back(recoil_elastic.Pz());
+			tmp_v.push_back(recoil_elastic.E());
+			tmp_v.push_back(recoil_elastic.M());
 			hepeup.PUP.push_back(tmp_v);
 			hepeup.VTIMUP.push_back(0);
 			hepeup.SPINUP.push_back(0);
 			hepeup.NUP += 2;
 			break;
-		case 2: //electron elastic
-			m_utils->doElectronRecoil(chi, recoil_e, recoil_chi);
-			m_utils->findInteractionPoint(chi, fiducialV, vin, vhit);
-			//add particles to hepeup
-			//final state chi
-			hepeup.IDUP.push_back(9611);
-			hepeup.ISTUP.push_back(1);
-			hepeup.MOTHUP.push_back(std::make_pair(particle + 1, particle + 1));
-			hepeup.ICOLUP.push_back(std::make_pair(0, 0));
-			tmp_v.clear();
-			tmp_v.push_back(recoil_chi.Px());
-			tmp_v.push_back(recoil_chi.Py());
-			tmp_v.push_back(recoil_chi.Pz());
-			tmp_v.push_back(recoil_chi.E());
-			tmp_v.push_back(recoil_chi.M());
-			hepeup.PUP.push_back(tmp_v);
-			hepeup.VTIMUP.push_back(0);
-			hepeup.SPINUP.push_back(0);
-			//final state electron
-			hepeup.IDUP.push_back(911);
-			hepeup.ISTUP.push_back(1);
-			hepeup.MOTHUP.push_back(std::make_pair(particle + 1, particle + 1));
-			hepeup.ICOLUP.push_back(std::make_pair(0, 0));
-			tmp_v.clear();
-			tmp_v.push_back(recoil_e.Px());
-			tmp_v.push_back(recoil_e.Py());
-			tmp_v.push_back(recoil_e.Pz());
-			tmp_v.push_back(recoil_e.E());
-			tmp_v.push_back(recoil_e.M());
-			hepeup.PUP.push_back(tmp_v);
-			hepeup.VTIMUP.push_back(0);
-			hepeup.SPINUP.push_back(0);
-			hepeup.NUP += 2;
-			break;
-		case 3: //inelastic
-
+		case Proc_Pinelastic: //inelastic
+		case Proc_Einelastic:
 			break;
 		default:
 			cout << "Error, interaction not recognized" << endl;
@@ -169,11 +137,6 @@ void AnalyseParticles(LHEF::Reader *reader) {
 		//use the eventComments for the vertex location (in m, in the form x y z)
 		reader->eventComments = Form("%f %f %f", vhit.X(), vhit.Y(), vhit.Z());
 	}
-
-	if (n_inside == 0)
-		cout
-				<< "Error with this event, no chi inside fiducial volume (but should be at least one!)"
-				<< endl;
 }
 
 //------------------------------------------------------------------------------
@@ -211,7 +174,10 @@ int main(int argc, char *argv[]) {
 	//instear of having, for each process, a single function with a free parameter (the incident chi energy),
 	//it is much better to have 100 of them, each for a certain energy: otherwise, the integral gets calculated for each event!
 	cout << " ** Preparing the cross-section functions and the KinUtils class ** " << endl;
-	m_utils=new KinUtils(inputReader->heprup.EBEAM,inputReader->heprup.FMASS,inputReader->heprup.APMASS,0,inputReader->heprup.SEED);
+
+	//note that alphaEM is saved in the event header (altough we are not going to touch this at all!).
+	//Therefore, I will set it in the first event in the  loop.
+	m_utils=new KinUtils(inputReader->heprup.EBEAM,inputReader->heprup.FMASS,inputReader->heprup.APMASS,0,inputReader->heprup.EPSILON,inputReader->heprup.SEED);
 
 
 	cout << "** Calculating number of events to process. Please wait..."

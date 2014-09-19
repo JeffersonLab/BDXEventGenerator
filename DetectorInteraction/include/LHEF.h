@@ -47,7 +47,9 @@ public:
       XMAXUP(x.XMAXUP), LPRUP(x.LPRUP),
       procid(x.procid), lx(x.lx), ly(x.ly), lz(x.lz),
       APMASS(x.APMASS),FMASS(x.FMASS),EBEAM(x.EBEAM),
-      SEED(x.SEED),eTHR(x.eTHR),pTHR(x.pTHR){}
+      SEED(x.SEED),eTHR(x.eTHR),pTHR(x.pTHR),
+      ALPHAD(x.ALPHAD),EPSILON(x.EPSILON)
+      {}
 
 
   /**
@@ -74,6 +76,8 @@ public:
     SEED=x.SEED;
     pTHR=x.pTHR;
     eTHR=x.eTHR;
+    ALPHAD=x.ALPHAD;
+    EPSILON=x.EPSILON;
     return *this;
   }
 
@@ -179,6 +183,9 @@ public:
   double EBEAM;
   //the random generator SEED
   int SEED;
+  //alpha-dark and epsilon
+  double ALPHAD,EPSILON;
+
   //the thresholds
   double eTHR,pTHR;
 
@@ -474,6 +481,14 @@ private:
 	            std::cout<<"SEED: "<<heprup.SEED<<std::endl; 	    
 		    headerBlock += currentLine + "\n";
 	    } 
+	   else if (readingHeader && ( currentLine.find("epsilon") != std::string::npos)){
+	 		    stream.str(currentLine);
+	 		    stream >> word;
+	 		    heprup.EPSILON=atof(word.c_str());
+	 	        std::cout<<"EPSILON: "<<heprup.EPSILON<<std::endl;
+	 		    headerBlock += currentLine + "\n";
+	  }
+
       else if (readingBDX && ( currentLine.find("ldet") != std::string::npos) ){
               stream.str(currentLine);    
 	      stream >> word;

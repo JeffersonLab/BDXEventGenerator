@@ -21,3 +21,18 @@
 *.exe
 *.out
 *.app
+
+#Log files
+*.log
+*log.txt
+
+#Root dictionary files to be generated!
+ExRootAnalysis/src/ExRootAnalysisDict.cc
+ExRootAnalysis/include/ExRootAnalysisDict.h
+
+#Eclipse
+.settings
+
+#MadGraph events
+*.lhe.gz
+*.lhe
