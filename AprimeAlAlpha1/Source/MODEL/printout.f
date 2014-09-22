@@ -141,6 +141,7 @@ c
       write(6,*) 'User Model Parameters:'
       write(6,*) '----------------------'
       write(6,24) 'epsilon   =  ', epsilon 
+      write(6,24) 'alphaD    =  ', alphaD
       write(6,24) 'Znuc      =  ', Znuc    
       write(6,*)
 

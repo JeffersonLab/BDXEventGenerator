@@ -153,7 +153,12 @@ c     &        ivalue(n),value(n),name(n)
        call set_it(n,ivalue,value,name,623,bn,hpwidth,0d0)
        bn='mguser'
        call set_it(n,ivalue,value,name,1,bn,epsilon ,0d0)
-       call set_it(n,ivalue,value,name,2,bn,znuc    ,0d0)
+       call set_it(n,ivalue,value,name,2,bn,alphaD  ,0d0)
+       call set_it(n,ivalue,value,name,3,bn,znuc    ,0d0)
+       
+c	   A. Celentano: I added these lines to re-define the apwidth by alphaD.
+       apwidth=(1./3.)*alphaD*apmass*DSQRT(1-(2*fmass/apmass)**2)*(1+2*(fmass/apmass)**2)
+       
       return
       end
 

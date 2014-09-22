@@ -1,3 +1,3 @@
 c      Input values....
-      double precision epsilon ,Znuc    
-      common /USR_PARAM/  epsilon ,Znuc    
+      double precision epsilon,alphaD,Znuc    
+      common /USR_PARAM/  epsilon,alphaD,Znuc    

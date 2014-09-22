@@ -81,10 +81,19 @@
 # Begin Classes # This is TAG. Do not modify this line
 jet  1 -1 2 -2 3 -3 4 -4 21   # Class number 1
 b    5 -5                     # Class number 2
-mET  12 -12 14 -14 16 -16     # Missing ET class, name is reserved
+mET  12 -12 14 -14 16 -16 1000022    # Missing ET class, name is reserved
 # End Classes # This is TAG. Do not modify this line
 #**************************************************************************
 ordering_function pt  # orders particles in classes according to their pt
+normalization xsec    # histogram normalization, xsec or number (e.g. 1)
+#**************************************************************************
+# Put here list of minimum pt for the classes
+#**************************************************************************
+# Begin Minpts # This is TAG. Do not modify this line
+#1  30
+#2  40
+#3  10
+# End Minpts # This is TAG. Do not modify this line
 #**************************************************************************
 # Cuts on plotted events
 #**************************************************************************
@@ -144,10 +153,10 @@ mij  4 1
 mij  5 1   
 mij  6 1   
 mij  7 1   
-cosij 1 2
-cosij 2 2   
-cosij 3 1   
-cosij 4 1   
+#cosij  1 2
+#cosij  2 2
+#cosij  3 1
+#cosij  4 1
 dRij 1 4   
 dRij 2 2   
 dRij 3 1   
@@ -169,10 +178,12 @@ dRij 7 1
 #**************************************************************************
 # Do NOT put spaces at the beginning of the following lines!
 # Begin PlotRange # This is TAG. Do not modify this line
-pt        4    0  200   # bin size, min value, max value
-et        4    0  200   # bin size, min value, max value
+pt        10    0  500   # bin size, min value, max value
+et        10    0  500   # bin size, min value, max value
+etmiss    10    0  500   # bin size, min value, max value
+ht        20    0 1500
 y         0.2 -5  5     # etc.
-mij       10   0  500
+mij       20   0  1500
 dRij      0.1  0  5
 #delta_phi 0.1  0  3.1
 #X1        1    0  100

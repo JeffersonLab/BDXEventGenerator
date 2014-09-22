@@ -48,7 +48,8 @@ public:
       procid(x.procid), lx(x.lx), ly(x.ly), lz(x.lz),
       APMASS(x.APMASS),FMASS(x.FMASS),EBEAM(x.EBEAM),
       SEED(x.SEED),eTHR(x.eTHR),pTHR(x.pTHR),
-      ALPHAD(x.ALPHAD),EPSILON(x.EPSILON)
+      ALPHAD(x.ALPHAD),EPSILON(x.EPSILON),
+      NDET(x.NDET),NDUMP(x.NDUMP),LDUMP(x.LDUMP)
       {}
 
 
@@ -72,12 +73,15 @@ public:
     lz = x.lz;
     APMASS = x.APMASS;
     FMASS  = x.FMASS;
+    ALPHAD=x.ALPHAD;
+    EPSILON=x.EPSILON;
     EBEAM = x.EBEAM;
     SEED=x.SEED;
     pTHR=x.pTHR;
     eTHR=x.eTHR;
-    ALPHAD=x.ALPHAD;
-    EPSILON=x.EPSILON;
+    NDET=x.NDET;
+    NDUMP=x.NDUMP;
+    LDUMP=x.LDUMP;
     return *this;
   }
 
@@ -178,16 +182,18 @@ public:
   double ly;
   double lz;	
   // the Aprime and the chi mass. We need them before starting to read events!
-  double APMASS;
-  double FMASS;
-  double EBEAM;
+  double APMASS; //GeV
+  double FMASS;  //GeV
+  double EBEAM; //GeV
   //the random generator SEED
   int SEED;
   //alpha-dark and epsilon
   double ALPHAD,EPSILON;
-
-  //the thresholds
+  //the thresholds (GeV) for the scattered particles kinetic energies
   double eTHR,pTHR;
+
+  double NDET,NDUMP; //the number of targets per unit of volume (cm^-3) in the DETector and in the DUMP
+  double LDUMP; //the dump effective lenght (cm). Usually, 1 radiation lenght is ok.
 
 };
 
@@ -488,7 +494,13 @@ private:
 	 	        std::cout<<"EPSILON: "<<heprup.EPSILON<<std::endl;
 	 		    headerBlock += currentLine + "\n";
 	  }
-
+	   else if (readingHeader && ( currentLine.find("alphaD") != std::string::npos)){
+	 	 		    stream.str(currentLine);
+	 	 		    stream >> word;
+	 	 		    heprup.ALPHAD=atof(word.c_str());
+	 	 	        std::cout<<"ALPHAD: "<<heprup.ALPHAD<<std::endl;
+	 	 		    headerBlock += currentLine + "\n";
+	 	  }
       else if (readingBDX && ( currentLine.find("ldet") != std::string::npos) ){
               stream.str(currentLine);    
 	      stream >> word;
@@ -538,6 +550,28 @@ private:
 	            std::cout<<"pTHR: "<<heprup.pTHR<<std::endl;
 		    headerBlock += currentLine + "\n";
 	    }
+
+	    else if (readingBDX  && ( currentLine.find("NDET") != std::string::npos) ){
+			    stream.str(currentLine);
+			    stream >> word;
+			    heprup.NDET=atof(word.c_str());
+		        std::cout<<"NDET: "<<heprup.NDET<<std::endl;
+			    headerBlock += currentLine + "\n";
+		    }
+	    else if (readingBDX  && ( currentLine.find("NDUMP") != std::string::npos) ){
+			    stream.str(currentLine);
+			    stream >> word;
+			    heprup.NDUMP=atof(word.c_str());
+	            std::cout<<"NDUMP: "<<heprup.NDUMP<<std::endl;
+			    headerBlock += currentLine + "\n";
+		    }
+	    else if (readingBDX  && ( currentLine.find("LDUMP") != std::string::npos) ){
+			    stream.str(currentLine);
+			    stream >> word;
+			    heprup.LDUMP=atof(word.c_str());
+		        std::cout<<"LDUMP: "<<heprup.LDUMP<<std::endl;
+			    headerBlock += currentLine + "\n";
+		    }
 	else if ( currentLine.find("<init") != std::string::npos ) {
 	// We have hit the init block, so we should expect to find the
 	// standard information in the following.

@@ -260,12 +260,11 @@ c      GAN(1)=dcmplx( ee*Znuc ,Zero) ! add formfactors
 c      GAN(2)=dcmplx( ee*Znuc ,Zero) ! add formfactors
       GEAP(1)=dcmplx( ee*epsilon ,Zero)
       GEAP(2)=dcmplx( ee*epsilon ,Zero)
-      GEAPX(1)=dcmplx( 11.3093*ee*epsilon ,Zero)
-      GEAPX(2)=dcmplx( 11.3093*ee*epsilon ,Zero)      
-c      GEAPX(1)=dcmplx( 3.574*ee ,Zero)
-c      GEAPX(2)=dcmplx( 3.574*ee ,Zero)
-c      GEAPX(1)=dcmplx( ee*epsilon ,Zero)
-c      GEAPX(2)=dcmplx( ee*epsilon ,Zero)
+c     GEAPX(1)=dcmplx( 11.3093*ee*epsilon ,Zero)
+c     GEAPX(2)=dcmplx( 11.3093*ee*epsilon ,Zero)
+c     A. Celentano: I changed these to reflect alphaD.
+	  GEAPX(1)=dcmplx(DSQRT(4d0*PI*alphaD),Zero)
+	  GEAPX(2)=dcmplx(DSQRT(4d0*PI*alphaD),Zero)        
 c----------------------------
 c end subroutine coupsm
 c----------------------------

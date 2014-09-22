@@ -36,7 +36,7 @@ if [[ -e events.list ]]; then
     echo 'events.list found'
 else
     echo 'events.list not found'
-    exit
+    exit 
 fi
 
 if [[ -e ../../Cards/plot_card.dat ]]; then

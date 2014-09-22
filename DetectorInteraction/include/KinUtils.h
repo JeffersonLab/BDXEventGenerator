@@ -35,23 +35,6 @@ class KinUtils{
 		int Seed;
 		TRandom3 Rand;
 
-		//I use a nested class for the electron elastic recoil cross-section,
-		class ElectronElasticRecoil{
-		private:
-				KinUtils *utils;
-		public:
-				ElectronElasticRecoil(KinUtils *m_utils);
-				double operator() (double *x,double *par);
-		};
-
-		class ProtonElasticRecoil{
-		private:
-			KinUtils	 *utils;
-		public:
-			ProtonElasticRecoil(KinUtils m_utils);
-			double operator() (double *x,double *par);
-		};
-
 
 
 	public:
@@ -63,8 +46,8 @@ class KinUtils{
 		void setAlphaD(double m_AlphaDark){AlphaDark=m_AlphaDark;};
 		void setEpsilon(double m_Epsilon){Epsilon=m_Epsilon;};
 
-		int doElasticRecoil(const TLorentzVector &chi,TLorentzVector &proton,TLorentzVector &chiPrime,const int &procID);
-		int findInteractionPoint(const TLorentzVector &chi,const TVector3 &fiducialV,const TVector3 &vin,TVector3 &vhit);
+		double doElasticRecoil(const TLorentzVector &chi,TLorentzVector &proton,TLorentzVector &chiPrime,const int &procID);
+		double findInteractionPoint(const TLorentzVector &chi,const TVector3 &fiducialV,const TVector3 &vin,TVector3 &vhit);
 		double Er_chipXsection(double *x,double *par);
 		double Er_chieXsection(double *x,double *par);
 

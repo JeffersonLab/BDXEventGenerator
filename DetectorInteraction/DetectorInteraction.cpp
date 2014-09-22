@@ -34,13 +34,14 @@ using namespace std;
 KinUtils *m_utils;
 //---------------------------------------------------------------------------
 
-void AnalyseParticles(LHEF::Reader *reader) {
+double AnalyseParticles(LHEF::Reader *reader) {
 	LHEF::HEPEUP &hepeup = reader->hepeup;
 	const LHEF::HEPRUP &heprup = reader->heprup;
 	long PID;
 	Int_t particle, n_inside;
 
-	Double_t signPz, cosTheta, M;
+	Double_t signPz, cosTheta,M;
+	Double_t w,L,ndet,sigma;
 	Double_t xthetaxfmin, xthetaxfmax, xthetayfmin, xthetayfmax;
 	TLorentzVector chi, recoil_chi, recoil_elastic;
 	TVector3 vin, vhit, fiducialV;
@@ -54,13 +55,15 @@ void AnalyseParticles(LHEF::Reader *reader) {
 	//set the fiducial volume "box", with respect to the z axis.
 	fiducialV.SetXYZ(heprup.lx/2, heprup.ly/2, heprup.lz);
 
+	w=hepeup.XWGTUP; //this is the event weight, in pbarn, as given by Madgraph.
+	ndet=heprup.NDET;
 	for (particle = 0; particle < hepeup.NUP; ++particle) {
 
 		m_utils->setAlpha(hepeup.AQEDUP); //set alpha_EM. It is saved evnt by evnt (but we have it fixed!)
 
 		PID = hepeup.IDUP[particle];
 		if ((PID != -611) && (PID != 611)){
-			continue; //other particles are ok. Go on
+			continue; //We are not interested in other particles. Go on
 		}
 		M = hepeup.PUP[particle][4];
 		chi.SetPxPyPzE(hepeup.PUP[particle][0], hepeup.PUP[particle][1],
@@ -68,9 +71,8 @@ void AnalyseParticles(LHEF::Reader *reader) {
 		cosTheta = TMath::Abs(chi.CosTheta());
 		signPz = (chi.Pz() >= 0.0) ? 1.0 : -1.0;
 		/* I need now to apply the fiducial cuts.
-		 Now, I need to find which of the two are inside, and use that for the interaction.
-		 If both are inside, I take only one.
-		 If none is inside, there is an error!*/
+		 I need to find which of the chis are inside (if more than one), and use that for the interaction.
+		 If both are inside, I take only one.*/
 		if ((fabs(chi.Px() / chi.Pz()) < xthetaxfmax)
 				&& (fabs(chi.Py() / chi.Pz()) < xthetayfmax))
 			n_inside++;
@@ -90,11 +92,13 @@ void AnalyseParticles(LHEF::Reader *reader) {
 
 		switch (heprup.procid) {
 		case Proc_nothing: //nothing to do
+			w=0;
 			break;
 		case Proc_Pelastic: //proton elastic
 		case Proc_Eelastic: //electron elastic
-			m_utils->doElasticRecoil(chi, recoil_elastic, recoil_chi,heprup.procid);
-			m_utils->findInteractionPoint(chi, fiducialV, vin, vhit);
+			sigma=m_utils->doElasticRecoil(chi, recoil_elastic, recoil_chi,heprup.procid);
+			L=m_utils->findInteractionPoint(chi, fiducialV, vin, vhit);
+			w=w*L*heprup.NDET*sigma;
 			//add particles to hepeup
 			//final state chi
 			hepeup.IDUP.push_back(9611);
@@ -111,7 +115,7 @@ void AnalyseParticles(LHEF::Reader *reader) {
 			hepeup.VTIMUP.push_back(0);
 			hepeup.SPINUP.push_back(0);
 			//final state recoil
-			(heprup.procid == Proc_Pelastic ? hepeup.IDUP.push_back(92212) : hepeup.IDUP.push_back(911));
+			(heprup.procid == Proc_Pelastic ? hepeup.IDUP.push_back(9212) : hepeup.IDUP.push_back(911));
 			hepeup.ISTUP.push_back(1);
 			hepeup.MOTHUP.push_back(std::make_pair(particle + 1, particle + 1));
 			hepeup.ICOLUP.push_back(std::make_pair(0, 0));
@@ -137,6 +141,7 @@ void AnalyseParticles(LHEF::Reader *reader) {
 		//use the eventComments for the vertex location (in m, in the form x y z)
 		reader->eventComments = Form("%f %f %f", vhit.X(), vhit.Y(), vhit.Z());
 	}
+	return w*n_inside; //by multipling per n_inside, automatically I correct for the fact I have two chis, potentially both in the detector.
 }
 
 //------------------------------------------------------------------------------
@@ -156,7 +161,7 @@ int main(int argc, char *argv[]) {
 
 	int appargc = 1;
 	char *appargv[] = { appName };
-
+	double W,L;
 	TApplication app(appName, &appargc, appargv);
 
 	// Open a stream connected to an event file:
@@ -184,7 +189,7 @@ int main(int argc, char *argv[]) {
 			<< endl;
 	Long64_t allEntries = inputReader->getNumberOfEvents();
 	cout << "** Input file contains " << allEntries << " events" << endl;
-
+	W=0;
 	if (allEntries > 0) {
 		ExRootProgressBar progressBar(allEntries);
 
@@ -194,20 +199,18 @@ int main(int argc, char *argv[]) {
 
 			//This is the function that triggers the interaction in the fiducial volume.
 			if (inputReader->heprup.procid)
-				AnalyseParticles(inputReader);
-
-			outputWriter->hepeup = inputReader->hepeup;
-			outputWriter->eventStream.str(inputReader->eventComments);
-			outputWriter->writeEvent();
-
-			progressBar.Update(entry);
-
-			++entry;
+				W+=AnalyseParticles(inputReader); //this also returns the "corrected" event weight (production weight * interaction probability)
+				outputWriter->hepeup = inputReader->hepeup;
+				outputWriter->eventStream.str(inputReader->eventComments);
+				outputWriter->writeEvent();
+				progressBar.Update(entry);
+				++entry;
 		}
 
 		progressBar.Finish();
 	}
-
+	W=W*(inputReader->heprup.NDUMP*inputReader->heprup.LDUMP);
+	cout<< " Events per EOT: "<<W<<endl;
 	cout << "** Exiting..." << endl;
 
 	delete inputReader;

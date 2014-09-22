@@ -23,12 +23,13 @@ Alpha(1./137.){
 
 		cout<<"KinUtils::KinUtils setting the cross-section functions";
 		for (int ii = 0; ii < 100; ii++) {
-			f_chipXsection[ii] = new TF1(Form("f_chipXsection_%i", ii),this,&KinUtils::Er_chipXsection, 0, Ebeam, 2);
+			f_chipXsection[ii] = new TF1(Form("f_chipXsection_%i", ii),this,&KinUtils::Er_chipXsection, Pthr+Mn, Ebeam+Mn-Mchi, 1);
 			f_chipXsection[ii]->SetNpx(1000);
 			f_chipXsection[ii]->FixParameter(0, (ii + 1) * Ebeam / 100);
-			f_chieXsection[ii] = new TF1(Form("f_chieXsection_%i", ii),this,&KinUtils::Er_chieXsection, 0, Ebeam, 2);
+			f_chieXsection[ii] = new TF1(Form("f_chieXsection_%i", ii),this,&KinUtils::Er_chieXsection, Ethr+Me, Ebeam+Me-Mchi, 1);
 			f_chieXsection[ii]->SetNpx(1000);
 			f_chieXsection[ii]->FixParameter(0, (ii + 1) * Ebeam / 100);
+			cout<<f_chipXsection[ii]->Integral(Pthr+Mn,Ebeam)<<" "<<f_chieXsection[ii]->Integral(Ethr+Me,Ebeam)<<endl;
 		}
 
 		cout<<"KinUtils::KinUtils created"<<endl;
@@ -87,7 +88,10 @@ double KinUtils::Er_chipXsection(double *x,double *par){
 	            return 0;
 	}
 	//3: the 2 momenta in the CM frame (before/after). Since this is elastic scattering, they're the same!!!
-	double p=sqrt((pow(s-Mchi*Mchi - Mn*Mn,2) - 4*Mchi*Mchi*Mn*Mn)/(4*s));
+
+	double p=((pow(s-Mchi*Mchi - Mn*Mn,2) - 4*Mchi*Mchi*Mn*Mn)/(4*s));
+
+	p=sqrt(p);
 	double k=p;
 
 	//4: the Jacobian for the transformation cos(theta_CM) --> Recoil total energy in LAB frame
@@ -100,12 +104,13 @@ double KinUtils::Er_chipXsection(double *x,double *par){
 	double FF=1/pow(1+(Er*Er-Mn*Mn)/Mn*Mn,2);
 
 	//8: put everything together
+
 	double dsigma=pow(FF,2)*ampsq*S; //in "GeV^-2 units" (and no coupling yet)
 	dsigma = dsigma * Epsilon*Epsilon*4*PI*Alpha*AlphaDark;
 	dsigma *=GeVm2cm2;
 
 
-	cout<<ampsq<<" "<<s<<" "<<t<<" "<<S<<" "<<endl;
+
 	return dsigma;
 
 }
@@ -142,7 +147,7 @@ double KinUtils::Er_chieXsection(double *x,double *par){
 	//2: the amplitude squared
 	double  ampsq=1.0*(k1k2*p1p2 + p1k2*k1p2 - Mchi*Mchi*k2p2 - Me*Me*k1p1 + 2*Mchi*Mchi*Me*Me)/(pow((t-Maprime*Maprime),2));
 	if (ampsq<0.0){
-	            cout<<"Er_chipXsection: negative amplitude!!!"<<endl;
+	            cout<<"Er_chieXsection: negative amplitude!!!"<<endl;
 	            return 0;
 	}
 	//3: the 2 momenta in the CM frame (before/after). Since this is elastic scattering, they're the same!!!
@@ -158,7 +163,7 @@ double KinUtils::Er_chieXsection(double *x,double *par){
 	//8: put everything together
 	double dsigma=ampsq*S; //in "GeV^-2 units" (and no coupling yet)
 	dsigma = dsigma * Epsilon*Epsilon*4*PI*Alpha*AlphaDark;
-
+	dsigma *=GeVm2cm2;
 
 	return dsigma;
 }
@@ -168,17 +173,17 @@ double KinUtils::Er_chieXsection(double *x,double *par){
  * estracts the recoil kinematics.
  * procID is an integer, for the process under study:
  *
- *
+ * Returns: the total cross-section, in cm2, for the interaction process, integrated over final state (with the kinetic energy cut)
  */
 
-int KinUtils::doElasticRecoil(const TLorentzVector &chi,TLorentzVector &recoil_p,TLorentzVector &recoil_chi,const int &procID){
+double KinUtils::doElasticRecoil(const TLorentzVector &chi,TLorentzVector &recoil_p,TLorentzVector &recoil_chi,const int &procID){
 
 
 	TVector3 v0,v1,v2;
 	TVector3 p0,pr,pchi;
 	double E0,Er,Echi;
 	double P0,Pr,Pchi;
-	double ctheta_r,stheta_r,phi_r;
+	double ctheta_r,stheta_r,phi_r,ret;
 	int ii;
 	E0=chi.E();
 	P0=chi.P();
@@ -188,9 +193,9 @@ int KinUtils::doElasticRecoil(const TLorentzVector &chi,TLorentzVector &recoil_p
 	ii=0;
 	ii=(int)rint(E0/(Ebeam/100));
 	if (ii>=100) ii=100;
-	cout<<"a "<<ii<<" "<<Ebeam<<" "<<E0<<endl;cin.get();
-	(procID==Proc_Pelastic ? Er=f_chipXsection[ii]->GetRandom(Pthr+Mn,E0):Er=f_chieXsection[ii]->GetRandom(Pthr+Mn,E0));
-	cout<<"b"<<endl;
+
+	(procID==Proc_Pelastic ? Er=f_chipXsection[ii]->GetRandom(Pthr+Mn,E0+Mn-Mchi):Er=f_chieXsection[ii]->GetRandom(Ethr+Mn,E0+Me-Mchi));
+
 	/*2: compute recoil chi total energy*/
 	Echi=E0+Mn-Er;
 	/*3: compute the momenta*/
@@ -198,8 +203,6 @@ int KinUtils::doElasticRecoil(const TLorentzVector &chi,TLorentzVector &recoil_p
 	(procID==Proc_Pelastic ? Pr=sqrt(Er*Er-Mn*Mn) : Pr=sqrt(Er*Er-Me*Me));
     /*4: compute the angle of the recoil nucleon wrt the initial chi momentum direction*/
 	ctheta_r=(P0*P0+Pr*Pr-Pchi*Pchi)/(2*P0*Pr);
-	if (ctheta_r>1) { ctheta_r=1; cout<<"CAZZO"<<endl;}
-	if (ctheta_r<-1) {ctheta_r=-1; cout<<"CAZZO2"<<endl;}
 	stheta_r=sqrt(1-ctheta_r*ctheta_r);
 	/*5: The azimuthal angle (around the incoming chi momentum direction) is flat*/
 	phi_r=Rand.Uniform(-PI,PI);
@@ -221,10 +224,10 @@ int KinUtils::doElasticRecoil(const TLorentzVector &chi,TLorentzVector &recoil_p
 	recoil_chi.SetVect(pchi);
 	recoil_chi.SetE(Echi);
 
+	//no time consuming, since integrals are cached!
+	(procID==Proc_Pelastic ? ret=f_chipXsection[ii]->Integral(Pthr+Mn,E0+Mn-Mchi):ret=f_chieXsection[ii]->Integral(Ethr+Mn,E0+Me-Mchi));
+	return ret;
 
-
-
-	return 1;
 
 }
 
@@ -242,8 +245,9 @@ int KinUtils::doElasticRecoil(const TLorentzVector &chi,TLorentzVector &recoil_p
 /*Given the impact point on the front face (vin) and the incoming particle LorentzVector (chi for invisible decay, A' for visible),
  *  determine the interaction point within the fiducial volume and save it in vhit.
 Use a random distribution along the chi flight path, with uniform probability
+This function returns the lenght (in m) of the trajectory within the fiducial volume.
 */
-int KinUtils::findInteractionPoint(const TLorentzVector &chi,const TVector3 &fiducialV,const TVector3 &vin,TVector3 &vhit){
+double KinUtils::findInteractionPoint(const TLorentzVector &chi,const TVector3 &fiducialV,const TVector3 &vin,TVector3 &vhit){
 
 	TVector3 vout; //the exit point from the fiducial volume
 	double tz,tx,ty,tout;
@@ -267,5 +271,7 @@ int KinUtils::findInteractionPoint(const TLorentzVector &chi,const TVector3 &fid
 	}
 	vout.SetXYZ(tout*chi.Px()+vin.X(),tout*chi.Py()+vin.Y(),tout*chi.Pz());
 	vhit.SetXYZ(Rand.Uniform(vin.X(),vout.X()),Rand.Uniform(vin.Y(),vout.Y()),Rand.Uniform(vin.Z(),vin.Z()+vout.Z()));//along z shift wrt beam-dump
-	return 1;
+
+
+	return (vout-vin).Mag();
 }
