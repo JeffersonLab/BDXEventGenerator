@@ -159,6 +159,10 @@ echo "Second step: fiducial volume interaction"
 if [[ (-x $ERAdir/DetectorInteraction.exe) && (-e unweighted_events.lhe) ]]; then
     echo "DetectorInteraction" >& ../status
     $dirbin/gen_crossxhtml-pl $t
+    here=`pwd`
+    cd $ERAdir
+    make 
+    cd $here  
     $ERAdir/DetectorInteraction.exe unweighted_events.lhe unweighted_events_new.lhe
     if [[(-e unweighted_events.lhe)]]; then
 	        rm unweighted_events.lhe
