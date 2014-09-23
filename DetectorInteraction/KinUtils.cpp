@@ -5,7 +5,7 @@
 
 using namespace std;
 
-KinUtils::KinUtils(const double &m_Ebeam,const double &m_Mchi,const double &m_Maprime,const double &m_Msplit,const double &m_Epsilon,const int &m_Seed):
+KinUtils::KinUtils(const double &m_Ebeam,const double &m_Mchi,const double &m_Maprime,const double &m_Msplit,const double &m_Epsilon,const double &m_AlphaD,const int &m_Seed):
 Ebeam(m_Ebeam),
 Mchi(m_Mchi),
 Maprime(m_Maprime),
@@ -14,13 +14,18 @@ Seed(m_Seed),
 Ethr(0),
 Pthr(0),
 Epsilon(m_Epsilon),
-AlphaDark(1),
+AlphaDark(m_AlphaD),
 Alpha(1./137.){
 
 		Rand.SetSeed(m_Seed);
 		f_chipXsection = new TF1*[100];
 		f_chieXsection = new TF1*[100];
 
+		/*This part is really critical. The cross-section is a function of the final state recoil energy, and as "parameter" needs the incoming
+		 * chi energy. However, if event-by-event we set this parameter, and then call a "GetRandom", we trigger the integration computation for ALL events,
+		 * and this is very time-consuming.
+		 * Instead, I "bin" wrt the incoming chi energy (100 bins), and then extract the random number from the function defining the energy in that bin!
+		 */
 		cout<<"KinUtils::KinUtils setting the cross-section functions";
 		for (int ii = 0; ii < 100; ii++) {
 			f_chipXsection[ii] = new TF1(Form("f_chipXsection_%i", ii),this,&KinUtils::Er_chipXsection, Pthr+Mn, Ebeam+Mn-Mchi, 1);
@@ -50,7 +55,6 @@ void KinUtils::PrintParameters(){
 			cout<<"AlphaDark: \t \t"<<AlphaDark<<endl;
 			cout<<"e- threshold: \t \t"<<Ethr<<endl;
 			cout<<"p threshold: \t \t"<<Pthr<<endl;
-
 }
 
 /*double Tr_chipXsection
@@ -178,7 +182,7 @@ double KinUtils::Er_chieXsection(double *x,double *par){
  * Returns: the total cross-section, in cm2, for the interaction process, integrated over final state (with the kinetic energy cut)
  */
 
-double KinUtils::doElasticRecoil(const TLorentzVector &chi,TLorentzVector &recoil_p,TLorentzVector &recoil_chi,const int &procID){
+double KinUtils::doElasticRecoil(const TLorentzVector &chi,TLorentzVector &recoil,TLorentzVector &recoil_chi,const int &procID){
 
 
 	TVector3 v0,v1,v2;
@@ -221,8 +225,8 @@ double KinUtils::doElasticRecoil(const TLorentzVector &chi,TLorentzVector &recoi
 	pchi=p0-pr;
 
 	/*6b:Set them */
-	recoil_p.SetVect(pr);
-	recoil_p.SetE(Er);
+	recoil.SetVect(pr);
+	recoil.SetE(Er);
 	recoil_chi.SetVect(pchi);
 	recoil_chi.SetE(Echi);
 
@@ -247,12 +251,12 @@ double KinUtils::doElasticRecoil(const TLorentzVector &chi,TLorentzVector &recoi
 /*Given the impact point on the front face (vin) and the incoming particle LorentzVector (chi for invisible decay, A' for visible),
  *  determine the interaction point within the fiducial volume and save it in vhit.
 Use a random distribution along the chi flight path, with uniform probability
-This function returns the lenght (in m) of the trajectory within the fiducial volume.
+This function returns the length (in m) of the trajectory within the fiducial volume.
 */
 double KinUtils::findInteractionPoint(const TLorentzVector &chi,const TVector3 &fiducialV,const TVector3 &vin,TVector3 &vhit){
 
 	TVector3 vout; //the exit point from the fiducial volume
-	double tz,tx,ty,tout;
+	double tz,tx,ty,tout,L;
 	int sigPx,sigPy;
 
 	sigPx = ( chi.Px()>0 ? 1 : -1);
@@ -262,6 +266,7 @@ double KinUtils::findInteractionPoint(const TLorentzVector &chi,const TVector3 &
 	tx=(sigPx*fiducialV.X()/2-vin.X())/chi.Px();
 	ty=(sigPy*fiducialV.Y()/2-vin.Y())/chi.Py();
 	tout=0;
+
 	if ((tz<tx) && (tz<ty)){
 		tout=tz;
 	}
@@ -271,9 +276,12 @@ double KinUtils::findInteractionPoint(const TLorentzVector &chi,const TVector3 &
 	else if ((ty<tx)&&(ty<tz)){
 		tout=ty;
 	}
-	vout.SetXYZ(tout*chi.Px()+vin.X(),tout*chi.Py()+vin.Y(),tout*chi.Pz());
-	vhit.SetXYZ(Rand.Uniform(vin.X(),vout.X()),Rand.Uniform(vin.Y(),vout.Y()),Rand.Uniform(vin.Z(),vin.Z()+vout.Z()));//along z shift wrt beam-dump
+	vout.SetXYZ(tout*chi.Px()+vin.X(),tout*chi.Py()+vin.Y(),tout*chi.Pz()+vin.Z());
+	vhit.SetXYZ(Rand.Uniform(vin.X(),vout.X()),Rand.Uniform(vin.Y(),vout.Y()),Rand.Uniform(vin.Z(),vin.Z()+vout.Z()));//along z shift wrt beam-dump;
+	L=(vout-vin).Mag();
 
 
-	return (vout-vin).Mag();
+
+
+	return L;
 }

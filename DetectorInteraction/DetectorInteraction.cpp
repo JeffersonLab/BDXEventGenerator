@@ -53,7 +53,7 @@ double AnalyseParticles(LHEF::Reader *reader) {
 	xthetayfmax = (heprup.ly / (2 * heprup.ldet)); //ok without ATAN for this check
 
 	//set the fiducial volume "box", with respect to the z axis.
-	fiducialV.SetXYZ(heprup.lx/2, heprup.ly/2, heprup.lz);
+	fiducialV.SetXYZ(heprup.lx, heprup.ly, heprup.lz);
 
 	w=hepeup.XWGTUP; //this is the event weight, in pbarn, as given by Madgraph.
 	ndet=heprup.NDET;
@@ -96,6 +96,7 @@ double AnalyseParticles(LHEF::Reader *reader) {
 		case Proc_Eelastic: //electron elastic
 			sigma=m_utils->doElasticRecoil(chi, recoil_elastic, recoil_chi,heprup.procid);
 			L=m_utils->findInteractionPoint(chi, fiducialV, vin, vhit);
+			L=L*100; //since the above returns it in m;
 			w=w*L*heprup.NDET*sigma;
 			//add particles to hepeup
 			//final state chi
@@ -130,8 +131,10 @@ double AnalyseParticles(LHEF::Reader *reader) {
 			break;
 		case Proc_Pinelastic: //inelastic
 		case Proc_Einelastic:
+			w=0;
 			break;
 		default:
+			w=0;
 			cout << "Error, interaction not recognized" << endl;
 			break;
 		}
@@ -139,7 +142,7 @@ double AnalyseParticles(LHEF::Reader *reader) {
 		//use the eventComments for the vertex location (in m, in the form x y z)
 		reader->eventComments = Form("%f %f %f", vhit.X(), vhit.Y(), vhit.Z());
 	}
-	return w*n_inside*1E-36; //by multipling per n_inside, automatically I correct for the fact I have two chis, potentially both in the detector.
+	return w*n_inside*1E-36; //by multiplying per n_inside, automatically I correct for the fact I have two chis, potentially both in the detector.
 	//the factor 1E-36 is the conversion pbarn ---> cm2
 }
 
@@ -175,13 +178,13 @@ int main(int argc, char *argv[]) {
 	outputWriter->headerStream.str(inputReader->headerBlock);
 	outputWriter->init();
 
-	//instear of having, for each process, a single function with a free parameter (the incident chi energy),
+	//Instead of having, for each process, a single function with a free parameter (the incident chi energy),
 	//it is much better to have 100 of them, each for a certain energy: otherwise, the integral gets calculated for each event!
 	cout << " ** Preparing the cross-section functions and the KinUtils class ** " << endl;
 
-	//note that alphaEM is saved in the event header (altough we are not going to touch this at all!).
+	//note that alphaEM is saved in the event header (although we are not going to touch this at all!).
 	//Therefore, I will set it in the first event in the  loop.
-	m_utils=new KinUtils(inputReader->heprup.EBEAM,inputReader->heprup.FMASS,inputReader->heprup.APMASS,0,inputReader->heprup.EPSILON,inputReader->heprup.SEED);
+	m_utils=new KinUtils(inputReader->heprup.EBEAM,inputReader->heprup.FMASS,inputReader->heprup.APMASS,0,inputReader->heprup.EPSILON,inputReader->heprup.ALPHAD,inputReader->heprup.SEED);
 
 
 	cout << "** Calculating number of events to process. Please wait..."
@@ -197,7 +200,7 @@ int main(int argc, char *argv[]) {
 		while (inputReader->readEvent()) {
 
 			if (entry==0){
-				m_utils->setAlpha(inputReader->hepeup.AQEDUP); //set alpha_EM. It is saved evnt by evnt (but we have it fixed!)
+				m_utils->setAlpha(inputReader->hepeup.AQEDUP); //set alpha_EM.
 				gRandom->SetSeed(inputReader->heprup.SEED);
 			}
 			//This is the function that triggers the interaction in the fiducial volume.

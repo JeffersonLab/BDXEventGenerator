@@ -47,8 +47,8 @@
 
    GAF(L)  =        0.31345      0.00000    GAF(R)  =        0.31345      0.00000
    GAN(L)  =        0.00000      0.00000    GAN(R)  =        0.00000      0.00000
- GEAPX(L)  =        5.01326      0.00000  GEAPX(R)  =        5.01326      0.00000
-  GEAP(L)  =        0.03135      0.00000   GEAP(R)  =        0.03135      0.00000
+ GEAPX(L)  =        3.54491      0.00000  GEAPX(R)  =        3.54491      0.00000
+  GEAP(L)  =        0.00012      0.00000   GEAP(R)  =        0.00012      0.00000
 
  Boson couplings:
  ----------------
@@ -94,13 +94,13 @@
  -----------------------------
 
        FMASS  =        0.010 GeV            FWIDTH    =    0.0000 GeV  (calc @ LO)
-      APMASS  =        0.068 GeV           APWIDTH    =    0.0452 GeV  (calc @ LO)
+      APMASS  =        0.100 GeV           APWIDTH    =    0.0333 GeV  (calc @ LO)
       HPMASS  =       25.127 GeV           HPWIDTH    =    0.0000 GeV  (calc @ LO)
 
  User Model Parameters:
  ----------------------
-    epsilon   =        0.100 GeV        
-    alphaD    =        2.000 GeV        
+    epsilon   =        0.000 GeV        
+    alphaD    =        1.000 GeV        
     Znuc      =       13.000 GeV        
 
 
@@ -128,20 +128,20 @@
  myamp l312: xm( 4)=  25.1267
  myamp l312: xm( 5)=  0.01
  myamp l312: xm( 6)=  0.01
- Setting BW -1 1  0.068
+ Setting BW -1 1  0.1
 Setting grid   2    0.21162E-09   -0.21162E-09   1
-Setting grid   3    0.37460E-05    0.00000E+00   1
+Setting grid   3    0.81012E-05    0.00000E+00   1
  Masses: 0.511E-03 0.251E+02 0.511E-03 0.251E+02 0.100E-01 0.100E-01
    1   1   2   3   4   5   6   7   8
 Using random seed offsets     1 :      1
-  with seed 314
- Ranmar initialization seeds 2117 9374
+  with seed 316
+ Ranmar initialization seeds 2119 9374
    1    0.85820E+01    0.00000E+00    0.00000E+00    0.85820E+01
    2    0.26552E+02    0.00000E+00    0.00000E+00   -0.85820E+01
-   3    0.14710E+01   -0.51011E+00   -0.89365E+00    0.10512E+01
-   4    0.26452E+02    0.89949E+00    0.17494E+00   -0.82156E+01
-   5    0.40855E+01   -0.19263E+00    0.43537E+00    0.40576E+01
-   6    0.31259E+01   -0.19675E+00    0.28333E+00    0.31068E+01
+   3    0.23427E+01   -0.13839E+01    0.66319E+00    0.17701E+01
+   4    0.26450E+02    0.13900E+01   -0.74464E+00   -0.81098E+01
+   5    0.56015E+01   -0.23782E-01    0.97857E-01    0.56006E+01
+   6    0.73959E+00    0.17729E-01   -0.16408E-01    0.73913E+00
  Bad swap 1 2 4 3 5 6
  Bad swap 1 2 5 3 4 6
  Bad swap 1 2 3 5 4 6

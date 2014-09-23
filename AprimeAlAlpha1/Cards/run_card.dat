@@ -137,9 +137,9 @@
   1    = procid ! which process to simulate after MADGRAPH: 0 none, 1 proton elastic, 2 electron elastic, 3 inelastic
   1E-3 = pTHR ! The recoil proton kinetic energy threshold GeV. Used only in the second stage (after MADGRAPH)
   1E-3 = eTHR ! The recoil electron kinetic energy threshold GeV. Used only in the second stage (after MADGRAPH)
-  3E23 = NDET ! The number of scatter centers per unit of volume in the detector (cm^-3), Nav/A * rho * Z (valid both for e- scattering and quasi-elastic)
-  4.6E22 = NDUMP ! The number of scatter centers per unit of volume in the dump (cm^-3), Nav/A * rho (if we consider the interaction with the dump nuclei as a whole)
-  1   = LDUMP ! The effective dump length (cm), usually 1 radiation lenght is ok 
+  2.41E23 = NDET ! The number of scatter centers per unit of volume in the detector (cm^-3), Nav/A * rho * Z (valid both for e- scattering and quasi-elastic)
+  6.02E22  = NDUMP ! The number of scatter centers per unit of volume in the dump (cm^-3), Nav/A * rho (if we consider the interaction with the dump nuclei as a whole)
+  8.9   = LDUMP ! The effective dump length (cm), usually 1 radiation lenght is ok 
 #</BDX> DO NOT TOUCH THIS TAG
 #
 #*******************                                                 

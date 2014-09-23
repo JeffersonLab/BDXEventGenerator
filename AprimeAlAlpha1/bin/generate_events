@@ -154,10 +154,6 @@ $dirbin/put_banner unweighted_events.lhe
 #    fi
 #fi
 
-#
-#  Create root file
-#
-
 	
 echo "Second step: fiducial volume interaction"
 if [[ (-x $ERAdir/DetectorInteraction.exe) && (-e unweighted_events.lhe) ]]; then

@@ -489,6 +489,7 @@ private:
 	    } 
 	   else if (readingHeader && ( currentLine.find("epsilon") != std::string::npos)){
 	 		    stream.str(currentLine);
+	 		    stream >> word; //ignore first word
 	 		    stream >> word;
 	 		    heprup.EPSILON=atof(word.c_str());
 	 	        std::cout<<"EPSILON: "<<heprup.EPSILON<<std::endl;
@@ -496,6 +497,7 @@ private:
 	  }
 	   else if (readingHeader && ( currentLine.find("alphaD") != std::string::npos)){
 	 	 		    stream.str(currentLine);
+	 	 		    stream >> word; //ignore first word
 	 	 		    stream >> word;
 	 	 		    heprup.ALPHAD=atof(word.c_str());
 	 	 	        std::cout<<"ALPHAD: "<<heprup.ALPHAD<<std::endl;
@@ -533,7 +535,7 @@ private:
 		    stream.str(currentLine);    
 		    stream >> word;
 		    heprup.procid=atoi(word.c_str());	      
-	            std::cout<<"procid: "<<heprup.procid<<std::endl;
+	        std::cout<<"procid: "<<heprup.procid<<std::endl;
 		    headerBlock += currentLine + "\n";
             }
 	    else if (readingBDX  && ( currentLine.find("eTHR") != std::string::npos) ){
@@ -602,9 +604,11 @@ private:
       }
 	    else if ( currentLine.find("<BDX>") != std::string::npos ) {
 		    readingBDX = true;
+		    headerBlock += currentLine + "\n";
 	    }
 	    else if ( currentLine.find("</BDX>") != std::string::npos ) {
 		    readingBDX = false;
+		    headerBlock += currentLine + "\n";
 	    }
       else if ( currentLine.find("</header>") != std::string::npos ) {
 	// The end of the header block. Dump this line as well to the
