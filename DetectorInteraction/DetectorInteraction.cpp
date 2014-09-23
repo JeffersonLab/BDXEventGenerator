@@ -59,8 +59,6 @@ double AnalyseParticles(LHEF::Reader *reader) {
 	ndet=heprup.NDET;
 	for (particle = 0; particle < hepeup.NUP; ++particle) {
 
-		m_utils->setAlpha(hepeup.AQEDUP); //set alpha_EM. It is saved evnt by evnt (but we have it fixed!)
-
 		PID = hepeup.IDUP[particle];
 		if ((PID != -611) && (PID != 611)){
 			continue; //We are not interested in other particles. Go on
@@ -141,7 +139,8 @@ double AnalyseParticles(LHEF::Reader *reader) {
 		//use the eventComments for the vertex location (in m, in the form x y z)
 		reader->eventComments = Form("%f %f %f", vhit.X(), vhit.Y(), vhit.Z());
 	}
-	return w*n_inside; //by multipling per n_inside, automatically I correct for the fact I have two chis, potentially both in the detector.
+	return w*n_inside*1E-36; //by multipling per n_inside, automatically I correct for the fact I have two chis, potentially both in the detector.
+	//the factor 1E-36 is the conversion pbarn ---> cm2
 }
 
 //------------------------------------------------------------------------------
@@ -197,6 +196,10 @@ int main(int argc, char *argv[]) {
 		Long64_t entry = 0;
 		while (inputReader->readEvent()) {
 
+			if (entry==0){
+				m_utils->setAlpha(inputReader->hepeup.AQEDUP); //set alpha_EM. It is saved evnt by evnt (but we have it fixed!)
+				gRandom->SetSeed(inputReader->heprup.SEED);
+			}
 			//This is the function that triggers the interaction in the fiducial volume.
 			if (inputReader->heprup.procid)
 				W+=AnalyseParticles(inputReader); //this also returns the "corrected" event weight (production weight * interaction probability)

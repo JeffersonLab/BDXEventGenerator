@@ -14,10 +14,10 @@ OBJ_EXROOTANALYSIS += ExRootAnalysis/obj/ExRootAnalysisDict.o
 all: $(OBJ)
 	$(MAKE) -C tcl    
 	$(MAKE) -C ExRootAnalysis
-	$(CC) -o $(MAIN) $(OBJ_TCL) $(OBJ_EXROOTANALYSIS) $(OBJ) $(OBJ_DICT) $(ROOT_LIB)
+	$(CC) -o $(MAIN) $(OBJ_TCL) $(OBJ_EXROOTANALYSIS) $(OBJ) $(OBJ_DICT) $(ROOT_LIB) -g3 -ddd
 
 obj/%.o: %.cpp
-	$(CC) $(ROOT_INC) $(INC_PATH) -c -o $@ $^ 
+	$(CC) $(ROOT_INC) $(INC_PATH) -g3 -ddd -c -o $@ $^ 
 
 clean:
 	$(MAKE) clean -C tcl

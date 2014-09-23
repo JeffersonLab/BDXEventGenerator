@@ -99,6 +99,7 @@ $dirbin/gen_crossxhtml-pl $t
 $dirbin/clean
 touch survey
 echo "Starting jobs" > status
+echo "Starting jobs"
 $dirbin/gen_crossxhtml-pl $t
 $dirbin/survey $p $n $t
 if [[  -e error  ]]; then

@@ -29,7 +29,9 @@ Alpha(1./137.){
 			f_chieXsection[ii] = new TF1(Form("f_chieXsection_%i", ii),this,&KinUtils::Er_chieXsection, Ethr+Me, Ebeam+Me-Mchi, 1);
 			f_chieXsection[ii]->SetNpx(1000);
 			f_chieXsection[ii]->FixParameter(0, (ii + 1) * Ebeam / 100);
-			cout<<f_chipXsection[ii]->Integral(Pthr+Mn,Ebeam)<<" "<<f_chieXsection[ii]->Integral(Ethr+Me,Ebeam)<<endl;
+			//cout<<f_chipXsection[ii]->Integral(Pthr+Mn,Ebeam)<<" "<<f_chieXsection[ii]->Integral(Ethr+Me,Ebeam)<<endl;
+			f_chipXsection[ii]->Integral(Pthr+Mn,Ebeam+Mn-Mchi);
+			f_chieXsection[ii]->Integral(Ethr+Me,Ebeam+Mn-Mchi);
 		}
 
 		cout<<"KinUtils::KinUtils created"<<endl;
@@ -191,8 +193,8 @@ double KinUtils::doElasticRecoil(const TLorentzVector &chi,TLorentzVector &recoi
 
 	/*1: extract the recoil total energy from the cross-section*/
 	ii=0;
-	ii=(int)rint(E0/(Ebeam/100));
-	if (ii>=100) ii=100;
+	ii=(int)(E0/(Ebeam/100));
+	if (ii>=100) ii=99; //should not happen
 
 	(procID==Proc_Pelastic ? Er=f_chipXsection[ii]->GetRandom(Pthr+Mn,E0+Mn-Mchi):Er=f_chieXsection[ii]->GetRandom(Ethr+Mn,E0+Me-Mchi));
 

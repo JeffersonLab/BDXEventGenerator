@@ -22,7 +22,7 @@ main=`pwd`
 dirbin=$main/bin
 pydir=$main/../pythia-pgs/src
 pgsdir=$pydir
-ERAdir=$main/../Analysis
+ERAdir=$main/../DetectorInteraction
 MAdir=$main/../MadAnalysis
 webbin=$dirbin
 td=$main/../td
@@ -159,26 +159,17 @@ $dirbin/put_banner unweighted_events.lhe
 
 	
 echo "Second step: fiducial volume interaction"
-if [[ (-x $ERAdir/DetectorInteraction) && (-e unweighted_events.lhe) ]]; then
+if [[ (-x $ERAdir/DetectorInteraction.exe) && (-e unweighted_events.lhe) ]]; then
     echo "DetectorInteraction" >& ../status
     $dirbin/gen_crossxhtml-pl $t
-    $ERAdir/DetectorInteraction unweighted_events.lhe unweighted_events_new.lhe
-#    if [[(-e unweighted_events.lhe)]]; then
-#		rm unweighted_events.lhe
-#		mv unweighted_events_new.lhe unweighted_events.lhe
-#    fi
+    $ERAdir/DetectorInteraction.exe unweighted_events.lhe unweighted_events_new.lhe
+    if [[(-e unweighted_events.lhe)]]; then
+	        rm unweighted_events.lhe
+		mv unweighted_events_new.lhe unweighted_events.lhe
+    fi
 fi
 
-#if ((-x $ERAdir/ExRootMain) && (-e unweighted_events.root) && (-e ../Cards/plot_card.dat)) then
-#    echo "Creating Root Plots" >& ../status
-#    $dirbin/gen_crossxhtml-pl $t
-#    mkdir $t
-#    cd $t
-#    echo "../unweighted_events.root" > events.list
-#    $dirbin/plot $ERAdir > plot.log
-#    cd ..
-#    $dirbin/plot_page-pl $t
-#endif
+
 echo "Creating Plots"
 if [[ (-x $MAdir/plot_events) && (-e unweighted_events.lhe) && (-e ../Cards/plot_card.dat) ]]; then
     echo "Creating Plots" >& ../status
