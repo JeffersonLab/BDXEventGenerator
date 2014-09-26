@@ -1,14 +1,15 @@
 Enter fractional accuracy (<1), or number events (>1) and max processes per job
 Generating    10000. unweighted events.
-Reading total xsection    0.234E+02
-   0.234E+02
- Working on creating   12000.0005 events.
- Effective Luminosity  0.512316974 fb^-1.
- 1  0.564  0.908363429
- 2  0.263  1.94797328
- Improving  1
- G2/results.dat                                                                  
-  1.94797328
+Reading total xsection    0.237E+02
+   0.237E+02
+ Working on creating    12000.000476837158       events.
+ Effective Luminosity  0.50697086932138391       fb^-1.
+           1  0.50300000000000000        1.0078943724083178     
+           2  0.27200000000000002        1.8638634901521467     
+ Improving            1 G2/results.dat                                                                     1.8638634901521467     
+ Improving            2 G1/results.dat                                                                     1.0078943724083178     
  Opening file ajob1                         
- Channel 2  1.94797328 2040000 2000
- Cross section 1 2  12.117 1
+ Channel 2   1.8638634901521467          2040000        2000
+ Cross section           1           2   12.409000000000001                1
+ Channel 1   1.8638634901521467          2040000        2000
+ Cross section           2           1   11.260999999999999                1

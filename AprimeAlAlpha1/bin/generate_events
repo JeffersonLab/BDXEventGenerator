@@ -25,7 +25,7 @@ pgsdir=$pydir
 ERAdir=$main/../DetectorInteraction
 MAdir=$main/../MadAnalysis
 webbin=$dirbin
-td=$main/../td
+td=$main/../
 web=0
 
 echo $$ >> myprocid
@@ -175,6 +175,10 @@ echo "Creating Plots"
 if [[ (-x $MAdir/plot_events) && (-e unweighted_events.lhe) && (-e ../Cards/plot_card.dat) ]]; then
     echo "Creating Plots" >& ../status
     $dirbin/gen_crossxhtml-pl $t
+    here=`pwd`
+    cd $MAdir
+    make
+    cd $here
     mkdir $t
     cd $t
     echo "../unweighted_events.lhe" > events.list

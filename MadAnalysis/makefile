@@ -6,7 +6,7 @@ FFLAGS+= -ffixed-line-length-132
 
 # Set FC unless it's defined by an environment variable
 ifeq ($(origin FC),default)
-  FC=g77 
+  FC=gfortran 
 endif
 
 PLOT    =  plot_events.o dbook.o rw_events.o kin_func.o set_cuts.o
