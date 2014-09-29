@@ -35,6 +35,7 @@ class KinUtils{
 		int Seed;
 		TRandom3 Rand;
 
+		static const int nFunctionsElastic = 1000;
 
 
 	public:

@@ -18,8 +18,8 @@ AlphaDark(m_AlphaD),
 Alpha(1./137.){
 
 		Rand.SetSeed(m_Seed);
-		f_chipXsection = new TF1*[100];
-		f_chieXsection = new TF1*[100];
+		f_chipXsection = new TF1*[nFunctionsElastic];
+		f_chieXsection = new TF1*[nFunctionsElastic];
 
 		/*This part is really critical. The cross-section is a function of the final state recoil energy, and as "parameter" needs the incoming
 		 * chi energy. However, if event-by-event we set this parameter, and then call a "GetRandom", we trigger the integration computation for ALL events,
@@ -27,16 +27,16 @@ Alpha(1./137.){
 		 * Instead, I "bin" wrt the incoming chi energy (100 bins), and then extract the random number from the function defining the energy in that bin!
 		 */
 		cout<<"KinUtils::KinUtils setting the cross-section functions";
-		for (int ii = 0; ii < 100; ii++) {
+		for (int ii = 0; ii < nFunctionsElastic; ii++) {
 			f_chipXsection[ii] = new TF1(Form("f_chipXsection_%i", ii),this,&KinUtils::Er_chipXsection, Pthr+Mn, Ebeam+Mn-Mchi, 1);
 			f_chipXsection[ii]->SetNpx(1000);
-			f_chipXsection[ii]->FixParameter(0, (ii + 1) * Ebeam / 100);
+			f_chipXsection[ii]->FixParameter(0, (ii + 1) * Ebeam / nFunctionsElastic);
 			f_chieXsection[ii] = new TF1(Form("f_chieXsection_%i", ii),this,&KinUtils::Er_chieXsection, Ethr+Me, Ebeam+Me-Mchi, 1);
 			f_chieXsection[ii]->SetNpx(1000);
-			f_chieXsection[ii]->FixParameter(0, (ii + 1) * Ebeam / 100);
+			f_chieXsection[ii]->FixParameter(0, (ii + 1) * Ebeam / nFunctionsElastic);
 			//cout<<f_chipXsection[ii]->Integral(Pthr+Mn,Ebeam)<<" "<<f_chieXsection[ii]->Integral(Ethr+Me,Ebeam)<<endl;
 			f_chipXsection[ii]->Integral(Pthr+Mn,Ebeam+Mn-Mchi);
-			f_chieXsection[ii]->Integral(Ethr+Me,Ebeam+Mn-Mchi);
+			f_chieXsection[ii]->Integral(Ethr+Me,Ebeam+Me-Mchi);
 		}
 
 		cout<<"KinUtils::KinUtils created"<<endl;
@@ -74,7 +74,7 @@ double KinUtils::Er_chipXsection(double *x,double *par){
 	double p1p1=Mchi*Mchi;
 	double k1k1=Mchi*Mchi;
 	double p1p2=E0*Mn;
-	double p1k1=-0.5*(Mn*Mn-Mchi*Mchi+Er*Mchi); //A.C. Ask Eder to check
+	double p1k1=-0.5*(2*Mn*Mn-2*Mchi*Mchi-2*Er*Mchi); //A.C. Ask Eder to check
 	double p1k2=Mn*(E0+Mn-Er);
 	double p2k1=(E0+Mn-Er)*Mn;
 	double p2k2=Er*Mn;
@@ -90,7 +90,7 @@ double KinUtils::Er_chipXsection(double *x,double *par){
 	//2: the amplitude squared
 	double  ampsq=1.0*(k1k2*p1p2 + p1k2*k1p2 - Mchi*Mchi*k2p2 - Mn*Mn*k1p1 + 2*Mchi*Mchi*Mn*Mn)/(pow((t-Maprime*Maprime),2));
 	if (ampsq<0.0){
-	            cout<<"Er_chipXsection: negative amplitude!!!"<<endl;
+	          //  cout<<"Er_chipXsection: negative amplitude!!!"<<endl;
 	            return 0;
 	}
 	//3: the 2 momenta in the CM frame (before/after). Since this is elastic scattering, they're the same!!!
@@ -136,7 +136,7 @@ double KinUtils::Er_chieXsection(double *x,double *par){
 	double p1p1=Mchi*Mchi;
 	double k1k1=Mchi*Mchi;
 	double p1p2=E0*Me;
-	double p1k1=-0.5*(Me*Me-Mchi*Mchi+Er*Mchi);
+	double p1k1=-0.5*(2*Me*Me-2*Mchi*Mchi-2*Er*Mchi);
 	double p1k2=Me*(E0+Me-Er);
 	double p2k1=(E0+Me-Er)*Me;
 	double p2k2=Er*Me;
@@ -152,7 +152,7 @@ double KinUtils::Er_chieXsection(double *x,double *par){
 	//2: the amplitude squared
 	double  ampsq=1.0*(k1k2*p1p2 + p1k2*k1p2 - Mchi*Mchi*k2p2 - Me*Me*k1p1 + 2*Mchi*Mchi*Me*Me)/(pow((t-Maprime*Maprime),2));
 	if (ampsq<0.0){
-	            cout<<"Er_chieXsection: negative amplitude!!! "<<E0<<" "<<Er<<endl;
+	          //  cout<<"Er_chieXsection: negative amplitude!!! "<<E0<<" "<<Er<<endl;
 	            return 0;
 	}
 	//3: the 2 momenta in the CM frame (before/after). Since this is elastic scattering, they're the same!!!
@@ -195,18 +195,21 @@ double KinUtils::doElasticRecoil(const TLorentzVector &chi,TLorentzVector &recoi
 
 	/*1: extract the recoil total energy from the cross-section*/
 	ii=0;
-	ii=(int)(E0/(Ebeam/100));
-	if (ii>=100) ii=99; //should not happen
+	ii=(int)(E0/(Ebeam/nFunctionsElastic));
+	if (ii>=nFunctionsElastic) ii=nFunctionsElastic-1; //should not happen
 
-	(procID==Proc_Pelastic ? Er=f_chipXsection[ii]->GetRandom(Pthr+Mn,E0+Mn-Mchi):Er=f_chieXsection[ii]->GetRandom(Ethr+Mn,E0+Me-Mchi));
+
+	(procID==Proc_Pelastic ? Er=f_chipXsection[ii]->GetRandom(Pthr+Mn,E0+Mn-Mchi):Er=f_chieXsection[ii]->GetRandom(Ethr+Me,E0+Me-Mchi));
+
 
 	/*2: compute recoil chi total energy*/
-	Echi=E0+Mn-Er;
+	(procID==Proc_Pelastic ? Echi=E0+Mn-Er : Echi=E0+Me-Er);
 	/*3: compute the momenta*/
 	Pchi=sqrt(Echi*Echi-Mchi*Mchi);
 	(procID==Proc_Pelastic ? Pr=sqrt(Er*Er-Mn*Mn) : Pr=sqrt(Er*Er-Me*Me));
     /*4: compute the angle of the recoil nucleon wrt the initial chi momentum direction*/
 	ctheta_r=(P0*P0+Pr*Pr-Pchi*Pchi)/(2*P0*Pr);
+	if ((ctheta_r<-1)||(ctheta_r>1)) {cout<<"a"<<endl;cin.get();}
 	stheta_r=sqrt(1-ctheta_r*ctheta_r);
 	/*5: The azimuthal angle (around the incoming chi momentum direction) is flat*/
 	phi_r=Rand.Uniform(-PI,PI);

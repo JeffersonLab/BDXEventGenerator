@@ -29,6 +29,7 @@
 
 #include "KinUtils.h"
 
+
 using namespace std;
 
 KinUtils *m_utils;
@@ -211,8 +212,9 @@ int main(int argc, char *argv[]) {
 				outputWriter->writeEvent();
 				progressBar.Update(entry);
 				++entry;
-		}
 
+				cout<<entry<<endl;
+		}
 		progressBar.Finish();
 	}
 	W=W*(inputReader->heprup.NDUMP*inputReader->heprup.LDUMP);
