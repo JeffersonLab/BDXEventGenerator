@@ -1,7 +1,7 @@
  Full compression. Using symmetry and assuming B.W.
  No PDF is used, alpha_s(MZ) from param_card is used
- Value of alpha_s from param_card:   0.11799999999999999     
- The default order of alpha_s running is fixed to            2
+ Value of alpha_s from param_card:   0.118
+ The default order of alpha_s running is fixed to  2
  *****************************************************
  *                    MadEvent                       *
  *        --------------------------------           *
@@ -107,7 +107,7 @@
  Collider parameters:
  --------------------
 
- Running at e e   machine @    34.728685549556864       GeV
+ Running at e e   machine @   34.7286855 GeV
  PDF set = none   
  alpha_s(Mz)= 0.1180 running at 2 loops.
  alpha_s(Mz)= 0.1180 running at 2 loops.
@@ -121,56 +121,55 @@
  No invarient mapping defined, using 1 to 1.
  Error opening grid
  Using Uniform Grid!
- Using uniform alpha   1.0000000000000000     
+ Using uniform alpha  1.
  Grid defined OK
- Mapping Graph           1  to config           1
- myamp l312: xm(           3 )=   5.1109989000000002E-004
- myamp l312: xm(           4 )=   25.126700000000000     
- myamp l312: xm(           5 )=   1.0000000000000000E-002
- myamp l312: xm(           6 )=   1.0000000000000000E-002
- Setting BW          -1           1  0.10000000000000001     
+ Mapping Graph 1 to config 1
+ myamp l312: xm( 3)=  0.00051109989
+ myamp l312: xm( 4)=  25.1267
+ myamp l312: xm( 5)=  0.01
+ myamp l312: xm( 6)=  0.01
+ Setting BW -1 1  0.1
 Setting grid   2    0.21162E-09   -0.21162E-09   1
-Setting grid   3    0.81012E-05   -0.00000E+00   1
+Setting grid   3    0.81012E-05    0.00000E+00   1
  Masses: 0.511E-03 0.251E+02 0.511E-03 0.251E+02 0.100E-01 0.100E-01
    1   1   2   3   4   5   6   7   8
 Using random seed offsets     1 :      1
-  with seed         321
- Ranmar initialization seeds        2124        9374
+  with seed 322
+ Ranmar initialization seeds 2125 9374
    1    0.85820E+01    0.00000E+00    0.00000E+00    0.85820E+01
-   2    0.26552E+02   -0.00000E+00   -0.00000E+00   -0.85820E+01
-   3    0.31927E+00   -0.83377E-01    0.37563E-01    0.30589E+00
-   4    0.26549E+02    0.97917E-01   -0.35908E-01   -0.85715E+01
-   5    0.59040E+01    0.46246E-02    0.28125E-01    0.59039E+01
-   6    0.23619E+01   -0.19165E-01   -0.29779E-01    0.23617E+01
- Bad swap           1           2           4           3           5           6
- Bad swap           1           2           5           3           4           6
- Bad swap           1           2           3           5           4           6
- Bad swap           1           2           4           5           3           6
- Bad swap           1           2           5           4           3           6
- Bad swap           1           2           6           4           3           5
- Bad swap           1           2           4           6           3           5
- Bad swap           1           2           3           6           4           5
- Bad swap           1           2           6           3           4           5
- Bad swap           1           2           4           3           6           5
- Bad swap           1           2           3           4           6           5
- Bad swap           1           2           3           5           6           4
- Bad swap           1           2           5           3           6           4
- Bad swap           1           2           6           3           5           4
- Bad swap           1           2           3           6           5           4
- Bad swap           1           2           5           6           3           4
- Bad swap           1           2           6           5           3           4
- Bad swap           1           2           6           5           4           3
- Bad swap           1           2           5           6           4           3
- Bad swap           1           2           4           6           5           3
- Bad swap           1           2           6           4           5           3
- Bad swap           1           2           5           4           6           3
- Bad swap           1           2           4           5           6           3
- Found            0  matches.            2  channels remain for integration.
- Checking for BW            1
- Got bw          -1           1
- Checking for BW            2
- Got bw          -1           1
- Checking for BW            1
- Got bw           1           1
- Checking for BW            2
- Got bw           1           1
+   2    0.26552E+02    0.00000E+00    0.00000E+00   -0.85820E+01
+   3    0.75945E+01   -0.40764E+00    0.35048E+00    0.75754E+01
+   4    0.26505E+02    0.19489E+00    0.18053E+00   -0.84309E+01
+   5    0.88529E+00    0.17908E+00   -0.48742E+00    0.71692E+00
+   6    0.14941E+00    0.33666E-01   -0.43578E-01    0.13853E+00
+ Bad swap 1 2 4 3 5 6
+ Bad swap 1 2 5 3 4 6
+ Bad swap 1 2 3 5 4 6
+ Bad swap 1 2 4 5 3 6
+ Bad swap 1 2 5 4 3 6
+ Bad swap 1 2 6 4 3 5
+ Bad swap 1 2 4 6 3 5
+ Bad swap 1 2 3 6 4 5
+ Bad swap 1 2 6 3 4 5
+ Bad swap 1 2 4 3 6 5
+ Bad swap 1 2 3 4 6 5
+ Bad swap 1 2 3 5 6 4
+ Bad swap 1 2 5 3 6 4
+ Bad swap 1 2 6 3 5 4
+ Bad swap 1 2 3 6 5 4
+ Bad swap 1 2 5 6 3 4
+ Bad swap 1 2 6 5 3 4
+ Bad swap 1 2 6 5 4 3
+ Bad swap 1 2 5 6 4 3
+ Bad swap 1 2 4 6 5 3
+ Bad swap 1 2 6 4 5 3
+ Bad swap 1 2 5 4 6 3
+ Found  0 matches.  2 channels remain for integration.
+ Checking for BW  1
+ Got bw -1 1
+ Checking for BW  2
+ Got bw -1 1
+ Checking for BW  1
+ Got bw 1 1
+ Checking for BW  2
+ Got bw 1 1

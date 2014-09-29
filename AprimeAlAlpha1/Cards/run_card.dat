@@ -29,7 +29,7 @@
 #*********************************************************************
 # Number of events and rnd seed                                      *
 #*********************************************************************
-   10000      = nevents ! Number of unweighted events requested 
+   20000      = nevents ! Number of unweighted events requested 
       0        = iseed   ! rnd seed (0=assigned automatically=default))
 #*********************************************************************
 # Collider type and energy                                           *
@@ -134,7 +134,7 @@
   1.0  = fiduciallz   ! fiducial volume length along z (along primary beam axis) in meters 
   1.0  = fiducially   ! fiducial volume length along y (vertical) in meters
   1.0  = fiduciallx   ! fiducial volume length along x in meters
-  1    = procid ! which process to simulate after MADGRAPH: 0 none, 1 proton elastic, 2 electron elastic, 3 inelastic
+  2    = procid ! which process to simulate after MADGRAPH: 0 none, 1 proton elastic, 2 electron elastic, 3 inelastic
   1E-3 = pTHR ! The recoil proton kinetic energy threshold GeV. Used only in the second stage (after MADGRAPH)
   1E-3 = eTHR ! The recoil electron kinetic energy threshold GeV. Used only in the second stage (after MADGRAPH)
   2.41E23 = NDET ! The number of scatter centers per unit of volume in the detector (cm^-3), Nav/A * rho * Z (valid both for e- scattering and quasi-elastic)

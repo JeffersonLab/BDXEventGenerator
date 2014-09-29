@@ -96,7 +96,6 @@ double KinUtils::Er_chipXsection(double *x,double *par){
 	//3: the 2 momenta in the CM frame (before/after). Since this is elastic scattering, they're the same!!!
 
 	double p=((pow(s-Mchi*Mchi - Mn*Mn,2) - 4*Mchi*Mchi*Mn*Mn)/(4*s));
-
 	p=sqrt(p);
 	double k=p;
 
@@ -153,13 +152,13 @@ double KinUtils::Er_chieXsection(double *x,double *par){
 	//2: the amplitude squared
 	double  ampsq=1.0*(k1k2*p1p2 + p1k2*k1p2 - Mchi*Mchi*k2p2 - Me*Me*k1p1 + 2*Mchi*Mchi*Me*Me)/(pow((t-Maprime*Maprime),2));
 	if (ampsq<0.0){
-	            cout<<"Er_chieXsection: negative amplitude!!!"<<endl;
+	            cout<<"Er_chieXsection: negative amplitude!!! "<<E0<<" "<<Er<<endl;
 	            return 0;
 	}
 	//3: the 2 momenta in the CM frame (before/after). Since this is elastic scattering, they're the same!!!
-	double p=sqrt((pow(s-Mchi*Mchi - Me*Me,2) - 4*Mchi*Mchi*Me*Me)/(4*s));
+	double p=((pow(s-Mchi*Mchi - Me*Me,2) - 4*Mchi*Mchi*Me*Me)/(4*s));
+	p=sqrt(p);
 	double k=p;
-
 	//4: the Jacobian for the transformation cos(theta_CM) --> Recoil total energy in LAB frame
 	double dcostheta = Me / (p*k); //AC: checked this formula.
 
@@ -170,7 +169,6 @@ double KinUtils::Er_chieXsection(double *x,double *par){
 	double dsigma=ampsq*S; //in "GeV^-2 units" (and no coupling yet)
 	dsigma = dsigma * Epsilon*Epsilon*4*PI*Alpha*AlphaDark;
 	dsigma *=GeVm2cm2;
-
 	return dsigma;
 }
 
