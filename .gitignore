@@ -26,9 +26,11 @@
 *.log
 *log.txt
 
-#Root dictionary files to be generated!
-ExRootAnalysis/src/ExRootAnalysisDict.cc
-ExRootAnalysis/include/ExRootAnalysisDict.h
+#SubProcess
+#AprimeAlAlpha1/SubProcesses/*
+*.html
+AprimeAlAlpha1/status
+
 
 #Eclipse
 .settings
