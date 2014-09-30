@@ -25,7 +25,7 @@ pgsdir=$pydir
 ERAdir=$main/../DetectorInteraction
 MAdir=$main/../MadAnalysis
 webbin=$dirbin
-td=$main/../td
+td=$main/../
 web=0
 
 echo $$ >> myprocid
@@ -99,6 +99,7 @@ $dirbin/gen_crossxhtml-pl $t
 $dirbin/clean
 touch survey
 echo "Starting jobs" > status
+echo "Starting jobs"
 $dirbin/gen_crossxhtml-pl $t
 $dirbin/survey $p $n $t
 if [[  -e error  ]]; then
@@ -153,15 +154,15 @@ $dirbin/put_banner unweighted_events.lhe
 #    fi
 #fi
 
-#
-#  Create root file
-#
-
 	
 echo "Second step: fiducial volume interaction"
-if [[ (-x $ERAdir/DetectorInteraction.exe) && (-e unweighted_events.lhe) ]]; then
+if [[ (-d $ERAdir) && (-e unweighted_events.lhe) ]]; then
     echo "DetectorInteraction" >& ../status
     $dirbin/gen_crossxhtml-pl $t
+    here=`pwd`
+    cd $ERAdir
+    make 
+    cd $here  
     $ERAdir/DetectorInteraction.exe unweighted_events.lhe unweighted_events_new.lhe
     if [[(-e unweighted_events.lhe)]]; then
 	        rm unweighted_events.lhe
@@ -174,6 +175,10 @@ echo "Creating Plots"
 if [[ (-x $MAdir/plot_events) && (-e unweighted_events.lhe) && (-e ../Cards/plot_card.dat) ]]; then
     echo "Creating Plots" >& ../status
     $dirbin/gen_crossxhtml-pl $t
+    here=`pwd`
+    cd $MAdir
+    make
+    cd $here
     mkdir $t
     cd $t
     echo "../unweighted_events.lhe" > events.list

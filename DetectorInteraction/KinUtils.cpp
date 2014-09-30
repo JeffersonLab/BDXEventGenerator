@@ -208,8 +208,16 @@ double KinUtils::doElasticRecoil(const TLorentzVector &chi,TLorentzVector &recoi
 	Pchi=sqrt(Echi*Echi-Mchi*Mchi);
 	(procID==Proc_Pelastic ? Pr=sqrt(Er*Er-Mn*Mn) : Pr=sqrt(Er*Er-Me*Me));
     /*4: compute the angle of the recoil nucleon wrt the initial chi momentum direction*/
-	ctheta_r=(P0*P0+Pr*Pr-Pchi*Pchi)/(2*P0*Pr);
-	if ((ctheta_r<-1)||(ctheta_r>1)) {cout<<"a"<<endl;cin.get();}
+	if (procID==Proc_Pelastic){
+		ctheta_r = E0*E0- Echi*Echi + Er*Er-Mn*Mn;
+		ctheta_r /= 2*P0*Pr;
+	}
+	else {
+		ctheta_r = E0*E0- Echi*Echi + Er*Er-Me*Me;
+		ctheta_r /= 2*P0*Pr;
+	}
+	if (ctheta_r>1) ctheta_r=1;
+	if (ctheta_r<-1) ctheta_r=-1;
 	stheta_r=sqrt(1-ctheta_r*ctheta_r);
 	/*5: The azimuthal angle (around the incoming chi momentum direction) is flat*/
 	phi_r=Rand.Uniform(-PI,PI);

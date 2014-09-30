@@ -140,11 +140,17 @@ double AnalyseParticles(LHEF::Reader *reader) {
 			break;
 		}
 
-		//use the eventComments for the vertex location (in m, in the form x y z)
-		reader->eventComments = Form("%f %f %f", vhit.X(), vhit.Y(), vhit.Z());
 	}
-	return w*n_inside*1E-36; //by multiplying per n_inside, automatically I correct for the fact I have two chis, potentially both in the detector.
+
+	/*use the eventComments for the vertex location (in m, in the form x y z)
+	use the eventComments also to report the "production weight * interaction probability * dump luminosity".
+	In this way, the output file is self-consistent. To have the number of events per EOT, it is sufficient to sum these weights.
+	*/
+	w=w*n_inside*1E-36;//by multiplying per n_inside, automatically I correct for the fact I have two chis, potentially both in the detector.
 	//the factor 1E-36 is the conversion pbarn ---> cm2
+	reader->eventComments = Form("%f %f %f \n", vhit.X(), vhit.Y(), vhit.Z());
+	reader->eventComments += Form("%f",w*heprup.NDUMP*heprup.LDUMP);
+	return w;
 }
 
 //------------------------------------------------------------------------------
@@ -206,18 +212,15 @@ int main(int argc, char *argv[]) {
 			}
 			//This is the function that triggers the interaction in the fiducial volume.
 			if (inputReader->heprup.procid)
-				W+=AnalyseParticles(inputReader); //this also returns the "corrected" event weight (production weight * interaction probability)
+				W+=AnalyseParticles(inputReader); //this also returns the "corrected" event weight (production weight * interaction probability * dump luminosity)
 				outputWriter->hepeup = inputReader->hepeup;
 				outputWriter->eventStream.str(inputReader->eventComments);
 				outputWriter->writeEvent();
 				progressBar.Update(entry);
 				++entry;
-
-				cout<<entry<<endl;
 		}
 		progressBar.Finish();
 	}
-	W=W*(inputReader->heprup.NDUMP*inputReader->heprup.LDUMP);
 	cout<< " Events per EOT: "<<W<<endl;
 	cout << "** Exiting..." << endl;
 
