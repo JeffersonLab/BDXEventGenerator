@@ -161,12 +161,16 @@ if [[ (-d $ERAdir) && (-e unweighted_events.lhe) ]]; then
     $dirbin/gen_crossxhtml-pl $t
     here=`pwd`
     cd $ERAdir
+    make clean
     make 
     cd $here  
     $ERAdir/DetectorInteraction.exe unweighted_events.lhe unweighted_events_new.lhe
-    if [[(-e unweighted_events.lhe)]]; then
+    if [[(-e unweighted_events_new.lhe)]]; then
 	        rm unweighted_events.lhe
 		mv unweighted_events_new.lhe unweighted_events.lhe
+    fi
+    if [[(-e unweighted_events_new.lhe.txt)]]; then
+		mv unweighted_events_new.lhe.txt unweighted_events.txt
     fi
 fi
 
@@ -177,6 +181,7 @@ if [[ (-x $MAdir/plot_events) && (-e unweighted_events.lhe) && (-e ../Cards/plot
     $dirbin/gen_crossxhtml-pl $t
     here=`pwd`
     cd $MAdir
+    make clean
     make
     cd $here
     mkdir $t

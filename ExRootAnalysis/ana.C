@@ -1,0 +1,182 @@
+#include <iostream>
+#include "TClonesArray.h"
+#include "TSystem.h"
+#include "TChain.h"
+
+#include "TH1D.h"
+#include "TH2D.h"
+#include "TCanvas.h"
+#include "TVector3.h"
+#include "TLorentzVector.h"
+#include "TMath.h"
+#include "TRandom3.h"
+
+#include "ExRootAnalysis/ExRootClasses.h"
+#include "ExRootAnalysis/ExRootTreeReader.h"
+#include "ExRootAnalysis/ExRootTreeWriter.h"
+#include "ExRootAnalysis/ExRootTreeBranch.h"
+#include "ExRootAnalysis/ExRootResult.h"
+#include "ExRootAnalysis/ExRootUtilities.h"
+
+using namespace std;
+
+TRandom3 mrand(0);
+
+void ana(string fname){
+  
+
+  TChain *chain = new TChain("LHEF");
+  chain->Add(fname.c_str());
+  //  chain->SetProof();
+  int N=chain->GetEntries();
+  cout<<N<<endl;
+
+  
+  ExRootTreeReader *treeReader = new ExRootTreeReader(chain);
+  TClonesArray *branchP = treeReader->UseBranch("Particle");
+  TClonesArray *branchE = treeReader->UseBranch("Event");
+ 
+
+  TRootLHEFEvent* evt;
+  TRootLHEFParticle *particle,*chi,*achi;
+  
+  TLorentzVector Pchi,Pachi;
+  TLorentzVector *Pchi_in;
+
+  int Np;
+
+  double L,W;
+  TVector3 vin,vout,vhit;
+
+  //Histograms
+  TH1D *hEnergy0=new TH1D("hEnergy0","hEnergy0; #chi Energy (GeV)",100,0,1.3);
+  TH1D *hEnergy1=new TH1D("hEnergy1","hEnergy1",100,0,1.3);
+
+  TH1D *hAngle0=new TH1D("hAngle0","hAngle0; #chi Angle (deg)",100,0,30);
+  TH1D *hAngle1=new TH1D("hAngle1","hAngle1",100,0,30);
+
+  TH2D *hSpace0=new TH2D("hSpace0","hSpace0; #chi X (at 1 m); #chi hit Y (at 1 m)",100,-2.,2.,100,-2.,2.);
+
+  TH2D *hVin0=new TH2D("hVin0","hVin0; #chi in X (m); #chi in Y (m)",100,-1.,1.,100,-1.,1.);
+  TH2D *hVout0=new TH2D("hVout0","hVout0; #chi out X (m); #chi out Y (m)",100,-1.,1.,100,-1.,1.);
+
+  TH1D *hL0=new TH1D("hL","hL; #chi length in det (m)",100,0.,5.); //all L
+  TH1D *hL1=new TH1D("hL1","hL1",100,0.,5.); //L for particles exiting back
+  TH1D *hL2=new TH1D("hL2","hL2",100,0.,5.); //L for particles exiting side
+
+  TH2D *hLvsE0=new TH2D("hLvsE","hLvsE; E(GeV); L(m)",100,0.,1.3,100,0,5.);
+
+  TH2D *hLvsTheta0=new TH2D("hLvsTheta0","hLvsTheta0; Theta(deg); L(m)",100,0.,20.,100,0,5.);
+
+
+  for (int ii=0;ii<N;ii++){
+    treeReader->ReadEntry(ii);
+    evt=(TRootLHEFEvent*)(branchE->At(0));
+    
+    Np=evt->Nparticles;
+    L=evt->L;
+    W=evt->W;
+    vin.SetXYZ(evt->Vin.X(),evt->Vin.Y(),evt->Vin.Z());
+    vout.SetXYZ(evt->Vout.X(),evt->Vout.Y(),evt->Vout.Z());
+    vhit.SetXYZ(evt->Vhit.X(),evt->Vhit.Y(),evt->Vhit.Z());
+   
+  
+    for (int jj=0;jj<Np;jj++){
+      particle=(TRootLHEFParticle*)(branchP->At(jj));
+      switch (particle->PID){
+      case 611:
+	chi=particle;
+	break;
+      case -611:
+	achi=particle;
+	break;
+      default:
+	break;
+      }
+    }
+    Pchi.SetXYZT(chi->Px,chi->Py,chi->Pz,chi->E);
+    Pachi.SetXYZT(achi->Px,achi->Py,achi->Pz,achi->E);
+
+    //To get a factor 2 statistics, use both chi and achi
+    int status1=chi->Status;
+    int status2=achi->Status;
+
+    
+    hEnergy0->Fill(Pchi.E()); hEnergy0->Fill(Pachi.E());
+    hAngle0->Fill(Pchi.Theta()*TMath::RadToDeg());hAngle0->Fill(Pachi.Theta()*TMath::RadToDeg());
+    hSpace0->Fill(Pchi.Px()/Pchi.Pz(),Pchi.Py()/Pchi.Pz()); hSpace0->Fill(Pachi.Px()/Pachi.Pz(),Pachi.Py()/Pachi.Pz());
+    
+    if ((status1>=1)&&(status2==0)) Pchi_in=&Pchi;
+    else if ((status1==0)&&(status2>=1)) Pchi_in=&Pachi;
+    else if ((status1==0)&&(status2==0)) continue;
+    else if ((status1>=1)&&(status2>=1)){
+      if (status1==11) Pchi_in=&Pchi;
+      else if (status2==11) Pchi_in=&Pachi;
+    }
+    
+    {
+      hEnergy1->Fill(Pchi_in->E());
+      hAngle1->Fill(Pchi_in->Theta()*TMath::RadToDeg());
+      hVin0->Fill(vin.X(),vin.Y());
+      hVout0->Fill(vout.X(),vout.Y());
+      hL0->Fill(L/100.);
+  
+
+      hLvsE0->Fill(Pchi_in->E(),L/100.);
+      hLvsTheta0->Fill(Pchi_in->Theta()*TMath::RadToDeg(),L/100.);
+      
+    }
+
+    
+
+  }
+
+  //Draw
+  TCanvas *c1=new TCanvas("c1","c1");
+  c1->Divide(4,4);
+  
+  c1->cd(1);
+  hEnergy0->Draw();
+  hEnergy1->SetLineColor(2);
+  hEnergy1->Draw("SAME");
+ 
+  c1->cd(2);
+  hAngle0->Draw();
+  hAngle1->SetLineColor(2);
+  hAngle1->Draw("SAME");
+
+  c1->cd(3);
+  hSpace0->Draw("colz");
+
+  c1->cd(5);
+  hVin0->Draw("colz");
+
+  c1->cd(6);
+  hVout0->Draw("colz");
+
+  c1->cd(7)->SetLogy();
+  hL0->Draw();
+  hL1->SetLineColor(2);
+  hL2->SetLineColor(3);
+  hL1->Draw("SAME");
+  hL2->Draw("SAME");
+
+  c1->cd(8);
+  hLvsE0->Draw("colz");
+  
+  c1->cd(9);
+  hLvsTheta0->Draw("colz");
+ 
+
+  int Ntot=hL0->GetEntries();
+  int Nback=hL1->GetEntries();
+  int Nside=hL2->GetEntries();
+
+  cout<<"Acceptance: "<<1.*Ntot/(2*N)<<endl;
+  cout<<"Back: "<<1.*Nback/Ntot<<endl;
+  cout<<"Side: "<<1.*Nside/Ntot<<endl;
+
+}
+
+
+

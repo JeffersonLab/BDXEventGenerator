@@ -5,16 +5,16 @@
 
 using namespace std;
 
-KinUtils::KinUtils(const double &m_Ebeam,const double &m_Mchi,const double &m_Maprime,const double &m_Msplit,const double &m_Epsilon,const double &m_AlphaD,const int &m_Seed):
+KinUtils::KinUtils(const double &m_Ebeam,const double &m_Mchi,const double &m_Maprime,const double &m_Msplit,const double &m_Epsilon,const double &m_alphaD,const double &m_Ethr,const double &m_Pthr,const int &m_Seed):
 Ebeam(m_Ebeam),
 Mchi(m_Mchi),
 Maprime(m_Maprime),
 Msplit(m_Msplit),
 Seed(m_Seed),
-Ethr(0),
-Pthr(0),
+Ethr(m_Ethr),
+Pthr(m_Pthr),
 Epsilon(m_Epsilon),
-AlphaDark(m_AlphaD),
+AlphaDark(m_alphaD),
 Alpha(1./137.){
 
 		Rand.SetSeed(m_Seed);
@@ -35,8 +35,8 @@ Alpha(1./137.){
 			f_chieXsection[ii]->SetNpx(1000);
 			f_chieXsection[ii]->FixParameter(0, (ii + 1) * Ebeam / nFunctionsElastic);
 			//cout<<f_chipXsection[ii]->Integral(Pthr+Mn,Ebeam)<<" "<<f_chieXsection[ii]->Integral(Ethr+Me,Ebeam)<<endl;
-			f_chipXsection[ii]->Integral(Pthr+Mn,Ebeam+Mn-Mchi);
-			f_chieXsection[ii]->Integral(Ethr+Me,Ebeam+Me-Mchi);
+			if (Pthr<(Ebeam-Mchi))	f_chipXsection[ii]->Integral(Pthr+Mn,Ebeam+Mn-Mchi);
+			if (Ethr<(Ebeam-Mchi))  f_chieXsection[ii]->Integral(Ethr+Me,Ebeam+Me-Mchi);
 		}
 
 		cout<<"KinUtils::KinUtils created"<<endl;
@@ -78,7 +78,7 @@ double KinUtils::Er_chipXsection(double *x,double *par){
 	double p1k2=Mn*(E0+Mn-Er);
 	double p2k1=(E0+Mn-Er)*Mn;
 	double p2k2=Er*Mn;
-	double k1k2=Mn*Er;
+	double k1k2=Mn*E0;
 
 	double k1p2=p2k1;
 	double k2p2=p2k2;
@@ -103,7 +103,7 @@ double KinUtils::Er_chipXsection(double *x,double *par){
 	double dcostheta = Mn / (p*k); //AC: checked this formula.
 
 	//5: the phase-space
-	double S=(k/s*p)*dcostheta;
+	double S=(k/(s*p))*dcostheta;
 
 	 //7: the Form-Factor, using a dipole approximation.
 	double FF=1/pow(1+(Er*Er-Mn*Mn)/Mn*Mn,2);
@@ -140,7 +140,7 @@ double KinUtils::Er_chieXsection(double *x,double *par){
 	double p1k2=Me*(E0+Me-Er);
 	double p2k1=(E0+Me-Er)*Me;
 	double p2k2=Er*Me;
-	double k1k2=Me*Er;
+	double k1k2=Me*E0;
 
 	double k1p2=p2k1;
 	double k2p2=p2k2;
@@ -163,7 +163,7 @@ double KinUtils::Er_chieXsection(double *x,double *par){
 	double dcostheta = Me / (p*k); //AC: checked this formula.
 
 	//5: the phase-space
-	double S=(k/s*p)*dcostheta;
+	double S=(k/(s*p))*dcostheta;
 
 	//8: put everything together
 	double dsigma=ampsq*S; //in "GeV^-2 units" (and no coupling yet)
@@ -198,12 +198,19 @@ double KinUtils::doElasticRecoil(const TLorentzVector &chi,TLorentzVector &recoi
 	ii=(int)(E0/(Ebeam/nFunctionsElastic));
 	if (ii>=nFunctionsElastic) ii=nFunctionsElastic-1; //should not happen
 
-
+	if (procID==Proc_Pelastic){
+		if (Pthr>(E0-Mchi)) return 0; //this event is not compatible with the threshold.	
+	}	
+	if (procID==Proc_Eelastic){
+		if (Ethr>(E0-Mchi)) return 0; //this event is not compatible with the threshold.	
+	}
+	
 	(procID==Proc_Pelastic ? Er=f_chipXsection[ii]->GetRandom(Pthr+Mn,E0+Mn-Mchi):Er=f_chieXsection[ii]->GetRandom(Ethr+Me,E0+Me-Mchi));
-
-
+	
 	/*2: compute recoil chi total energy*/
 	(procID==Proc_Pelastic ? Echi=E0+Mn-Er : Echi=E0+Me-Er);
+	
+
 	/*3: compute the momenta*/
 	Pchi=sqrt(Echi*Echi-Mchi*Mchi);
 	(procID==Proc_Pelastic ? Pr=sqrt(Er*Er-Mn*Mn) : Pr=sqrt(Er*Er-Me*Me));
@@ -240,7 +247,9 @@ double KinUtils::doElasticRecoil(const TLorentzVector &chi,TLorentzVector &recoi
 	recoil_chi.SetE(Echi);
 
 	//no time consuming, since integrals are cached!
-	(procID==Proc_Pelastic ? ret=f_chipXsection[ii]->Integral(Pthr+Mn,E0+Mn-Mchi):ret=f_chieXsection[ii]->Integral(Ethr+Mn,E0+Me-Mchi));
+	(procID==Proc_Pelastic ? ret=f_chipXsection[ii]->Integral(Pthr+Mn,E0+Mn-Mchi):ret=f_chieXsection[ii]->Integral(Ethr+Me,E0+Me-Mchi));
+	
+	
 	return ret;
 
 
@@ -262,9 +271,9 @@ double KinUtils::doElasticRecoil(const TLorentzVector &chi,TLorentzVector &recoi
 Use a random distribution along the chi flight path, with uniform probability
 This function returns the length (in m) of the trajectory within the fiducial volume.
 */
-double KinUtils::findInteractionPoint(const TLorentzVector &chi,const TVector3 &fiducialV,const TVector3 &vin,TVector3 &vhit){
+double KinUtils::findInteractionPoint(const TLorentzVector &chi,const TVector3 &fiducialV,const TVector3 &vin,TVector3 &vout,TVector3 &vhit){
 
-	TVector3 vout; //the exit point from the fiducial volume
+
 	double tz,tx,ty,tout,L;
 	int sigPx,sigPy;
 
@@ -286,9 +295,9 @@ double KinUtils::findInteractionPoint(const TLorentzVector &chi,const TVector3 &
 		tout=ty;
 	}
 	vout.SetXYZ(tout*chi.Px()+vin.X(),tout*chi.Py()+vin.Y(),tout*chi.Pz()+vin.Z());
-	vhit.SetXYZ(Rand.Uniform(vin.X(),vout.X()),Rand.Uniform(vin.Y(),vout.Y()),Rand.Uniform(vin.Z(),vin.Z()+vout.Z()));//along z shift wrt beam-dump;
+	vhit.SetXYZ(Rand.Uniform(vin.X(),vout.X()),Rand.Uniform(vin.Y(),vout.Y()),Rand.Uniform(vin.Z(),vout.Z()));
 	L=(vout-vin).Mag();
-
+	
 
 
 

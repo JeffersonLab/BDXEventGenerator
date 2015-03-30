@@ -206,11 +206,23 @@ sub writeHtmlProcessPage {
   print PAGE "<TABLE BORDER=2 align=\"center\" >  \n";	
   print PAGE "<TR align=\"center\">";	
   print PAGE "<TH>Links</TH> <TH>Events</TH> <TH NOWRAP> Tag </TH><TH NOWRAP> Run </TH> \n";
-  print PAGE "<TH>Collider</TH> <TH> Cross section (pb) </TH> <TH> Events  </TH> </TR> \n";
+	  print PAGE "<TH>Collider</TH> <TH> Physics </TH><TH> BDX det </TH> <TH> Cross section (pb) </TH> <TH> Events  </TH> <TH> Interactions per EOT  </TH> </TR> \n";
   $collider="";
   $nevents=0;
   $cross=0;
-  
+  $nint_eot=0;
+ 	  
+# BDX
+  $ldet=0;
+  $lx=0;
+  $ly=0;
+  $lz=0;	 		       
+
+#physics
+  $Mchi=0;
+  $Ma=0;
+  $alphaD=0;
+  $eps=0;
   foreach $i (@runs) {
       $res="SubProcesses/".$i."_results.html";
       $eve="Events/".$i."_unweighted_events.lhe.gz";
@@ -280,9 +292,10 @@ sub writeHtmlProcessPage {
       open(INPUT , "$ban") or die "Could not read from file $ban \n";
       @input=<INPUT>; 
 #
-# start loop over stored results
+# start loop over stored results 
 #
       foreach $j (@input) {
+#This reads line by line
 #find the tag
 	  if($j =~ /^(.+)\=.*run_tag.*\!/){$tag=$1;$tag =~ s/'||"//g;}
 #find the collider
@@ -294,9 +307,20 @@ sub writeHtmlProcessPage {
 	  if($j =~ /^#.*Integrated weight.*:(.+)/){$cross=$1}
 #find the number of events
 	  if($j =~ /^#.*Number of Events.*:(.+)/){$nevents=$1}
-	  
+#find the number of interactions per EOT
+	  if($j =~ /^#.*Number of Interactions per EOT.*:(.+)/){$nint_eot=$1}	  
+#BDX
+	  if($j =~ /^(.+)\=.*ldet.*\!/){$ldet=$1}
+          if($j =~ /^(.+)\=.*fiduciallx.*\!/){$lx=$1}
+          if($j =~ /^(.+)\=.*fiducially.*\!/){$ly=$1}
+          if($j =~ /^(.+)\=.*fiduciallz.*\!/){$lz=$1}
+#Physics
+          if($j =~ /^(.+)\=.*FMASS.*\!/){print $1;$Mchi=$1}
+          if($j =~ /^(.+)\=.*APMASS.*\!/){$Ma=$2}
+          if($j =~ /^(.+)\=.*epsilon.*\!/){$eps=$2}
+          if($j =~ /^(.+)\=.*alphaD.*\!/){$alphaD=$2}
       }# end loop over banner
-
+ 
 
       $lpp1 =~ s/\s+//g;
       $lpp2 =~ s/\s+//g;
@@ -306,11 +330,14 @@ sub writeHtmlProcessPage {
       if($lpp2 eq "0") {$lpp2="e"}
       if($lpp2 eq "1") {$lpp2="p"}
       if($lpp2 eq "-1") {$lpp2="pbar"}
-      print "$lpp1  lpp2\n";  # NATALIA DEBUG
+      print "$lpp1  $lpp2\n";  # NATALIA DEBUG
       $collider=$lpp1."     ".$lpp2;
       $collider= $collider."<BR>".$ebeam1." x ".$ebeam2." GeV";
-      if (-e "$i.log") {print PAGE "<TD> $tag  </TD> <TD> <a href=\"../$i.log\">$i</a> </TD> <TD> $collider </TD> <TD> $cross </TD> <TD> $nevents";}
-      else {print PAGE "<TD> $tag  </TD> <TD> $i </TD> <TD> $collider </TD> <TD> $cross </TD> <TD> $nevents";}
+      $BDX = "Ldump: ".$ldet."<BR> Detector: ".$lx." x ".$ly." x ".$lz;
+      $PHYS = "mA: ".$Ma." mChi: ".$Mchi."<BR> eps: ".$eps." alphaD: ".$alphaD;
+
+      if (-e "$i.log") {print PAGE "<TD> $tag  </TD> <TD> <a href=\"../$i.log\">$i</a> </TD> <TD> $collider </TD> <TD> $cross </TD> <TD> $nevents </TD> <TD> $nint_eot";}
+      else {print PAGE "<TD> $tag  </TD> <TD> $i </TD> <TD> $collider </TD><TD> $PHYS </TD><TD> $BDX </TD><TD> $cross </TD> <TD> $nevents </TD> <TD> $nint_eot";}
   if (-e "Online") {
       print PAGE "</TD><TD><FORM ACTION=\"http://$server/cgi-bin/RunProcess/handle_runs-pl\" ENCTYPE=\"multipart/form-data\" METHOD=\"POST\">";
       print PAGE "<INPUT TYPE=HIDDEN NAME=directory VALUE=\"$directory\"> \n";

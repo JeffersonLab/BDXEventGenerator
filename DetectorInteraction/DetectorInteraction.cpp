@@ -1,9 +1,12 @@
 #include <iostream>
 #include <map>
+#include <cstdlib>      // std::rand, std::srand
+#include <vector>
+#include <algorithm>
 
 #include "TROOT.h"
 #include "TApplication.h"
-
+#include "TCanvas.h"
 #include "TFile.h"
 #include "TChain.h"
 #include "TString.h"
@@ -33,6 +36,9 @@
 using namespace std;
 
 KinUtils *m_utils;
+
+double msigma=0;
+double mL=0;
 //---------------------------------------------------------------------------
 
 double AnalyseParticles(LHEF::Reader *reader) {
@@ -45,9 +51,9 @@ double AnalyseParticles(LHEF::Reader *reader) {
 	Double_t w,L,ndet,sigma;
 	Double_t xthetaxfmin, xthetaxfmax, xthetayfmin, xthetayfmax;
 	TLorentzVector chi, recoil_chi, recoil_elastic;
-	TVector3 vin, vhit, fiducialV;
+	TVector3 vin, vhit,vout, fiducialV;
 	vector<double> tmp_v;
-
+	vector<int> ii_inside;
 	n_inside = 0;
 	xthetaxfmin = xthetayfmin = 0;
 	xthetaxfmax = (heprup.lx / (2 * heprup.ldet)); //ok without ATAN for this check
@@ -55,8 +61,14 @@ double AnalyseParticles(LHEF::Reader *reader) {
 
 	//set the fiducial volume "box", with respect to the z axis.
 	fiducialV.SetXYZ(heprup.lx, heprup.ly, heprup.lz);
+	//init vhit
+	vhit.SetXYZ(0.,0.,0.);
+	//init vin
+	vin.SetXYZ(0.,0.,0.);
+	//init vout
+	vout.SetXYZ(0.,0.,0.);
 
-	w=hepeup.XWGTUP; //this is the event weight, in pbarn, as given by Madgraph.
+	w=hepeup.XWGTUP; //this is the event weight, in pbarn, as given by Madgraph. --> Croos section is the sum over the events of the event weight
 	ndet=heprup.NDET;
 	for (particle = 0; particle < hepeup.NUP; ++particle) {
 
@@ -72,64 +84,83 @@ double AnalyseParticles(LHEF::Reader *reader) {
 		/* I need now to apply the fiducial cuts.
 		 I need to find which of the chis are inside (if more than one), and use that for the interaction.
 		 If both are inside, I take only one.*/
-		if ((fabs(chi.Px() / chi.Pz()) < xthetaxfmax)
-				&& (fabs(chi.Py() / chi.Pz()) < xthetayfmax))
+		if ((fabs(chi.Px() / chi.Pz()) < xthetaxfmax)&& (fabs(chi.Py() / chi.Pz()) < xthetayfmax)){
 			n_inside++;
+			ii_inside.push_back(particle);
+			hepeup.ISTUP[particle] = 1;
+		    }
 		else { //for now, just mark this chi out of the fiducial volume with a status "0"
 			hepeup.ISTUP[particle] = 0;
 			continue;
 		}
-		//now check if this is the second chi, if it is within the fiducial volume, and if the first was already in the fiducial volume. If so, we skip the second chi
-		if (n_inside == 2) {
-			hepeup.ISTUP[particle] = 0;
-			continue;
-		}
+	}
+	//now we know how many chis are inside (n_inside). Take 1 random.
+	if (n_inside!=0){
+		
+		std::random_shuffle (ii_inside.begin(), ii_inside.end() );
+		chi.SetPxPyPzE(hepeup.PUP[ii_inside.at(0)][0], hepeup.PUP[ii_inside.at(0)][1],
+		               hepeup.PUP[ii_inside.at(0)][2], hepeup.PUP[ii_inside.at(0)][3]);
+		
 		vin.SetXYZ((chi.Px() / chi.Pz()) * heprup.ldet,
 				(chi.Py() / chi.Pz()) * heprup.ldet, heprup.ldet); //the chi hit position in the fiducial volume front-face
+		
+		//mark this chi with status "11":
+		hepeup.ISTUP[ii_inside.at(0)]=11;
+
 		//From here, we have a chi within the fiducial volume.
 		//See which interaction to consider
-
 		switch (heprup.procid) {
 		case Proc_nothing: //nothing to do
 			w=0;
 			break;
 		case Proc_Pelastic: //proton elastic
 		case Proc_Eelastic: //electron elastic
-			sigma=m_utils->doElasticRecoil(chi, recoil_elastic, recoil_chi,heprup.procid);
-			L=m_utils->findInteractionPoint(chi, fiducialV, vin, vhit);
-			L=L*100; //since the above returns it in m;
-			w=w*L*heprup.NDET*sigma;
-			//add particles to hepeup
-			//final state chi
-			hepeup.IDUP.push_back(9611);
-			hepeup.ISTUP.push_back(1);
-			hepeup.MOTHUP.push_back(std::make_pair(particle + 1, particle + 1));
-			hepeup.ICOLUP.push_back(std::make_pair(0, 0));
-			tmp_v.clear();
-			tmp_v.push_back(recoil_chi.Px());
-			tmp_v.push_back(recoil_chi.Py());
-			tmp_v.push_back(recoil_chi.Pz());
-			tmp_v.push_back(recoil_chi.E());
-			tmp_v.push_back(recoil_chi.M());
-			hepeup.PUP.push_back(tmp_v);
-			hepeup.VTIMUP.push_back(0);
-			hepeup.SPINUP.push_back(0);
-			//final state recoil
-			(heprup.procid == Proc_Pelastic ? hepeup.IDUP.push_back(9212) : hepeup.IDUP.push_back(911));
-			hepeup.ISTUP.push_back(1);
-			hepeup.MOTHUP.push_back(std::make_pair(particle + 1, particle + 1));
-			hepeup.ICOLUP.push_back(std::make_pair(0, 0));
-			tmp_v.clear();
-			tmp_v.push_back(recoil_elastic.Px());
-			tmp_v.push_back(recoil_elastic.Py());
-			tmp_v.push_back(recoil_elastic.Pz());
-			tmp_v.push_back(recoil_elastic.E());
-			tmp_v.push_back(recoil_elastic.M());
-			hepeup.PUP.push_back(tmp_v);
-			hepeup.VTIMUP.push_back(0);
-			hepeup.SPINUP.push_back(0);
-			hepeup.NUP += 2;
-			break;
+			sigma=m_utils->doElasticRecoil(chi, recoil_elastic, recoil_chi,heprup.procid);		
+			msigma+=sigma;
+	
+			if (sigma==0){
+				w=0;
+				hepeup.ISTUP[ii_inside.at(0)]=-11; //mark this negative
+				break;
+			}
+			else{
+				L=m_utils->findInteractionPoint(chi, fiducialV, vin,vout, vhit);
+				L=L*100; //since the above returns it in m;
+				mL+=L;
+				w=w*L*heprup.NDET*sigma;
+				//w=sigma;
+				//add particles to hepeup
+				//final state chi
+				hepeup.IDUP.push_back(9611);
+				hepeup.ISTUP.push_back(1);
+				hepeup.MOTHUP.push_back(std::make_pair(particle + 1, particle + 1));
+				hepeup.ICOLUP.push_back(std::make_pair(0, 0));
+				tmp_v.clear();
+				tmp_v.push_back(recoil_chi.Px());
+				tmp_v.push_back(recoil_chi.Py());
+				tmp_v.push_back(recoil_chi.Pz());
+				tmp_v.push_back(recoil_chi.E());
+				tmp_v.push_back(recoil_chi.M());
+				hepeup.PUP.push_back(tmp_v);
+				hepeup.VTIMUP.push_back(0);
+				hepeup.SPINUP.push_back(0);
+				//final state recoil
+				(heprup.procid == Proc_Pelastic ? hepeup.IDUP.push_back(92212) : hepeup.IDUP.push_back(911));
+				hepeup.ISTUP.push_back(1);
+				hepeup.MOTHUP.push_back(std::make_pair(particle + 1, particle + 1));
+				hepeup.ICOLUP.push_back(std::make_pair(0, 0));
+				tmp_v.clear();
+				tmp_v.push_back(recoil_elastic.Px());
+				tmp_v.push_back(recoil_elastic.Py());
+				tmp_v.push_back(recoil_elastic.Pz());
+				tmp_v.push_back(recoil_elastic.E());
+				tmp_v.push_back(recoil_elastic.M());
+				hepeup.PUP.push_back(tmp_v);
+				hepeup.VTIMUP.push_back(0);
+				hepeup.SPINUP.push_back(0);
+				hepeup.NUP += 2;
+				break;
+			}
 		case Proc_Pinelastic: //inelastic
 		case Proc_Einelastic:
 			w=0;
@@ -141,6 +172,8 @@ double AnalyseParticles(LHEF::Reader *reader) {
 		}
 
 	}
+	
+	
 
 	/*use the eventComments for the vertex location (in m, in the form x y z)
 	use the eventComments also to report the "production weight * interaction probability * dump luminosity".
@@ -148,8 +181,13 @@ double AnalyseParticles(LHEF::Reader *reader) {
 	*/
 	w=w*n_inside*1E-36;//by multiplying per n_inside, automatically I correct for the fact I have two chis, potentially both in the detector.
 	//the factor 1E-36 is the conversion pbarn ---> cm2
-	reader->eventComments = Form("%f %f %f \n", vhit.X(), vhit.Y(), vhit.Z());
-	reader->eventComments += Form("%f",w*heprup.NDUMP*heprup.LDUMP);
+	w*=heprup.NDUMP*heprup.LDUMP;
+	
+	reader->eventComments  = Form("IN: %f %f %f \n",vin.X(),vin.Y(),vin.Z());
+	reader->eventComments += Form("OUT: %f %f %f \n", vout.X(), vout.Y(), vout.Z());
+	reader->eventComments += Form("HIT: %f %f %f \n", vhit.X(), vhit.Y(), vhit.Z());
+	reader->eventComments += Form("L: %f \n",L);
+	reader->eventComments += Form("W: %e",w);
 	return w;
 }
 
@@ -163,6 +201,7 @@ int main(int argc, char *argv[]) {
 				<< endl;
 		cout << " input_file - input file in LHEF format," << endl;
 		cout << " output_file - output file in LHEF format." << endl;
+		cout << " output_file is also used to write the number of events per EOT, as output_file.txt"<<endl;
 		return 1;
 	}
 
@@ -171,12 +210,16 @@ int main(int argc, char *argv[]) {
 	int appargc = 1;
 	char *appargv[] = { appName };
 	double W,L;
-	TApplication app(appName, &appargc, appargv);
-
+	double thisW;
+	int Nin=0;
 	// Open a stream connected to an event file:
 	ifstream inputFileStream(argv[1]);
 	ofstream outputFileStream(argv[2]);
-
+	
+	string outputFileEOTname(argv[2]);
+	outputFileEOTname+=".txt";
+	ofstream outputFileEOT(outputFileEOTname.c_str());
+	
 	// Create the Reader object:
 	LHEF::Reader *inputReader = new LHEF::Reader(inputFileStream); //this triggers also "init"
 	// Create the Writer object:
@@ -191,7 +234,7 @@ int main(int argc, char *argv[]) {
 
 	//note that alphaEM is saved in the event header (although we are not going to touch this at all!).
 	//Therefore, I will set it in the first event in the  loop.
-	m_utils=new KinUtils(inputReader->heprup.EBEAM,inputReader->heprup.FMASS,inputReader->heprup.APMASS,0,inputReader->heprup.EPSILON,inputReader->heprup.ALPHAD,inputReader->heprup.SEED);
+	m_utils=new KinUtils(inputReader->heprup.EBEAM,inputReader->heprup.FMASS,inputReader->heprup.APMASS,0,inputReader->heprup.EPSILON,inputReader->heprup.ALPHAD,inputReader->heprup.eTHR,inputReader->heprup.pTHR,inputReader->heprup.SEED);
 
 
 	cout << "** Calculating number of events to process. Please wait..."
@@ -207,12 +250,19 @@ int main(int argc, char *argv[]) {
 		while (inputReader->readEvent()) {
 
 			if (entry==0){
+				cout<<"First entry"<<endl;
 				m_utils->setAlpha(inputReader->hepeup.AQEDUP); //set alpha_EM.
 				gRandom->SetSeed(inputReader->heprup.SEED);
+				std::srand(inputReader->heprup.SEED);
+				
 			}
 			//This is the function that triggers the interaction in the fiducial volume.
 			if (inputReader->heprup.procid)
-				W+=AnalyseParticles(inputReader); //this also returns the "corrected" event weight (production weight * interaction probability * dump luminosity)
+				thisW=AnalyseParticles(inputReader); //this also returns the "corrected" event weight (production weight * interaction probability * dump luminosity)
+				W+=thisW;
+				if (thisW>0){
+					Nin++;
+				}
 				outputWriter->hepeup = inputReader->hepeup;
 				outputWriter->eventStream.str(inputReader->eventComments);
 				outputWriter->writeEvent();
@@ -223,8 +273,15 @@ int main(int argc, char *argv[]) {
 	}
 	cout<< " Events per EOT: "<<W<<endl;
 	cout << "** Exiting..." << endl;
-
+	
+	cout<< " mean sigma: "<<msigma/Nin<<endl;
+	cout<< " mean L: "<<mL/Nin<<endl;
+	outputFileEOT<<W<<endl;
+	outputFileEOT.close();
+	
 	delete inputReader;
 	delete outputWriter;
+	
+
 }
 

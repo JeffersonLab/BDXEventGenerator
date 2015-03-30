@@ -89,6 +89,7 @@ if [[ -d Events ]]; then
     rm -f $c
     echo '</LesHouchesEvents>' >> banner.txt
     sed -e '/^ *$/d' banner.txt > $c
+    echo $c
     rm -f temp.dat
     rm -f banner.txt
     cd ..

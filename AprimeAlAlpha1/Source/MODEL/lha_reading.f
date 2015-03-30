@@ -157,10 +157,16 @@ c     &        ivalue(n),value(n),name(n)
        call set_it(n,ivalue,value,name,3,bn,znuc    ,0d0)
        
 c	   A. Celentano: I added these lines to re-define the apwidth by alphaD.
-       apwidth=(1./3.)*alphaD*apmass*DSQRT(1-(2*fmass/apmass)**2)*(1+2*(fmass/apmass)**2)
-       
-      return
-      end
+       apwidth = 0.      
+       if(apmass.ge.(fmass*2))then
+	apwidth=apwidth + (1./3.)*alphaD*apmass*DSQRT(1-(2*fmass/apmass)**2)*(1+2*(fmass/apmass)**2)
+       endif
+       if (apmass.ge.(elemass*2))then		
+	apwidth = apwidth + (1./3.)*alpha*epsilon*epsilon*apmass*DSQRT(1-(2*elemass/apmass)**2)*(1+2*(elemass/apmass)**2)
+       endif
+       write (*,*) "The A prime width is: ", apwidth , " GeV "
+       return
+       end
 
       
       subroutine set_it(npara,ivalue,value,name,id,

@@ -23,6 +23,7 @@ dirbin=$main/bin
 pydir=$main/../pythia-pgs/src
 pgsdir=$pydir
 ERAdir=$main/../DetectorInteraction
+ERAdir1=$main/../ExRootAnalysis
 MAdir=$main/../MadAnalysis
 webbin=$dirbin
 td=$main/../
@@ -165,9 +166,12 @@ if [[ (-d $ERAdir) && (-e unweighted_events.lhe) ]]; then
     make 
     cd $here  
     $ERAdir/DetectorInteraction.exe unweighted_events.lhe unweighted_events_new.lhe
-    if [[(-e unweighted_events.lhe)]]; then
+    if [[(-e unweighted_events_new.lhe)]]; then
 	        rm unweighted_events.lhe
 		mv unweighted_events_new.lhe unweighted_events.lhe
+    fi
+    if [[(-e unweighted_events_new.lhe.txt)]]; then
+		mv unweighted_events_new.lhe.txt unweighted_events.txt
     fi
 fi
 
@@ -188,6 +192,20 @@ if [[ (-x $MAdir/plot_events) && (-e unweighted_events.lhe) && (-e ../Cards/plot
     cd ..
     $dirbin/plot_page-pl $t
 fi
+
+echo "ExRootAnalysis"
+if [[ (-x $ERAdir1/ExRootLHEFConverter) && (-e unweighted_events.lhe) ]]; then
+    echo "Creatin LHE Root File" >& ../status
+    $dirbin/gen_crossxhtml-pl $t
+    here=`pwd`
+    cd $ERAdir1
+    make clean
+    make 
+    cd $here  
+    $ERAdir1/ExRootLHEFConverter unweighted_events.lhe  unweighted_events.root 
+fi
+
+
 
 $dirbin/store $t
 $dirbin/gen_crossxhtml-pl $t

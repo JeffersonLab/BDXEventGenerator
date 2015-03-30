@@ -41,14 +41,14 @@ class KinUtils{
 	public:
 
 
-		KinUtils(const double &m_Ebeam,const double &m_Mchi,const double &m_Maprime,const double &m_Msplit,const double &m_Epsilon,const double &m_alphaD,const int &m_Seed);
+		KinUtils(const double &m_Ebeam,const double &m_Mchi,const double &m_Maprime,const double &m_Msplit,const double &m_Epsilon,const double &m_alphaD,const double &m_Pthr,const double &m_Ethr,const int &m_Seed);
 		void PrintParameters();
 		void setAlpha(double m_Alpha){Alpha=m_Alpha;};
 		void setAlphaD(double m_AlphaDark){AlphaDark=m_AlphaDark;};
 		void setEpsilon(double m_Epsilon){Epsilon=m_Epsilon;};
 
 		double doElasticRecoil(const TLorentzVector &chi,TLorentzVector &recoil,TLorentzVector &chiPrime,const int &procID);
-		double findInteractionPoint(const TLorentzVector &chi,const TVector3 &fiducialV,const TVector3 &vin,TVector3 &vhit);
+		double findInteractionPoint(const TLorentzVector &chi,const TVector3 &fiducialV,const TVector3 &vin,TVector3 &vout,TVector3 &vhit);
 		double Er_chipXsection(double *x,double *par);
 		double Er_chieXsection(double *x,double *par);
 

@@ -68,8 +68,18 @@ if [[ -e Events/events.lhe ]]; then
     rm -f Events/$1_events.lhe.gz >& /dev/null
     gzip -f Events/$1_events.lhe
 fi
+	
 if [[ -e Events/unweighted_events.lhe ]]; then
     ./bin/extract_banner-pl Events/unweighted_events.lhe  Events/$1_banner.txt 
+	if [[ -e Events/unweighted_events.txt ]]; then
+		echo "# <BDXResults>" >> Events/$1_banner.txt
+		echo -n "# Number of Interactions per EOT : " >> Events/$1_banner.txt
+		cat Events/unweighted_events.txt >> Events/$1_banner.txt
+		echo "" >> Events/$1_banner.txt
+		echo "# </BDXResults>" >> Events/$1_banner.txt
+		rm  Events/unweighted_events.txt
+	fi
+	
     mv -f Events/unweighted_events.lhe Events/$1_unweighted_events.lhe 
     rm -f Events/$1_unweighted_events.lhe.gz >& /dev/null
     gzip -f Events/$1_unweighted_events.lhe 
