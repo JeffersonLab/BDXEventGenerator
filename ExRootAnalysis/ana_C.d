@@ -85,11 +85,11 @@ ExRootAnalysis/ana_C.so: /project/Gruppo3/fiber6/apps/jlab_software_20121030/Lin
 ExRootAnalysis/ana_C.so: /project/Gruppo3/fiber6/apps/jlab_software_20121030/Linux_Scientific5-x86_64-gcc4.1.2/root/5.32/include/root/TRotation.h
 ExRootAnalysis/ana_C.so: /project/Gruppo3/fiber6/apps/jlab_software_20121030/Linux_Scientific5-x86_64-gcc4.1.2/root/5.32/include/root/TRandom3.h
 ExRootAnalysis/ana_C.so: /project/Gruppo3/fiber6/apps/jlab_software_20121030/Linux_Scientific5-x86_64-gcc4.1.2/root/5.32/include/root/TRandom.h
-ExRootAnalysis/ana_C.so: /auto_data/fiber5/celentano/EventGenerator/ExRootAnalysis/ExRootAnalysis/ExRootClasses.h
+ExRootAnalysis/ana_C.so: /mnt/project_mnt/jlab12/fiber5_fs/celentano/EventGenerator/ExRootAnalysis/ExRootAnalysis/ExRootClasses.h
 ExRootAnalysis/ana_C.so: /project/Gruppo3/fiber6/apps/jlab_software_20121030/Linux_Scientific5-x86_64-gcc4.1.2/root/5.32/include/root/TRef.h
 ExRootAnalysis/ana_C.so: /project/Gruppo3/fiber6/apps/jlab_software_20121030/Linux_Scientific5-x86_64-gcc4.1.2/root/5.32/include/root/TRefArray.h
 ExRootAnalysis/ana_C.so: /project/Gruppo3/fiber6/apps/jlab_software_20121030/Linux_Scientific5-x86_64-gcc4.1.2/root/5.32/include/root/TProcessID.h
-ExRootAnalysis/ana_C.so: /auto_data/fiber5/celentano/EventGenerator/ExRootAnalysis/ExRootAnalysis/ExRootTreeReader.h
+ExRootAnalysis/ana_C.so: /mnt/project_mnt/jlab12/fiber5_fs/celentano/EventGenerator/ExRootAnalysis/ExRootAnalysis/ExRootTreeReader.h
 ExRootAnalysis/ana_C.so: /project/Gruppo3/fiber6/apps/jlab_software_20121030/Linux_Scientific5-x86_64-gcc4.1.2/root/5.32/include/root/TROOT.h
 ExRootAnalysis/ana_C.so: /project/Gruppo3/fiber6/apps/jlab_software_20121030/Linux_Scientific5-x86_64-gcc4.1.2/root/5.32/include/root/TDirectory.h
 ExRootAnalysis/ana_C.so: /project/Gruppo3/fiber6/apps/jlab_software_20121030/Linux_Scientific5-x86_64-gcc4.1.2/root/5.32/include/root/TList.h
@@ -100,10 +100,10 @@ ExRootAnalysis/ana_C.so: /project/Gruppo3/fiber6/apps/jlab_software_20121030/Lin
 ExRootAnalysis/ana_C.so: /project/Gruppo3/fiber6/apps/jlab_software_20121030/Linux_Scientific5-x86_64-gcc4.1.2/root/5.32/include/root/TUrl.h
 ExRootAnalysis/ana_C.so: /project/Gruppo3/fiber6/apps/jlab_software_20121030/Linux_Scientific5-x86_64-gcc4.1.2/root/5.32/include/root/TMap.h
 ExRootAnalysis/ana_C.so: /project/Gruppo3/fiber6/apps/jlab_software_20121030/Linux_Scientific5-x86_64-gcc4.1.2/root/5.32/include/root/THashTable.h
-ExRootAnalysis/ana_C.so: /auto_data/fiber5/celentano/EventGenerator/ExRootAnalysis/ExRootAnalysis/ExRootTreeWriter.h
-ExRootAnalysis/ana_C.so: /auto_data/fiber5/celentano/EventGenerator/ExRootAnalysis/ExRootAnalysis/ExRootTreeBranch.h
-ExRootAnalysis/ana_C.so: /auto_data/fiber5/celentano/EventGenerator/ExRootAnalysis/ExRootAnalysis/ExRootResult.h
+ExRootAnalysis/ana_C.so: /mnt/project_mnt/jlab12/fiber5_fs/celentano/EventGenerator/ExRootAnalysis/ExRootAnalysis/ExRootTreeWriter.h
+ExRootAnalysis/ana_C.so: /mnt/project_mnt/jlab12/fiber5_fs/celentano/EventGenerator/ExRootAnalysis/ExRootAnalysis/ExRootTreeBranch.h
+ExRootAnalysis/ana_C.so: /mnt/project_mnt/jlab12/fiber5_fs/celentano/EventGenerator/ExRootAnalysis/ExRootAnalysis/ExRootResult.h
 ExRootAnalysis/ana_C.so: /project/Gruppo3/fiber6/apps/jlab_software_20121030/Linux_Scientific5-x86_64-gcc4.1.2/root/5.32/include/root/Gtypes.h
-ExRootAnalysis/ana_C.so: /auto_data/fiber5/celentano/EventGenerator/ExRootAnalysis/ExRootAnalysis/ExRootUtilities.h
+ExRootAnalysis/ana_C.so: /mnt/project_mnt/jlab12/fiber5_fs/celentano/EventGenerator/ExRootAnalysis/ExRootAnalysis/ExRootUtilities.h
 ExRootAnalysis/ana_C.so: /project/Gruppo3/fiber6/apps/jlab_software_20121030/Linux_Scientific5-x86_64-gcc4.1.2/root/5.32/include/root/cintdictversion.h /project/Gruppo3/fiber6/apps/jlab_software_20121030/Linux_Scientific5-x86_64-gcc4.1.2/root/5.32/include/root/RVersion.h
 ana_C__ROOTBUILDVERSION= 5.32/01
