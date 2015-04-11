@@ -25,12 +25,15 @@
 #Log files
 *.log
 *log.txt
-
+*.e
+*.o
 #SubProcess
 #AprimeAlAlpha1/SubProcesses/*
 *.html
 AprimeAlAlpha1/status
-
+*.dat
+#run
+run/*.txt
 
 #Eclipse
 .settings
@@ -39,3 +42,4 @@ AprimeAlAlpha1/status
 *.lhe.gz
 *.lhe
 *.gz
+*banner.txt
