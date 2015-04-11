@@ -43,3 +43,7 @@ run/*.txt
 *.lhe
 *.gz
 *banner.txt
+
+
+#backup
+*~
