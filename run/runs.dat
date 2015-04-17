@@ -14,7 +14,7 @@
 #Double length, /sqrt(2) face
 #BDXLNF003 100E-3 10E-3 3.87E-4 0.1 100000 0.75 9 0.42426 0.42426 4.5 2
 
-#The same, with 1.1 GeV
+#The same, with 1.1 GeV 
 #BDXLNF004 100E-3 10E-3 3.87E-4 0.1 100000 1.1 9 0.6 0.6 2.25 2
 #Half length, sqrt(2)* face
 #BDXLNF005 100E-3 10E-3 3.87E-4 0.1 100000 1.1 9 0.85 0.85 1.125 2

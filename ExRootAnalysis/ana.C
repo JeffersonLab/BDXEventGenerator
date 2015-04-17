@@ -22,6 +22,22 @@ using namespace std;
 
 TRandom3 mrand(0);
 
+
+//Acceptance at 2 m
+double Nacc2a,Nacc2b,Nacc2c;  //20x20 cm2, 50x50 cm2, 100x100 cm2
+
+//Acceptance at 5 m
+double Nacc5a,Nacc5b,Nacc5c;  //20x20 cm2, 50x50 cm2, 100x100 cm2
+	
+//Acceptance at 10 m
+double Nacc10a,Nacc10b,Nacc10c;    //20x20 cm2, 50x50 cm2, 100x100 cm2
+	
+//Acceptance at 15 m
+double Nacc15a,Nacc15b,Nacc15c;   //20x20 cm2, 50x50 cm2, 100x100 cm2
+	
+//Acceptance at 20 m
+double Nacc20a,Nacc20b,Nacc20c;   //20x20 cm2, 50x50 cm2, 100x100 cm2
+
 void ana(string fname){
 	
 	
@@ -44,18 +60,7 @@ void ana(string fname){
 	TLorentzVector *Pchi_in;
 	
 	int Np;
-	
-  //Acceptance at 5 m
-	double Nacc5a,Nacc5b,Nacc5c;  //20x20 cm2, 50x50 cm2, 100x100 cm2
-	
-  //Acceptance at 10 m
-	double Nacc10a,Nacc10b,Nacc10c;    //20x20 cm2, 50x50 cm2, 100x100 cm2
-	
-  //Acceptance at 15 m
-	double Nacc15a,Nacc15b,Nacc15c;   //20x20 cm2, 50x50 cm2, 100x100 cm2
-	
-  //Acceptance at 20 m
-	double Nacc20a,Nacc20b,Nacc20c;   //20x20 cm2, 50x50 cm2, 100x100 cm2
+
 	
 	double x,y;
 	double L,W;
@@ -82,7 +87,7 @@ void ana(string fname){
 	
 	TH2D *hLvsTheta0=new TH2D("hLvsTheta0","hLvsTheta0; Theta(deg); L(m)",100,0.,20.,100,0,5.);
 	
-	Nacc5a=Nacc5b=Nacc5c=Nacc10a=Nacc10b=Nacc10c=Nacc15a=Nacc15b=Nacc15c=Nacc20a=Nacc20b=Nacc20c=0;
+	Nacc2a=Nacc2b=Nacc2c=Nacc5a=Nacc5b=Nacc5c=Nacc10a=Nacc10b=Nacc10c=Nacc15a=Nacc15b=Nacc15c=Nacc20a=Nacc20b=Nacc20c=0;
 	
 	for (int ii=0;ii<N;ii++){
 		treeReader->ReadEntry(ii);
@@ -122,6 +127,18 @@ void ana(string fname){
 		hSpace0->Fill(Pchi.Px()/Pchi.Pz(),Pchi.Py()/Pchi.Pz()); hSpace0->Fill(Pachi.Px()/Pachi.Pz(),Pachi.Py()/Pachi.Pz());
 		hSpace1->Fill(10*Pchi.Px()/Pchi.Pz(),10*Pchi.Py()/Pchi.Pz()); hSpace1->Fill(10*Pachi.Px()/Pachi.Pz(),10*Pachi.Py()/Pachi.Pz());
 		/*Here compute the acceptance*/
+		//2 m
+		x=(Pchi.Px()/Pchi.Pz())*200;
+		y=(Pchi.Py()/Pchi.Pz())*200;
+		if ((fabs(x)<10)&&(fabs(y)<10))	 Nacc2a++;
+		if ((fabs(x)<25)&&(fabs(y)<25))	 Nacc2b++;
+		if ((fabs(x)<50)&&(fabs(y)<50))	 Nacc2c++;		
+		x=(Pachi.Px()/Pachi.Pz())*200;
+		y=(Pachi.Py()/Pachi.Pz())*200;
+		if ((fabs(x)<10)&&(fabs(y)<10))	 Nacc2a++;
+		if ((fabs(x)<25)&&(fabs(y)<25))	 Nacc2b++;
+		if ((fabs(x)<50)&&(fabs(y)<50))	 Nacc2c++;
+		
 		//5 m
 		x=(Pchi.Px()/Pchi.Pz())*500;
 		y=(Pchi.Py()/Pchi.Pz())*500;
@@ -237,6 +254,10 @@ void ana(string fname){
 	hLvsTheta0->Draw("colz");
 	
 	//Divide the acceptance counts
+	Nacc2a/=(2*N);
+	Nacc2b/=(2*N);
+	Nacc2c/=(2*N);
+	
 	Nacc5a/=(2*N);
 	Nacc5b/=(2*N);
 	Nacc5c/=(2*N);
@@ -254,15 +275,11 @@ void ana(string fname){
 	Nacc20c/=(2*N);
 	
 	cout<<"Acceptance: "<<endl;
+	cout<<Nacc2a<<" "<<Nacc2b<<" "<<Nacc2c<<endl;
 	cout<<Nacc5a<<" "<<Nacc5b<<" "<<Nacc5c<<endl;
 	cout<<Nacc10a<<" "<<Nacc10b<<" "<<Nacc10c<<endl;
 	cout<<Nacc15a<<" "<<Nacc15b<<" "<<Nacc15c<<endl;
-	cout<<Nacc20a<<" "<<Nacc20b<<" "<<Nacc20c<<endl;
-	
-	
-	
-	
+	cout<<Nacc20a<<" "<<Nacc20b<<" "<<Nacc20c<<endl;	
 }
-
 
 

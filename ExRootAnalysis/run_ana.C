@@ -1,11 +1,11 @@
 void run_ana(){
 static bool loaded = false;
 
-  gSystem->Load("ExRootAnalysis/libExRootAnalysis.so");
+  gSystem->Load("./ExRootAnalysis/libExRootAnalysis.so");
 
   if (loaded) gROOT->ProcessLine(".U ana.C");
   gSystem->CompileMacro("ExRootAnalysis/ana.C","k");
   loaded=true;
-  ana("/project/Gruppo3/fiber5/celentano/EventGenerator/AprimeAlAlpha1/Events/BDXLNF010_unweighted_events.root");
+  ana("/work/BDXEventGenerator/AprimeAlAlpha1/Events/BDXLNF010_unweighted_events.root");
 }
 ;
