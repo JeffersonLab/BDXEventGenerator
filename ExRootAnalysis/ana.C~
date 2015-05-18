@@ -275,6 +275,7 @@ void ana(string fname){
 	Nacc20c/=(2*N);
 	
 	cout<<"Acceptance: "<<endl;
+	cout<<Nacc2a<<" "<<Nacc2b<<" "<<Nacc2c<<endl;
 	cout<<Nacc5a<<" "<<Nacc5b<<" "<<Nacc5c<<endl;
 	cout<<Nacc10a<<" "<<Nacc10b<<" "<<Nacc10c<<endl;
 	cout<<Nacc15a<<" "<<Nacc15b<<" "<<Nacc15c<<endl;

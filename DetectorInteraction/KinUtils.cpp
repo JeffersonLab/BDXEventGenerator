@@ -120,10 +120,10 @@ double KinUtils::Er_chipXsection(double *x,double *par){
 
 }
 
-/*double Tr_chieXsection
- Returns the chi e -> chi e DIFFERENTIAL cross section, dsigma/dTr, where Tr is the recoil electron kinetic energy
- Parameters: x[0]: Tr
-             par[0]: T0, kinetic energy of incoming chi
+/*double Er_chieXsection
+ Returns the chi e -> chi e DIFFERENTIAL cross section, dsigma/dEr, where Er is the recoil electron total energy
+ Parameters: x[0]: recoil KINETIC energy Er
+           par[0]: E0, kinetic energy of incoming chi
 */
 double KinUtils::Er_chieXsection(double *x,double *par){
 	double Er=x[0];
