@@ -78,8 +78,8 @@ Block MASS      #  Mass spectrum (kinematic masses)
  23  9.15445065E+01  #  Z  mass  
  24  8.02673592E+01  #  W  mass  
  25  1.20000000E+02  #  H  mass  
- 611  1E-3  #  FMASS  #This  is  the  chi  mass  in  GeV  
- 622  50E-3  #  APMASS  #This  is  the  A'  mass  in  GeV  
+ 611  10E-3  #  FMASS  #This  is  the  chi  mass  in  GeV  
+ 622  100E-3  #  APMASS  #This  is  the  A'  mass  in  GeV  
  623  2.51267000e+01  #  HPMASS  (aluminum)  #This  is  the  nucleus  mass  in  GeV  (material  of  the  beam  dump)  
 #            PDG       Width
 DECAY       611     0.00000000e+00   # ELWIDTH
