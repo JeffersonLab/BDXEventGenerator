@@ -74,9 +74,9 @@ double KinUtils::Er_chipXsection(double *x,double *par){
 	double p1p1=Mchi*Mchi;
 	double k1k1=Mchi*Mchi;
 	double p1p2=E0*Mn;
-	double p1k1=-0.5*(2*Mn*Mn-2*Mchi*Mchi-2*Er*Mchi); //A.C. Ask Eder to check
+	double p1k1=-0.5*(2*Mn*Mn-2*Mchi*Mchi-2*Er*Mn); //A.C. Ask Eder to check
 	double p1k2=Mn*(E0+Mn-Er);
-	double p2k1=(E0+Mn-Er)*Mn;
+	double p2k1=MN*(E0+Mn-Er);
 	double p2k2=Er*Mn;
 	double k1k2=Mn*E0;
 
@@ -136,9 +136,9 @@ double KinUtils::Er_chieXsection(double *x,double *par){
 	double p1p1=Mchi*Mchi;
 	double k1k1=Mchi*Mchi;
 	double p1p2=E0*Me;
-	double p1k1=-0.5*(2*Me*Me-2*Mchi*Mchi-2*Er*Mchi);
+	double p1k1=-0.5*(2*Me*Me-2*Mchi*Mchi-2*Er*Me);
 	double p1k2=Me*(E0+Me-Er);
-	double p2k1=(E0+Me-Er)*Me;
+	double p2k1=Me*(E0+Me-Er);
 	double p2k2=Er*Me;
 	double k1k2=Me*E0;
 
