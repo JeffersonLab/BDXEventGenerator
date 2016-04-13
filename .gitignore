@@ -44,6 +44,11 @@ run/*.txt
 *.gz
 *banner.txt
 
+#Root
+*.root
 
 #backup
 *~
+
+#compiled python
+*.pyc

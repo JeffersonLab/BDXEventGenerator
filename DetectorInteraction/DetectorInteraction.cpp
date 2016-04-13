@@ -68,7 +68,7 @@ double AnalyseParticles(LHEF::Reader *reader) {
 	//init vout
 	vout.SetXYZ(0.,0.,0.);
 
-	w=hepeup.XWGTUP; //this is the event weight, in pbarn, as given by Madgraph. --> Croos section is the sum over the events of the event weight
+	w=hepeup.XWGTUP; //this is the event weight, in pbarn, as given by Madgraph. --> Cross section is the sum over the events of the event weight
 	ndet=heprup.NDET;
 	for (particle = 0; particle < hepeup.NUP; ++particle) {
 
@@ -194,7 +194,7 @@ double AnalyseParticles(LHEF::Reader *reader) {
 //------------------------------------------------------------------------------
 
 int main(int argc, char *argv[]) {
-	char appName[] = "ExRootLHEFConverter";
+	char appName[] = "BDX-DetectorInteraction";
 
 	if (argc != 3) {
 		cout << " Usage: " << appName << " input_file" << " output_file"
@@ -217,7 +217,7 @@ int main(int argc, char *argv[]) {
 	ofstream outputFileStream(argv[2]);
 	
 	string outputFileEOTname(argv[2]);
-	outputFileEOTname+=".txt";
+	outputFileEOTname+=".summary.txt";
 	ofstream outputFileEOT(outputFileEOTname.c_str());
 	
 	// Create the Reader object:

@@ -20,7 +20,7 @@
 #*********************************************************************
 # Tag name for the run (one word)                                    *
 #*********************************************************************
-  'BDXLNF'     = run_tag ! name of the run 
+  'VALID'     = run_tag ! name of the run 
 #*********************************************************************
 # Run to generate the grid pack                                      *
 #*********************************************************************
@@ -29,13 +29,13 @@
 # Number of events and rnd seed                                      *
 #*********************************************************************
  10000 = nevents ! Number of unweighted events requested 
- 0  = iseed ! rnd seed (0=assigned automatically=default)) 
+ 0 = iseed ! rnd seed (0=assigned automatically=default)) 
 #*********************************************************************
 # Collider type and energy                                           *
 #*********************************************************************
  0 = lpp1 ! beam 1 type (0=NO PDF) 
  0 = lpp2 ! beam 2 type (0=NO PDF) 
- 1.1 = ebeam1 ! beam 1 energy in GeV 
+ 11 = ebeam1 ! beam 1 energy in GeV 
  25.1267 = ebeam2 ! beam 2 energy in GeV 
  0.000511 = mbeam1 ! beam 1 energy in GeV 
  25.1267 = mbeam2 ! beam 2 energy in GeV 
@@ -123,16 +123,15 @@
 # 
 #*******************                                                 
 #<BDX> DO NOT TOUCH THIS TAG
- 5 = ldet ! distance between beam-dump front face and fiducial volume front face in meters 
- 2.25 = fiduciallz ! fiducial volume length along z (along primary beam axis) in meters 
- 0.6 = fiducially ! fiducial volume length along y (vertical) in meters 
- 0.6 = fiduciallx ! fiducial volume length along x in meters 
- 2 = procid ! which process to simulate after MADGRAPH: 0 none, 1 proton elastic, 2 electron elastic, 3 inelastic 
- 1E-3 = pTHR ! The recoil proton kinetic energy threshold GeV. Used only in the second stage (after MADGRAPH) 
- 500E-3 = eTHR ! The recoil electron kinetic energy threshold GeV. Used only in the second stage (after MADGRAPH) 
- 1.35E24 = NDET ! The number of scatter centers per unit of volume in the detector (cm^-3), Nav/A * rho * Z (valid both for e- scattering and quasi-elastic) 
- 6.02E22 = NDUMP ! The number of scatter centers per unit of volume in the dump (cm^-3), Nav/A * rho (if we consider the interaction with the dump nuclei as a whole) 
- 8.9 = LDUMP ! The effective dump length (cm), usually 1 radiation lenght is ok 
+ 10 = ldet        ! distance between beam-dump front face and fiducial volume front face in meters 
+ 2 = fiduciallz   ! fiducial volume length along z (along primary beam axis) in meters 
+ 0.5 = fiducially ! fiducial volume length along y (vertical) in meters 
+ 0.5 = fiduciallx ! fiducial volume length along x in meters 
+ 2 = procid       ! which process to simulate after MADGRAPH: 0 none, 1 proton elastic, 2 electron elastic, 3 inelastic 
+ 1E-3 = pTHR      ! The recoil proton kinetic energy threshold GeV. Used only in the second stage (after MADGRAPH) 
+ 10E-3 = eTHR     ! The recoil electron kinetic energy threshold GeV. Used only in the second stage (after MADGRAPH) 
+ 1.35E24 = NDET   ! The number of scatter centers per unit of volume in the detector (cm^-3), Nav/A * rho * Z (valid both for e- scattering and quasi-elastic) 
+ 6.02E22 = NDUMP  ! The number of scatter centers per unit of volume in the dump (cm^-3), Nav/A * rho (if we consider the interaction with the dump nuclei as a whole) 8.9 = LDUMP      ! The effective dump length (cm), usually 1 radiation lenght is ok 
 #</BDX> DO NOT TOUCH THIS TAG
 #
 #*******************                                                 

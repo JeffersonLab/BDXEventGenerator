@@ -14,14 +14,14 @@ def is_number(s):
 
 
 def createRunCard(nevents,eBeam,ldet,fiduciallx,fiducially,fiduciallz,procid):
-        print "CREATE RUN CARD"
-	runcardIN = open("run/run_card_base.dat", "r")
-	runcardOUT = open("run/run_card.dat","w")
-	lines = runcardIN.readlines()
-	iii = 0
-	for line in lines:
-		x = line.split()
-		if (len(x)>0):
+    print "CREATE RUN CARD"
+    runcardIN = open("run/run_card_base.dat", "r")
+    runcardOUT = open("run/run_card.dat","w")
+    lines = runcardIN.readlines()
+    iii = 0
+    for line in lines:
+        x = line.split()
+        if (len(x)>0):
 			if (x[0][0]=="#"):
 				runcardOUT.write(line)
 			elif	(is_number(x[0])==False):
@@ -49,8 +49,8 @@ def createRunCard(nevents,eBeam,ldet,fiduciallx,fiducially,fiduciallz,procid):
                         else:
                             paramcardOUT.write(line)
                         
-	runcardIN.close()
-	runcardOUT.close()
+    runcardIN.close()
+    runcardOUT.close()
 
 
 def createParamCard(aMass,chiMass,epsilon,alphaD):

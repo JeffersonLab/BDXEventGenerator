@@ -76,7 +76,7 @@ double KinUtils::Er_chipXsection(double *x,double *par){
 	double p1p2=E0*Mn;
 	double p1k1=-0.5*(2*Mn*Mn-2*Mchi*Mchi-2*Er*Mn); //A.C. Ask Eder to check
 	double p1k2=Mn*(E0+Mn-Er);
-	double p2k1=MN*(E0+Mn-Er);
+	double p2k1=Mn*(E0+Mn-Er);
 	double p2k2=Er*Mn;
 	double k1k2=Mn*E0;
 
@@ -214,7 +214,7 @@ double KinUtils::doElasticRecoil(const TLorentzVector &chi,TLorentzVector &recoi
 	/*3: compute the momenta*/
 	Pchi=sqrt(Echi*Echi-Mchi*Mchi);
 	(procID==Proc_Pelastic ? Pr=sqrt(Er*Er-Mn*Mn) : Pr=sqrt(Er*Er-Me*Me));
-    /*4: compute the angle of the recoil nucleon wrt the initial chi momentum direction*/
+	/*4: compute the angle of the recoil nucleon wrt the initial chi momentum direction*/
 	if (procID==Proc_Pelastic){
 		ctheta_r = E0*E0- Echi*Echi + Er*Er-Mn*Mn;
 		ctheta_r /= 2*P0*Pr;
