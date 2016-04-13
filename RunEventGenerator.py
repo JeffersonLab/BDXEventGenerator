@@ -136,10 +136,10 @@ else:
         os.chdir(MadGraphLocation)
         this_run_name=run_name+"_"+str(ii)
         command = "./bin/generate_events_new 0 "+this_run_name;  
-        #os.system(command)  
+        os.system(command)  
         command = "cd Events ; gzip -d "+this_run_name+"_unweighted_events.lhe.gz"     #Ok, this seems stupid since I am using gzip -d after MadGraph did a gzip. But I do not want to touch madgraph  
         lhefname = MadGraphEventsLocation+"/"+this_run_name+"_unweighted_events.lhe"
-        #os.system(command)
+        os.system(command)
         
         os.chdir(EventGeneratorLocation)  
         os.remove(MadGraphCardsLocation+"/run_card.dat");
