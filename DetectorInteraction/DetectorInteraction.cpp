@@ -96,7 +96,6 @@ double AnalyseParticles(LHEF::Reader *reader) {
 	}
 	//now we know how many chis are inside (n_inside). Take 1 random.
 	if (n_inside!=0){
-		
 		std::random_shuffle (ii_inside.begin(), ii_inside.end() );
 		chi.SetPxPyPzE(hepeup.PUP[ii_inside.at(0)][0], hepeup.PUP[ii_inside.at(0)][1],
 		               hepeup.PUP[ii_inside.at(0)][2], hepeup.PUP[ii_inside.at(0)][3]);
@@ -127,8 +126,7 @@ double AnalyseParticles(LHEF::Reader *reader) {
 				L=m_utils->findInteractionPoint(chi, fiducialV, vin,vout, vhit);
 				L=L*100; //since the above returns it in m;
 				mL+=L;
-				w=w*L*heprup.NDET*sigma;
-				//w=sigma;
+				w=w*L*heprup.NDET*sigma;      /*Multiply the total cross-section * interaction length of this event * weight (pbarn) of this event*/
 				//add particles to hepeup
 				//final state chi
 				hepeup.IDUP.push_back(9611);
@@ -172,9 +170,6 @@ double AnalyseParticles(LHEF::Reader *reader) {
 		}
 
 	}
-	
-	
-
 	/*use the eventComments for the vertex location (in m, in the form x y z)
 	use the eventComments also to report the "production weight * interaction probability * dump luminosity".
 	In this way, the output file is self-consistent. To have the number of events per EOT, it is sufficient to sum these weights.

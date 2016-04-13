@@ -268,8 +268,8 @@ double KinUtils::doElasticRecoil(const TLorentzVector &chi,TLorentzVector &recoi
 
 /*Given the impact point on the front face (vin) and the incoming particle LorentzVector (chi for invisible decay, A' for visible),
  *  determine the interaction point within the fiducial volume and save it in vhit.
-Use a random distribution along the chi flight path, with uniform probability
-This function returns the length (in m) of the trajectory within the fiducial volume.
+    Use a random distribution along the chi flight path, with uniform probability
+    This function returns the length (in m) of the trajectory within the fiducial volume.
 */
 double KinUtils::findInteractionPoint(const TLorentzVector &chi,const TVector3 &fiducialV,const TVector3 &vin,TVector3 &vout,TVector3 &vhit){
 

@@ -193,7 +193,7 @@ public:
   double eTHR,pTHR;
 
   double NDET,NDUMP; //the number of targets per unit of volume (cm^-3) in the DETector and in the DUMP
-  double LDUMP; //the dump effective lenght (cm). Usually, 1 radiation lenght is ok.
+  double LDUMP;      //the dump radiation lenght (cm).
 
 };
 
