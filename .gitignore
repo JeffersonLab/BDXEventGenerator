@@ -31,7 +31,6 @@
 #AprimeAlAlpha1/SubProcesses/*
 *.html
 AprimeAlAlpha1/status
-*.dat
 #run
 run/*.txt
 
