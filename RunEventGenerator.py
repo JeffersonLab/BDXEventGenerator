@@ -30,6 +30,7 @@ DetectorInteractionEventsLocation = DetectorInteractionLocation+"/Events"
 os.chdir(EventGeneratorLocation)
 
 
+#no_showering=False
 
 parser = argparse.ArgumentParser(description='BDX event generator')
 
@@ -38,16 +39,18 @@ parser.add_argument('--run_name',type=str,required=True,help="Run name",default=
 parser.add_argument('--run_card',type=str, required=True,help='Run card to use')
 parser.add_argument('--param_card',type=str,help='Param card to use',default='Cards/param_card.dat');
 parser.add_argument('--proc_card',type=str,help='Proc card to use',default='Cards/proc_card.dat');
+parser.set_defaults(no_showering=False);
 
-
-parser.add_argument('--force_no_showering',type=bool,help='Ignore showering effects, no matter what is used in the run_card');
+parser.add_argument('--force_no_showering',dest='no_showering',action='store_true',help='Ignore showering effects, no matter what is used in the run_card');
 args = parser.parse_args()
+
+no_showering = args.no_showering;
 
 run_name = args.run_name;
 run_card_name=args.run_card;
 param_card_name=args.param_card;
 proc_card_name=args.proc_card;
-force_no_showering=args.force_no_showering;
+
 
 Energy = [];               #Array  of bin-center energy (GeV)
 nGeneratedEvents = [];     #Array  of number of generated events per energy bin
@@ -84,7 +87,7 @@ Emax = float(Emax)
 nbins= int(nbins)
 deltaE = (Emax-Emin)/(nbins);
 
-if (force_no_showering==True):
+if (no_showering==True):
     print bcolors.WARNING,"Overriding electron showering, not using it",bcolors.ENDC
     UseElectronShowering=False
 
