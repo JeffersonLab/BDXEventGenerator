@@ -39,11 +39,92 @@ KinUtils *m_utils;
 
 double msigma=0;
 double mL=0;
+
+/*These are here for writeLund*/
+TVector3 vin, vhit,vout, fiducialV;
+
 //---------------------------------------------------------------------------
 
+void writeLund(ofstream &ofile,LHEF::HEPEUP &data){
+	int nparticles=data.IDUP.size();
+	int pdg;
+	int isGood=0;
+	int status;
+	int idParticle,idInitialChi,idFinalChi;
+	double Px,Py,Pz,E,M,vx,vy,vz;
+
+	int charge;
+	/*We write to the lund file only the final state proton (or electron), the input chi, and the output chi.
+	 * The latter twos have status==0
+	 */
+	/*1: preliminary check to see we have all the particles*/
+	for (int ip=0;ip<nparticles;ip++){
+		pdg=data.IDUP[ip];
+		if ((pdg==92212)||(pdg==911)){
+			isGood+=1;
+			idParticle=ip;
+			if (pdg==911) charge=-1;
+			else if (pdg==92212) charge=1;
+
+			vx=vhit.X();
+			vy=vhit.Y();
+			vz=vhit.Z();
+
+		}
+		else if (pdg==9611){
+			isGood+=2;
+			idFinalChi=ip;
+		}
+		else if ((pdg==611)|(pdg==-611)){
+			status=data.ISTUP[ip];
+			if (status==11){
+				isGood+=4;
+				idInitialChi=ip;
+			}
+		}
+	}
+
+	if (isGood!=7){
+		cout<<isGood<<" BBB "<<endl;
+		return; /*For same reasons, in this events not all the particles where there??*/
+	}
+	else{
+		ofile<<"3 0 0 0 0 0 0 0 0 0"<<endl; //lund header. 10 numbers, first is number of particles (the only relevant!)
+
+		/*The initial state chi*/
+		Px=data.PUP[idInitialChi][0];
+		Py=data.PUP[idInitialChi][1];
+		Pz=data.PUP[idInitialChi][2];
+		E=data.PUP[idInitialChi][3];
+		M=data.PUP[idInitialChi][4];
+		ofile<<"1 0 0 611 0 0 "<<Px<<" "<<Py<<" "<<Pz<<" "<<E<<" "<<M<<" "<<vx<<" "<<vy<<" "<<vz<<endl;
+
+
+		/*The final state chi*/
+		Px=data.PUP[idFinalChi][0];
+		Py=data.PUP[idFinalChi][1];
+		Pz=data.PUP[idFinalChi][2];
+		E=data.PUP[idFinalChi][3];
+		M=data.PUP[idFinalChi][4];
+		ofile<<"2 0 0 9611 0 0 "<<Px<<" "<<Py<<" "<<Pz<<" "<<E<<" "<<M<<" "<<vx<<" "<<vy<<" "<<vz<<endl;
+
+		/*The final state SM particle - e- or P!*/
+		Px=data.PUP[idParticle][0];
+		Py=data.PUP[idParticle][1];
+		Pz=data.PUP[idParticle][2];
+		E=data.PUP[idParticle][3];
+		M=data.PUP[idParticle][4];
+		pdg=data.IDUP[idParticle];
+		if (pdg==911) pdg=11;
+		else if (pdg=92212) pdg=92212;
+		ofile<<"3 1 "<<charge<<" "<<pdg<<" 0 0 "<<Px<<" "<<Py<<" "<<Pz<<" "<<E<<" "<<M<<" "<<vx<<" "<<vy<<" "<<vz<<endl;
+	}
+}
+
+
 double AnalyseParticles(LHEF::Reader *reader) {
-	LHEF::HEPEUP &hepeup = reader->hepeup;
-	const LHEF::HEPRUP &heprup = reader->heprup;
+	LHEF::HEPEUP &hepeup = reader->hepeup;              /*This is a reference!*/
+	const LHEF::HEPRUP &heprup = reader->heprup; 		/*This is a reference!*/
 	long PID;
 	Int_t particle, n_inside;
 
@@ -51,7 +132,7 @@ double AnalyseParticles(LHEF::Reader *reader) {
 	Double_t w,L,ndet,sigma;
 	Double_t xthetaxfmin, xthetaxfmax, xthetayfmin, xthetayfmax;
 	TLorentzVector chi, recoil_chi, recoil_elastic;
-	TVector3 vin, vhit,vout, fiducialV;
+
 	vector<double> tmp_v;
 	vector<int> ii_inside;
 	n_inside = 0;
@@ -77,8 +158,7 @@ double AnalyseParticles(LHEF::Reader *reader) {
 			continue; //We are not interested in other particles. Go on
 		}
 		M = hepeup.PUP[particle][4];
-		chi.SetPxPyPzE(hepeup.PUP[particle][0], hepeup.PUP[particle][1],
-				hepeup.PUP[particle][2], hepeup.PUP[particle][3]);
+		chi.SetPxPyPzE(hepeup.PUP[particle][0], hepeup.PUP[particle][1],hepeup.PUP[particle][2], hepeup.PUP[particle][3]);
 		cosTheta = TMath::Abs(chi.CosTheta());
 		signPz = (chi.Pz() >= 0.0) ? 1.0 : -1.0;
 		/* I need now to apply the fiducial cuts.
@@ -88,7 +168,7 @@ double AnalyseParticles(LHEF::Reader *reader) {
 			n_inside++;
 			ii_inside.push_back(particle);
 			hepeup.ISTUP[particle] = 1;
-		    }
+		}
 		else { //for now, just mark this chi out of the fiducial volume with a status "0"
 			hepeup.ISTUP[particle] = 0;
 			continue;
@@ -97,12 +177,10 @@ double AnalyseParticles(LHEF::Reader *reader) {
 	//now we know how many chis are inside (n_inside). Take 1 random.
 	if (n_inside!=0){
 		std::random_shuffle (ii_inside.begin(), ii_inside.end() );
-		chi.SetPxPyPzE(hepeup.PUP[ii_inside.at(0)][0], hepeup.PUP[ii_inside.at(0)][1],
-		               hepeup.PUP[ii_inside.at(0)][2], hepeup.PUP[ii_inside.at(0)][3]);
-		
-		vin.SetXYZ((chi.Px() / chi.Pz()) * heprup.ldet,
-				(chi.Py() / chi.Pz()) * heprup.ldet, heprup.ldet); //the chi hit position in the fiducial volume front-face
-		
+		chi.SetPxPyPzE(hepeup.PUP[ii_inside.at(0)][0], hepeup.PUP[ii_inside.at(0)][1],hepeup.PUP[ii_inside.at(0)][2],hepeup.PUP[ii_inside.at(0)][3]);
+
+		vin.SetXYZ((chi.Px() / chi.Pz()) * heprup.ldet, (chi.Py() / chi.Pz()) * heprup.ldet, heprup.ldet); //the chi hit position in the fiducial volume front-face
+
 		//mark this chi with status "11":
 		hepeup.ISTUP[ii_inside.at(0)]=11;
 
@@ -116,7 +194,7 @@ double AnalyseParticles(LHEF::Reader *reader) {
 		case Proc_Eelastic: //electron elastic
 			sigma=m_utils->doElasticRecoil(chi, recoil_elastic, recoil_chi,heprup.procid);		
 			msigma+=sigma;
-	
+
 			if (sigma==0){
 				w=0;
 				hepeup.ISTUP[ii_inside.at(0)]=-11; //mark this negative
@@ -173,11 +251,11 @@ double AnalyseParticles(LHEF::Reader *reader) {
 	/*use the eventComments for the vertex location (in m, in the form x y z)
 	use the eventComments also to report the "production weight * interaction probability * dump luminosity".
 	In this way, the output file is self-consistent. To have the number of events per EOT, it is sufficient to sum these weights.
-	*/
+	 */
 	w=w*n_inside*1E-36;//by multiplying per n_inside, automatically I correct for the fact I have two chis, potentially both in the detector.
 	//the factor 1E-36 is the conversion pbarn ---> cm2
 	w*=heprup.NDUMP*heprup.LDUMP;
-	
+
 	reader->eventComments  = Form("IN: %f %f %f \n",vin.X(),vin.Y(),vin.Z());
 	reader->eventComments += Form("OUT: %f %f %f \n", vout.X(), vout.Y(), vout.Z());
 	reader->eventComments += Form("HIT: %f %f %f \n", vhit.X(), vhit.Y(), vhit.Z());
@@ -189,13 +267,13 @@ double AnalyseParticles(LHEF::Reader *reader) {
 //------------------------------------------------------------------------------
 
 int main(int argc, char *argv[]) {
-	char appName[] = "BDX-DetectorInteraction";
+	char appName[] = "DetectorInteraction.exe";
 
 	if (argc != 3) {
-		cout << " Usage: " << appName << " input_file" << " output_file"
+		cout << " Usage: " << appName << " input_file" << " output_file_name"
 				<< endl;
-		cout << " input_file - input file in LHEF format," << endl;
-		cout << " output_file - output file in LHEF format." << endl;
+		cout << " input_file - input file (LHEF format)" << endl;
+		cout << " output_file - output file name. Will create ouput_file.lhe and ouput_file.lund" << endl;
 		cout << " output_file is also used to write the number of events per EOT, as output_file.txt"<<endl;
 		return 1;
 	}
@@ -208,17 +286,27 @@ int main(int argc, char *argv[]) {
 	double thisW;
 	int Nin=0;
 	// Open a stream connected to an event file:
-	ifstream inputFileStream(argv[1]);
-	ofstream outputFileStream(argv[2]);
-	
-	string outputFileEOTname(argv[2]);
-	outputFileEOTname+=".summary.txt";
-	ofstream outputFileEOT(outputFileEOTname.c_str());
-	
+	string outputFileEOTName(argv[2]);
+	outputFileEOTName+=".summary.txt";
+	string outputFileLundName(argv[2]);
+	outputFileLundName+=".lund";
+	string outputFileLHEName(argv[2]);
+	outputFileLHEName+=".lhe";
+
+	cout<<"Out files: "<<endl;
+	cout<<"LUND: "<<outputFileLundName<<endl;
+	cout<<"LHE : "<<outputFileLHEName<<endl;
+	cout<<"SUM : "<<outputFileEOTName<<endl;
+	ifstream inputFile(argv[1]);
+
+	ofstream outputFileLHE(outputFileLHEName.c_str());
+	ofstream outputFileLund(outputFileLundName.c_str());
+	ofstream outputFileEOT(outputFileEOTName.c_str());
+
 	// Create the Reader object:
-	LHEF::Reader *inputReader = new LHEF::Reader(inputFileStream); //this triggers also "init"
+	LHEF::Reader *inputReader = new LHEF::Reader(inputFile); //this triggers also "init"
 	// Create the Writer object:
-	LHEF::Writer *outputWriter = new LHEF::Writer(outputFileStream);
+	LHEF::Writer *outputWriter = new LHEF::Writer(outputFileLHE);
 	outputWriter->heprup = inputReader->heprup;
 	outputWriter->headerStream.str(inputReader->headerBlock);
 	outputWriter->init();
@@ -229,7 +317,7 @@ int main(int argc, char *argv[]) {
 
 	//note that alphaEM is saved in the event header (although we are not going to touch this at all!).
 	//Therefore, I will set it in the first event in the  loop.
-	m_utils=new KinUtils(inputReader->heprup.EBEAM,inputReader->heprup.FMASS,inputReader->heprup.APMASS,0,inputReader->heprup.EPSILON,inputReader->heprup.ALPHAD,inputReader->heprup.eTHR,inputReader->heprup.pTHR,inputReader->heprup.SEED);
+	m_utils=new KinUtils(inputReader->heprup.EBEAM,inputReader->heprup.FMASS,inputReader->heprup.APMASS,0,inputReader->heprup.EPSILON,inputReader->heprup.ALPHAD,inputReader->heprup.eTHR,inputReader->heprup.pTHR,inputReader->heprup.pBINDING,inputReader->heprup.SEED);
 
 
 	cout << "** Calculating number of events to process. Please wait..."
@@ -249,34 +337,38 @@ int main(int argc, char *argv[]) {
 				m_utils->setAlpha(inputReader->hepeup.AQEDUP); //set alpha_EM.
 				gRandom->SetSeed(inputReader->heprup.SEED);
 				std::srand(inputReader->heprup.SEED);
-				
+
 			}
 			//This is the function that triggers the interaction in the fiducial volume.
 			if (inputReader->heprup.procid)
 				thisW=AnalyseParticles(inputReader); //this also returns the "corrected" event weight (production weight * interaction probability * dump luminosity)
-				W+=thisW;
-				if (thisW>0){
-					Nin++;
-				}
-				outputWriter->hepeup = inputReader->hepeup;
-				outputWriter->eventStream.str(inputReader->eventComments);
-				outputWriter->writeEvent();
-				progressBar.Update(entry);
-				++entry;
+			W+=thisW;
+			if (thisW>0){
+				Nin++;
+			}
+			outputWriter->hepeup = inputReader->hepeup;
+			outputWriter->eventStream.str(inputReader->eventComments);
+			outputWriter->writeEvent();
+			/*Now write the LUND block*/
+			if (thisW>0) writeLund(outputFileLund,inputReader->hepeup);
+
+			progressBar.Update(entry);
+			++entry;
 		}
 		progressBar.Finish();
 	}
 	cout<< " Events per EOT: "<<W<<endl;
 	cout << "** Exiting..." << endl;
-	
+
 	cout<< " mean sigma: "<<msigma/Nin<<endl;
 	cout<< " mean L: "<<mL/Nin<<endl;
+	outputFileEOT<<"Number of events per EOT: "<<endl;
 	outputFileEOT<<W<<endl;
 	outputFileEOT.close();
-	
+
 	delete inputReader;
 	delete outputWriter;
-	
+
 
 }
 

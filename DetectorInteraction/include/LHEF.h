@@ -29,171 +29,182 @@ class HEPRUP {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * Default constructor.
-   */
-  HEPRUP()
-    : IDWTUP(0), NPRUP(0) {}
+	/** @name Standard constructors and destructors. */
+	//@{
+	/**
+	 * Default constructor.
+	 */
+	HEPRUP()
+: IDWTUP(0), NPRUP(0) {}
 
-  /**
-   * Copy-constructor.
-   */
-  HEPRUP(const HEPRUP & x)
-    : IDBMUP(x.IDBMUP), EBMUP(x.EBMUP),
-      PDFGUP(x.PDFGUP), PDFSUP(x.PDFSUP), IDWTUP(x.IDWTUP),
-      NPRUP(x.NPRUP), XSECUP(x.XSECUP), XERRUP(x.XERRUP),
-      XMAXUP(x.XMAXUP), LPRUP(x.LPRUP),
-      procid(x.procid), lx(x.lx), ly(x.ly), lz(x.lz),
-      APMASS(x.APMASS),FMASS(x.FMASS),EBEAM(x.EBEAM),
-      SEED(x.SEED),eTHR(x.eTHR),pTHR(x.pTHR),
-      ALPHAD(x.ALPHAD),EPSILON(x.EPSILON),
-      NDET(x.NDET),NDUMP(x.NDUMP),LDUMP(x.LDUMP)
-      {}
+	/**
+	 * Copy-constructor.
+	 */
+	HEPRUP(const HEPRUP & x)
+	: IDBMUP(x.IDBMUP), EBMUP(x.EBMUP),
+	  PDFGUP(x.PDFGUP), PDFSUP(x.PDFSUP), IDWTUP(x.IDWTUP),
+	  NPRUP(x.NPRUP), XSECUP(x.XSECUP), XERRUP(x.XERRUP),
+	  XMAXUP(x.XMAXUP), LPRUP(x.LPRUP),
+	  procid(x.procid), lx(x.lx), ly(x.ly), lz(x.lz),
+	  APMASS(x.APMASS),FMASS(x.FMASS),EBEAM(x.EBEAM),
+	  SEED(x.SEED),eTHR(x.eTHR),pTHR(x.pTHR),pBINDING(x.pBINDING),
+	  ALPHAD(x.ALPHAD),EPSILON(x.EPSILON),
+	  MCcenterX(x.MCcenterX), MCcenterY(x.MCcenterY),MCcenterZ(x.MCcenterZ),
+	  NDET(x.NDET),NDUMP(x.NDUMP),LDUMP(x.LDUMP)
+	{}
 
 
-  /**
-   * Assignment operator.
-   */
-  HEPRUP & operator=(const HEPRUP & x) {
-    IDBMUP = x.IDBMUP;
-    EBMUP = x.EBMUP;
-    PDFGUP = x.PDFGUP;
-    PDFSUP = x.PDFSUP;
-    IDWTUP = x.IDWTUP;
-    NPRUP = x.NPRUP;
-    XSECUP = x.XSECUP;
-    XERRUP = x.XERRUP;
-    XMAXUP = x.XMAXUP;
-    LPRUP = x.LPRUP;
-    procid = x.procid;
-    lx = x.lx;
-    ly = x.ly;
-    lz = x.lz;
-    APMASS = x.APMASS;
-    FMASS  = x.FMASS;
-    ALPHAD=x.ALPHAD;
-    EPSILON=x.EPSILON;
-    EBEAM = x.EBEAM;
-    SEED=x.SEED;
-    pTHR=x.pTHR;
-    eTHR=x.eTHR;
-    NDET=x.NDET;
-    NDUMP=x.NDUMP;
-    LDUMP=x.LDUMP;
-    return *this;
-  }
+	/**
+	 * Assignment operator.
+	 */
+	HEPRUP & operator=(const HEPRUP & x) {
+		IDBMUP = x.IDBMUP;
+		EBMUP = x.EBMUP;
+		PDFGUP = x.PDFGUP;
+		PDFSUP = x.PDFSUP;
+		IDWTUP = x.IDWTUP;
+		NPRUP = x.NPRUP;
+		XSECUP = x.XSECUP;
+		XERRUP = x.XERRUP;
+		XMAXUP = x.XMAXUP;
+		LPRUP = x.LPRUP;
+		procid = x.procid;
+		lx = x.lx;
+		ly = x.ly;
+		lz = x.lz;
+		MCcenterX = x.MCcenterX;
+		MCcenterY = x.MCcenterY;
+		MCcenterZ = x.MCcenterZ;
+		APMASS = x.APMASS;
+		FMASS  = x.FMASS;
+		ALPHAD=x.ALPHAD;
+		EPSILON=x.EPSILON;
+		EBEAM = x.EBEAM;
+		SEED=x.SEED;
+		pTHR=x.pTHR;
+		pBINDING=x.pBINDING;
+		eTHR=x.eTHR;
+		NDET=x.NDET;
+		NDUMP=x.NDUMP;
+		LDUMP=x.LDUMP;
+		return *this;
+	}
 
-  /**
-   * Destructor.
-   */
-  ~HEPRUP() {}
-  //@}
-
-public:
-
-  /**
-   * Set the NPRUP variable, corresponding to the number of
-   * sub-processes, to \a nrup, and resize all relevant vectors
-   * accordingly.
-   */
-  void resize(int nrup) {
-    NPRUP = nrup;
-    resize();
-  }
-
-  /**
-   * Assuming the NPRUP variable, corresponding to the number of
-   * sub-processes, is correctly set, resize the relevant vectors
-   * accordingly.
-   */
-  void resize() {
-    XSECUP.resize(NPRUP);
-    XERRUP.resize(NPRUP);
-    XMAXUP.resize(NPRUP);
-    LPRUP.resize(NPRUP);
-  }
+	/**
+	 * Destructor.
+	 */
+	~HEPRUP() {}
+	//@}
 
 public:
 
-  /**
-   * PDG id's of beam particles. (first/second is in +/-z direction).
-   */
-  std::pair<long,long> IDBMUP;
+	/**
+	 * Set the NPRUP variable, corresponding to the number of
+	 * sub-processes, to \a nrup, and resize all relevant vectors
+	 * accordingly.
+	 */
+	void resize(int nrup) {
+		NPRUP = nrup;
+		resize();
+	}
 
-  /**
-   * Energy of beam particles given in GeV.
-   */
-  std::pair<double,double> EBMUP;
+	/**
+	 * Assuming the NPRUP variable, corresponding to the number of
+	 * sub-processes, is correctly set, resize the relevant vectors
+	 * accordingly.
+	 */
+	void resize() {
+		XSECUP.resize(NPRUP);
+		XERRUP.resize(NPRUP);
+		XMAXUP.resize(NPRUP);
+		LPRUP.resize(NPRUP);
+	}
 
-  /**
-   * The author group for the PDF used for the beams according to the
-   * PDFLib specification.
-   */
-  std::pair<int,int> PDFGUP;
+public:
 
-  /**
-   * The id number the PDF used for the beams according to the
-   * PDFLib specification.
-   */
-  std::pair<int,int> PDFSUP;
+	/**
+	 * PDG id's of beam particles. (first/second is in +/-z direction).
+	 */
+	std::pair<long,long> IDBMUP;
 
-  /**
-   * Master switch indicating how the ME generator envisages the
-   * events weights should be interpreted according to the Les Houches
-   * accord.
-   */
-  int IDWTUP;
+	/**
+	 * Energy of beam particles given in GeV.
+	 */
+	std::pair<double,double> EBMUP;
 
-  /**
-   * The number of different subprocesses in this file.
-   */
-  int NPRUP;
+	/**
+	 * The author group for the PDF used for the beams according to the
+	 * PDFLib specification.
+	 */
+	std::pair<int,int> PDFGUP;
 
-  /**
-   * The cross sections for the different subprocesses in pb.
-   */
-  std::vector<double> XSECUP;
+	/**
+	 * The id number the PDF used for the beams according to the
+	 * PDFLib specification.
+	 */
+	std::pair<int,int> PDFSUP;
 
-  /**
-   * The statistical error in the cross sections for the different
-   * subprocesses in pb.
-   */
-  std::vector<double> XERRUP;
+	/**
+	 * Master switch indicating how the ME generator envisages the
+	 * events weights should be interpreted according to the Les Houches
+	 * accord.
+	 */
+	int IDWTUP;
 
-  /**
-   * The maximum event weights (in HEPEUP::XWGTUP) for different
-   * subprocesses.
-   */
-  std::vector<double> XMAXUP;
+	/**
+	 * The number of different subprocesses in this file.
+	 */
+	int NPRUP;
 
-  /**
-   * The subprocess code for the different subprocesses.
-   */
-  std::vector<int> LPRUP;
+	/**
+	 * The cross sections for the different subprocesses in pb.
+	 */
+	std::vector<double> XSECUP;
 
-  /**
+	/**
+	 * The statistical error in the cross sections for the different
+	 * subprocesses in pb.
+	 */
+	std::vector<double> XERRUP;
+
+	/**
+	 * The maximum event weights (in HEPEUP::XWGTUP) for different
+	 * subprocesses.
+	 */
+	std::vector<double> XMAXUP;
+
+	/**
+	 * The subprocess code for the different subprocesses.
+	 */
+	std::vector<int> LPRUP;
+
+	/**
   A. Celentano: insert here the code to store the settings for BDX, i.e. the fiducial volume and the process to simulate
-  */
-  int procid;
-  double ldet;
-  double lx;
-  double ly;
-  double lz;	
-  // the Aprime and the chi mass. We need them before starting to read events!
-  double APMASS; //GeV
-  double FMASS;  //GeV
-  double EBEAM; //GeV
-  //the random generator SEED
-  int SEED;
-  //alpha-dark and epsilon
-  double ALPHAD,EPSILON;
-  //the thresholds (GeV) for the scattered particles kinetic energies
-  double eTHR,pTHR;
+	 */
+	int procid;
+	double ldet; //distance in m between dump front-face and detector front face (m)
+	double lx;   //fiducial volume length along X (m)
+	double ly;
+	double lz;
 
-  double NDET,NDUMP; //the number of targets per unit of volume (cm^-3) in the DETector and in the DUMP
-  double LDUMP;      //the dump radiation lenght (cm).
+	double MCcenterX; //fiducial volum front face center in GEMC coordinates (m);
+	double MCcenterY;
+	double MCcenterZ;
+
+	// the Aprime and the chi mass. We need them before starting to read events!
+	double APMASS; //GeV
+	double FMASS;  //GeV
+	double EBEAM; //GeV
+	//the random generator SEED
+	int SEED;
+	//alpha-dark and epsilon
+	double ALPHAD,EPSILON;
+	//the thresholds (GeV) for the scattered particles kinetic energies
+	double eTHR,pTHR;
+	//the proton binding energy (GeV)
+	double pBINDING;
+	double NDET,NDUMP; //the number of targets per unit of volume (cm^-3) in the DETector and in the DUMP
+	double LDUMP;      //the dump radiation lenght (cm).
 
 };
 
@@ -210,160 +221,160 @@ class HEPEUP {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * Default constructor.
-   */
-  HEPEUP()
-    : NUP(0), IDPRUP(0), XWGTUP(0.0), XPDWUP(0.0, 0.0),
-      SCALUP(0.0), AQEDUP(0.0), AQCDUP(0.0) {}
+	/** @name Standard constructors and destructors. */
+	//@{
+	/**
+	 * Default constructor.
+	 */
+	HEPEUP()
+: NUP(0), IDPRUP(0), XWGTUP(0.0), XPDWUP(0.0, 0.0),
+  SCALUP(0.0), AQEDUP(0.0), AQCDUP(0.0) {}
 
-  /**
-   * Copy-constructor.
-   */
-  HEPEUP(const HEPEUP & x)
-    : NUP(x.NUP), IDPRUP(x.IDPRUP), XWGTUP(x.XWGTUP), XPDWUP(x.XPDWUP),
-      SCALUP(x.SCALUP), AQEDUP(x.AQEDUP), AQCDUP(x.AQCDUP), IDUP(x.IDUP),
-      ISTUP(x.ISTUP), MOTHUP(x.MOTHUP), ICOLUP(x.ICOLUP),
-      PUP(x.PUP), VTIMUP(x.VTIMUP), SPINUP(x.SPINUP) {}
-  
-  /**
-   * Assignment operator.
-   */
-  HEPEUP & operator=(const HEPEUP & x) {
-    NUP = x.NUP;
-    IDPRUP = x.IDPRUP;
-    XWGTUP = x.XWGTUP;
-    XPDWUP = x.XPDWUP;
-    SCALUP = x.SCALUP;
-    AQEDUP = x.AQEDUP;
-    AQCDUP = x.AQCDUP;
-    IDUP = x.IDUP;
-    ISTUP = x.ISTUP;
-    MOTHUP = x.MOTHUP;
-    ICOLUP = x.ICOLUP;
-    PUP = x.PUP;
-    VTIMUP = x.VTIMUP;
-    SPINUP = x.SPINUP;
-    return *this;
-  }
+	/**
+	 * Copy-constructor.
+	 */
+	HEPEUP(const HEPEUP & x)
+	: NUP(x.NUP), IDPRUP(x.IDPRUP), XWGTUP(x.XWGTUP), XPDWUP(x.XPDWUP),
+	  SCALUP(x.SCALUP), AQEDUP(x.AQEDUP), AQCDUP(x.AQCDUP), IDUP(x.IDUP),
+	  ISTUP(x.ISTUP), MOTHUP(x.MOTHUP), ICOLUP(x.ICOLUP),
+	  PUP(x.PUP), VTIMUP(x.VTIMUP), SPINUP(x.SPINUP) {}
+
+	/**
+	 * Assignment operator.
+	 */
+	HEPEUP & operator=(const HEPEUP & x) {
+		NUP = x.NUP;
+		IDPRUP = x.IDPRUP;
+		XWGTUP = x.XWGTUP;
+		XPDWUP = x.XPDWUP;
+		SCALUP = x.SCALUP;
+		AQEDUP = x.AQEDUP;
+		AQCDUP = x.AQCDUP;
+		IDUP = x.IDUP;
+		ISTUP = x.ISTUP;
+		MOTHUP = x.MOTHUP;
+		ICOLUP = x.ICOLUP;
+		PUP = x.PUP;
+		VTIMUP = x.VTIMUP;
+		SPINUP = x.SPINUP;
+		return *this;
+	}
 
 
-  /**
-   * Destructor.
-   */
-  ~HEPEUP() {};
-  //@}
-
-public:
-
-  /**
-   * Set the NUP variable, corresponding to the number of particles in
-   * the current event, to \a nup, and resize all relevant vectors
-   * accordingly.
-   */
-  void resize(int nup) {
-    NUP = nup;
-    resize();
-  }
-
-  /**
-   * Assuming the NUP variable, corresponding to the number of
-   * particles in the current event, is correctly set, resize the
-   * relevant vectors accordingly.
-   */
-  void resize() {
-    IDUP.resize(NUP);
-    ISTUP.resize(NUP);
-    MOTHUP.resize(NUP);
-    ICOLUP.resize(NUP);
-    PUP.resize(NUP, std::vector<double>(5));
-    VTIMUP.resize(NUP);
-    SPINUP.resize(NUP);
-  }
+	/**
+	 * Destructor.
+	 */
+	~HEPEUP() {};
+	//@}
 
 public:
 
-  /**
-   * The number of particle entries in the current event.
-   */
-  int NUP;
+	/**
+	 * Set the NUP variable, corresponding to the number of particles in
+	 * the current event, to \a nup, and resize all relevant vectors
+	 * accordingly.
+	 */
+	void resize(int nup) {
+		NUP = nup;
+		resize();
+	}
 
-  /**
-   * The subprocess code for this event (as given in LPRUP).
-   */
-  int IDPRUP;
+	/**
+	 * Assuming the NUP variable, corresponding to the number of
+	 * particles in the current event, is correctly set, resize the
+	 * relevant vectors accordingly.
+	 */
+	void resize() {
+		IDUP.resize(NUP);
+		ISTUP.resize(NUP);
+		MOTHUP.resize(NUP);
+		ICOLUP.resize(NUP);
+		PUP.resize(NUP, std::vector<double>(5));
+		VTIMUP.resize(NUP);
+		SPINUP.resize(NUP);
+	}
 
-  /**
-   * The weight for this event.
-   */
-  double XWGTUP;
+public:
 
-  /**
-   * The PDF weights for the two incoming partons. Note that this
-   * variable is not present in the current LesHouches accord
-   * (<A HREF="http://arxiv.org/abs/hep-ph/0109068">hep-ph/0109068</A>),
-   * hopefully it will be present in a future accord.
-   */
-  std::pair<double,double> XPDWUP;
+	/**
+	 * The number of particle entries in the current event.
+	 */
+	int NUP;
 
-  /**
-   * The scale in GeV used in the calculation of the PDF's in this
-   * event.
-   */
-  double SCALUP;
+	/**
+	 * The subprocess code for this event (as given in LPRUP).
+	 */
+	int IDPRUP;
 
-  /**
-   * The value of the QED coupling used in this event.
-   */
-  double AQEDUP;
+	/**
+	 * The weight for this event.
+	 */
+	double XWGTUP;
 
-  /**
-   * The value of the QCD coupling used in this event.
-   */
-  double AQCDUP;
+	/**
+	 * The PDF weights for the two incoming partons. Note that this
+	 * variable is not present in the current LesHouches accord
+	 * (<A HREF="http://arxiv.org/abs/hep-ph/0109068">hep-ph/0109068</A>),
+	 * hopefully it will be present in a future accord.
+	 */
+	std::pair<double,double> XPDWUP;
 
-  /**
-   * The PDG id's for the particle entries in this event.
-   */
-  std::vector<long> IDUP;
+	/**
+	 * The scale in GeV used in the calculation of the PDF's in this
+	 * event.
+	 */
+	double SCALUP;
 
-  /**
-   * The status codes for the particle entries in this event.
-   */
-  std::vector<int> ISTUP;
+	/**
+	 * The value of the QED coupling used in this event.
+	 */
+	double AQEDUP;
 
-  /**
-   * Indices for the first and last mother for the particle entries in
-   * this event.
-   */
-  std::vector< std::pair<int,int> > MOTHUP;
+	/**
+	 * The value of the QCD coupling used in this event.
+	 */
+	double AQCDUP;
 
-  /**
-   * The colour-line indices (first(second) is (anti)colour) for the
-   * particle entries in this event.
-   */
-  std::vector< std::pair<int,int> > ICOLUP;
+	/**
+	 * The PDG id's for the particle entries in this event.
+	 */
+	std::vector<long> IDUP;
 
-  /**
-   * Lab frame momentum (Px, Py, Pz, E and M in GeV) for the particle
-   * entries in this event.
-   */
-  std::vector< std::vector<double> > PUP;
+	/**
+	 * The status codes for the particle entries in this event.
+	 */
+	std::vector<int> ISTUP;
 
-  /**
-   * Invariant lifetime (c*tau, distance from production to decay in
-   * mm) for the particle entries in this event.
-   */
-  std::vector<double> VTIMUP;
+	/**
+	 * Indices for the first and last mother for the particle entries in
+	 * this event.
+	 */
+	std::vector< std::pair<int,int> > MOTHUP;
 
-  /**
-   * Spin info for the particle entries in this event given as the
-   * cosine of the angle between the spin vector of a particle and the
-   * 3-momentum of the decaying particle, specified in the lab frame.
-   */
-  std::vector<double> SPINUP;
+	/**
+	 * The colour-line indices (first(second) is (anti)colour) for the
+	 * particle entries in this event.
+	 */
+	std::vector< std::pair<int,int> > ICOLUP;
+
+	/**
+	 * Lab frame momentum (Px, Py, Pz, E and M in GeV) for the particle
+	 * entries in this event.
+	 */
+	std::vector< std::vector<double> > PUP;
+
+	/**
+	 * Invariant lifetime (c*tau, distance from production to decay in
+	 * mm) for the particle entries in this event.
+	 */
+	std::vector<double> VTIMUP;
+
+	/**
+	 * Spin info for the particle entries in this event given as the
+	 * cosine of the angle between the spin vector of a particle and the
+	 * 3-momentum of the decaying particle, specified in the lab frame.
+	 */
+	std::vector<double> SPINUP;
 
 };
 
@@ -387,403 +398,436 @@ class Reader {
 
 public:
 
-  /**
-   * Initialize the Reader with a stream from which to read an event
-   * file. After the constructor is called the whole header block
-   * including the enclosing lines with tags are available in the
-   * public headerBlock member variable. Also the information from the
-   * init block is available in the heprup member variable and any
-   * additional comment lines are available in initComments.
-   *
-   * @param is the stream to read from.
-   */
-  Reader(std::istream & is)
-    : file(is) {
-    init();
-  }
+	/**
+	 * Initialize the Reader with a stream from which to read an event
+	 * file. After the constructor is called the whole header block
+	 * including the enclosing lines with tags are available in the
+	 * public headerBlock member variable. Also the information from the
+	 * init block is available in the heprup member variable and any
+	 * additional comment lines are available in initComments.
+	 *
+	 * @param is the stream to read from.
+	 */
+	Reader(std::istream & is)
+: file(is) {
+		init();
+	}
 
-  /**
-   * Initialize the Reader with a filename from which to read an event
-   * file. After the constructor is called the whole header block
-   * including the enclosing lines with tags are available in the
-   * public headerBlock member variable. Also the information from the
-   * init block is available in the heprup member variable and any
-   * additional comment lines are available in initComments.
-   *
-   * @param filename the name of the file to read from.
-   */
-  Reader(std::string filename)
-    : intstream(filename.c_str()), file(intstream) {
-    init();
-  }
+	/**
+	 * Initialize the Reader with a filename from which to read an event
+	 * file. After the constructor is called the whole header block
+	 * including the enclosing lines with tags are available in the
+	 * public headerBlock member variable. Also the information from the
+	 * init block is available in the heprup member variable and any
+	 * additional comment lines are available in initComments.
+	 *
+	 * @param filename the name of the file to read from.
+	 */
+	Reader(std::string filename)
+	: intstream(filename.c_str()), file(intstream) {
+		init();
+	}
 
 private:
 
-  /**
-   * Used internally in the constructors to read header and init
-   * blocks.
-   */
-  void init() {
+	/**
+	 * Used internally in the constructors to read header and init
+	 * blocks.
+	 */
+	void init() {
 
-  heprup.ldet=-1;
-  heprup.lx=-1;
-  heprup.ly=-1;
-  heprup.lz=-1;
-  heprup.procid=0;
-   	  
-  bool readingHeader = false;
-  bool readingInit = false;
-  bool readingBDX = false;
-	  
-  std::string word;
-  std::stringstream stream;
-	  
-    // Make sure we are reading a LHEF file:
-    getline();
-    if ( currentLine.find("<LesHouchesEvents" ) == std::string::npos )
-      throw std::runtime_error
-	("Tried to read a file which does not start with the "
-	 "LesHouchesEvents tag.");
-    if ( currentLine.find("version=\"1.0\"" ) == std::string::npos )
-      throw std::runtime_error
-	("Tried to read a LesHouchesEvents file which is not version 1.0.");
+		heprup.ldet=-1;
+		heprup.lx=-1;
+		heprup.ly=-1;
+		heprup.lz=-1;
+		heprup.MCcenterX=0;
+		heprup.MCcenterY=0;
+		heprup.MCcenterZ=0;
+		heprup.procid=0;
 
-    // Loop over all lines until we hit the </init> tag.
-    // Here we have info about ALL the cuts!
-    while ( getline() && currentLine.find("</init>") == std::string::npos ) {
-      if ( currentLine.find("<header") != std::string::npos ) {
-	// We have hit the header block, so we should dump this all
-	// following lines to headerBlock until we hit the end of it.
-	readingHeader = true;
-	headerBlock = currentLine + "\n";
-      }
-	    else if (readingHeader && ( currentLine.find("APMASS") != std::string::npos)){
-		    stream.str(currentLine);    
-		    stream >> word;
-		    stream >> word;
-		    heprup.APMASS=atof(word.c_str());	      
-	            std::cout<<"APMASS: "<<heprup.APMASS<<std::endl; 
-		    headerBlock += currentLine + "\n";
-      }
-               else if (readingHeader && ( currentLine.find("FMASS") != std::string::npos)){
-	     stream.str(currentLine);    
-	               stream >> word;
-	               stream >> word;
-	     heprup.FMASS=atof(word.c_str());	      
-             std::cout<<"FMASS: "<<heprup.FMASS<<std::endl; 
-	               headerBlock += currentLine + "\n";
-      }   
-               else if (readingHeader && ( currentLine.find("ebeam1") != std::string::npos)){
-	               stream.str(currentLine);    
-	               stream >> word;
-	               heprup.EBEAM=atof(word.c_str());	      
-               std::cout<<"EBEAM: "<<heprup.EBEAM<<std::endl; 	    
-	               headerBlock += currentLine + "\n";
-               } 
-	    else if (readingHeader && ( currentLine.find("iseed") != std::string::npos)){
-		    stream.str(currentLine);    
-		    stream >> word;
-		    heprup.SEED=atoi(word.c_str());	      
-	            std::cout<<"SEED: "<<heprup.SEED<<std::endl; 	    
-		    headerBlock += currentLine + "\n";
-	    } 
-	   else if (readingHeader && ( currentLine.find("epsilon") != std::string::npos)){
-	 		    stream.str(currentLine);
-	 		    stream >> word; //ignore first word
-	 		    stream >> word;
-	 		    heprup.EPSILON=atof(word.c_str());
-	 	        std::cout<<"EPSILON: "<<heprup.EPSILON<<std::endl;
-	 		    headerBlock += currentLine + "\n";
-	  }
-	   else if (readingHeader && ( currentLine.find("alphaD") != std::string::npos)){
-	 	 		    stream.str(currentLine);
-	 	 		    stream >> word; //ignore first word
-	 	 		    stream >> word;
-	 	 		    heprup.ALPHAD=atof(word.c_str());
-	 	 	        std::cout<<"ALPHAD: "<<heprup.ALPHAD<<std::endl;
-	 	 		    headerBlock += currentLine + "\n";
-	 	  }
-      else if (readingBDX && ( currentLine.find("ldet") != std::string::npos) ){
-              stream.str(currentLine);    
-	      stream >> word;
-	      heprup.ldet=atof(word.c_str());	      
-              std::cout<<"ldet: "<<heprup.ldet<<std::endl;
-	      headerBlock += currentLine + "\n";
-      }
-	    else if (readingBDX  && ( currentLine.find("fiduciallx") != std::string::npos) ){
-		    stream.str(currentLine);    
-		    stream >> word;
-	            heprup.lx=atof(word.c_str());	      
-                    std::cout<<"lx: "<<heprup.lx<<std::endl;
-		    headerBlock += currentLine + "\n";
-	    }
-	    else if (readingBDX  && ( currentLine.find("fiducially") != std::string::npos) ){
-		    stream.str(currentLine);    
-		    stream >> word;
-	            heprup.ly=atof(word.c_str());	      
-                    std::cout<<"ly: "<<heprup.ly<<std::endl;
-		    headerBlock += currentLine + "\n";
-	    }
-	    else if (readingBDX  && ( currentLine.find("fiduciallz") != std::string::npos) ){
-		    stream.str(currentLine);    
-		    stream >> word;
-	            heprup.lz=atof(word.c_str());	      
-                    std::cout<<"lz: "<<heprup.lz<<std::endl;
-		    headerBlock += currentLine + "\n";
-	    }
-	    else if (readingBDX  && ( currentLine.find("procid") != std::string::npos) ){
-		    stream.str(currentLine);    
-		    stream >> word;
-		    heprup.procid=atoi(word.c_str());	      
-	        std::cout<<"procid: "<<heprup.procid<<std::endl;
-		    headerBlock += currentLine + "\n";
-            }
-	    else if (readingBDX  && ( currentLine.find("eTHR") != std::string::npos) ){
-		    stream.str(currentLine);    
-		    stream >> word;
-		    heprup.eTHR=atof(word.c_str());	      
-	            std::cout<<"eTHR: "<<heprup.eTHR<<std::endl;
-		    headerBlock += currentLine + "\n";
-	    }
-	    else if (readingBDX  && ( currentLine.find("pTHR") != std::string::npos) ){
-		    stream.str(currentLine);    
-		    stream >> word;
-		    heprup.pTHR=atof(word.c_str());	      
-	            std::cout<<"pTHR: "<<heprup.pTHR<<std::endl;
-		    headerBlock += currentLine + "\n";
-	    }
+		bool readingHeader = false;
+		bool readingInit = false;
+		bool readingBDX = false;
 
-	    else if (readingBDX  && ( currentLine.find("NDET") != std::string::npos) ){
-			    stream.str(currentLine);
-			    stream >> word;
-			    heprup.NDET=atof(word.c_str());
-		        std::cout<<"NDET: "<<heprup.NDET<<std::endl;
-			    headerBlock += currentLine + "\n";
-		    }
-	    else if (readingBDX  && ( currentLine.find("NDUMP") != std::string::npos) ){
-			    stream.str(currentLine);
-			    stream >> word;
-			    heprup.NDUMP=atof(word.c_str());
-	            std::cout<<"NDUMP: "<<heprup.NDUMP<<std::endl;
-			    headerBlock += currentLine + "\n";
-		    }
-	    else if (readingBDX  && ( currentLine.find("LDUMP") != std::string::npos) ){
-			    stream.str(currentLine);
-			    stream >> word;
-			    heprup.LDUMP=atof(word.c_str());
-		        std::cout<<"LDUMP: "<<heprup.LDUMP<<std::endl;
-			    headerBlock += currentLine + "\n";
-		    }
-	else if ( currentLine.find("<init") != std::string::npos ) {
-	// We have hit the init block, so we should expect to find the
-	// standard information in the following.
-	readingInit = true;
+		std::string word;
+		std::stringstream stream;
 
-	// The first line tells us how many lines to read next.
-	getline();
-	std::istringstream iss(currentLine);
-	if ( !( iss >> heprup.IDBMUP.first >> heprup.IDBMUP.second
-		    >> heprup.EBMUP.first >> heprup.EBMUP.second
-	            >> heprup.PDFGUP.first >> heprup.PDFGUP.second
-	            >> heprup.PDFSUP.first >> heprup.PDFSUP.second
-		    >> heprup.IDWTUP >> heprup.NPRUP ) ) {
-	  heprup.NPRUP = -42;
-	  return;
+		// Make sure we are reading a LHEF file:
+		getline();
+		if ( currentLine.find("<LesHouchesEvents" ) == std::string::npos )
+			throw std::runtime_error
+			("Tried to read a file which does not start with the "
+					"LesHouchesEvents tag.");
+		if ( currentLine.find("version=\"1.0\"" ) == std::string::npos )
+			throw std::runtime_error
+			("Tried to read a LesHouchesEvents file which is not version 1.0.");
+
+		// Loop over all lines until we hit the </init> tag.
+		// Here we have info about ALL the cuts!
+		while ( getline() && currentLine.find("</init>") == std::string::npos ) {
+			if ( currentLine.find("<header") != std::string::npos ) {
+				// We have hit the header block, so we should dump this all
+				// following lines to headerBlock until we hit the end of it.
+				readingHeader = true;
+				headerBlock = currentLine + "\n";
+			}
+			else if (readingHeader && ( currentLine.find("APMASS") != std::string::npos)){
+				stream.str(currentLine);
+				stream >> word;
+				stream >> word;
+				heprup.APMASS=atof(word.c_str());
+				std::cout<<"APMASS: "<<heprup.APMASS<<std::endl;
+				headerBlock += currentLine + "\n";
+			}
+			else if (readingHeader && ( currentLine.find("FMASS") != std::string::npos)){
+				stream.str(currentLine);
+				stream >> word;
+				stream >> word;
+				heprup.FMASS=atof(word.c_str());
+				std::cout<<"FMASS: "<<heprup.FMASS<<std::endl;
+				headerBlock += currentLine + "\n";
+			}
+			else if (readingHeader && ( currentLine.find("ebeam1") != std::string::npos)){
+				stream.str(currentLine);
+				stream >> word;
+				heprup.EBEAM=atof(word.c_str());
+				std::cout<<"EBEAM: "<<heprup.EBEAM<<std::endl;
+				headerBlock += currentLine + "\n";
+			}
+			else if (readingHeader && ( currentLine.find("iseed") != std::string::npos)){
+				stream.str(currentLine);
+				stream >> word;
+				heprup.SEED=atoi(word.c_str());
+				std::cout<<"SEED: "<<heprup.SEED<<std::endl;
+				headerBlock += currentLine + "\n";
+			}
+			else if (readingHeader && ( currentLine.find("epsilon") != std::string::npos)){
+				stream.str(currentLine);
+				stream >> word; //ignore first word
+				stream >> word;
+				heprup.EPSILON=atof(word.c_str());
+				std::cout<<"EPSILON: "<<heprup.EPSILON<<std::endl;
+				headerBlock += currentLine + "\n";
+			}
+			else if (readingHeader && ( currentLine.find("alphaD") != std::string::npos)){
+				stream.str(currentLine);
+				stream >> word; //ignore first word
+				stream >> word;
+				heprup.ALPHAD=atof(word.c_str());
+				std::cout<<"ALPHAD: "<<heprup.ALPHAD<<std::endl;
+				headerBlock += currentLine + "\n";
+			}
+			else if (readingBDX && ( currentLine.find("ldet") != std::string::npos) ){
+				stream.str(currentLine);
+				stream >> word;
+				heprup.ldet=atof(word.c_str());
+				std::cout<<"ldet: "<<heprup.ldet<<std::endl;
+				headerBlock += currentLine + "\n";
+			}
+			else if (readingBDX  && ( currentLine.find("MCx") != std::string::npos) ){
+				stream.str(currentLine);
+				stream >> word;
+				heprup.MCcenterX=atof(word.c_str());
+				std::cout<<"MCcenterX: "<<heprup.MCcenterX<<std::endl;
+				headerBlock += currentLine + "\n";
+			}
+			else if (readingBDX  && ( currentLine.find("MCy") != std::string::npos) ){
+				stream.str(currentLine);
+				stream >> word;
+				heprup.MCcenterY=atof(word.c_str());
+				std::cout<<"MCcenterY: "<<heprup.MCcenterY<<std::endl;
+				headerBlock += currentLine + "\n";
+			}
+			else if (readingBDX  && ( currentLine.find("MCz") != std::string::npos) ){
+				stream.str(currentLine);
+				stream >> word;
+				heprup.MCcenterZ=atof(word.c_str());
+				std::cout<<"MCcenterZ: "<<heprup.MCcenterZ<<std::endl;
+				headerBlock += currentLine + "\n";
+			}
+			else if (readingBDX  && ( currentLine.find("fiduciallx") != std::string::npos) ){
+				stream.str(currentLine);
+				stream >> word;
+				heprup.lx=atof(word.c_str());
+				std::cout<<"lx: "<<heprup.lx<<std::endl;
+				headerBlock += currentLine + "\n";
+			}
+
+
+
+			else if (readingBDX  && ( currentLine.find("fiducially") != std::string::npos) ){
+				stream.str(currentLine);
+				stream >> word;
+				heprup.ly=atof(word.c_str());
+				std::cout<<"ly: "<<heprup.ly<<std::endl;
+				headerBlock += currentLine + "\n";
+			}
+			else if (readingBDX  && ( currentLine.find("fiduciallz") != std::string::npos) ){
+				stream.str(currentLine);
+				stream >> word;
+				heprup.lz=atof(word.c_str());
+				std::cout<<"lz: "<<heprup.lz<<std::endl;
+				headerBlock += currentLine + "\n";
+			}
+			else if (readingBDX  && ( currentLine.find("procid") != std::string::npos) ){
+				stream.str(currentLine);
+				stream >> word;
+				heprup.procid=atoi(word.c_str());
+				std::cout<<"procid: "<<heprup.procid<<std::endl;
+				headerBlock += currentLine + "\n";
+			}
+			else if (readingBDX  && ( currentLine.find("eTHR") != std::string::npos) ){
+				stream.str(currentLine);
+				stream >> word;
+				heprup.eTHR=atof(word.c_str());
+				std::cout<<"eTHR: "<<heprup.eTHR<<std::endl;
+				headerBlock += currentLine + "\n";
+			}
+			else if (readingBDX  && ( currentLine.find("pTHR") != std::string::npos) ){
+				stream.str(currentLine);
+				stream >> word;
+				heprup.pTHR=atof(word.c_str());
+				std::cout<<"pTHR: "<<heprup.pTHR<<std::endl;
+				headerBlock += currentLine + "\n";
+			}
+			else if (readingBDX  && ( currentLine.find("pBINDING") != std::string::npos) ){
+				stream.str(currentLine);
+				stream >> word;
+				heprup.pBINDING=atof(word.c_str());
+				std::cout<<"pBINDING: "<<heprup.pBINDING<<std::endl;
+				headerBlock += currentLine + "\n";
+			}
+			else if (readingBDX  && ( currentLine.find("NDET") != std::string::npos) ){
+				stream.str(currentLine);
+				stream >> word;
+				heprup.NDET=atof(word.c_str());
+				std::cout<<"NDET: "<<heprup.NDET<<std::endl;
+				headerBlock += currentLine + "\n";
+			}
+			else if (readingBDX  && ( currentLine.find("NDUMP") != std::string::npos) ){
+				stream.str(currentLine);
+				stream >> word;
+				heprup.NDUMP=atof(word.c_str());
+				std::cout<<"NDUMP: "<<heprup.NDUMP<<std::endl;
+				headerBlock += currentLine + "\n";
+			}
+			else if (readingBDX  && ( currentLine.find("LDUMP") != std::string::npos) ){
+				stream.str(currentLine);
+				stream >> word;
+				heprup.LDUMP=atof(word.c_str());
+				std::cout<<"LDUMP: "<<heprup.LDUMP<<std::endl;
+				headerBlock += currentLine + "\n";
+			}
+			else if ( currentLine.find("<init") != std::string::npos ) {
+				// We have hit the init block, so we should expect to find the
+				// standard information in the following.
+				readingInit = true;
+
+				// The first line tells us how many lines to read next.
+				getline();
+				std::istringstream iss(currentLine);
+				if ( !( iss >> heprup.IDBMUP.first >> heprup.IDBMUP.second
+						>> heprup.EBMUP.first >> heprup.EBMUP.second
+						>> heprup.PDFGUP.first >> heprup.PDFGUP.second
+						>> heprup.PDFSUP.first >> heprup.PDFSUP.second
+						>> heprup.IDWTUP >> heprup.NPRUP ) ) {
+					heprup.NPRUP = -42;
+					return;
+				}
+				heprup.resize();
+
+				for ( int i = 0; i < heprup.NPRUP; ++i ) {
+					getline();
+					std::istringstream iss(currentLine);
+					if ( !( iss >> heprup.XSECUP[i] >> heprup.XERRUP[i]
+					                                                 >> heprup.XMAXUP[i] >> heprup.LPRUP[i] ) ) {
+						heprup.NPRUP = -42;
+						return;
+					}
+				}
+			}
+			else if ( currentLine.find("<BDX>") != std::string::npos ) {
+				readingBDX = true;
+				headerBlock += currentLine + "\n";
+			}
+			else if ( currentLine.find("</BDX>") != std::string::npos ) {
+				readingBDX = false;
+				headerBlock += currentLine + "\n";
+			}
+			else if ( currentLine.find("</header>") != std::string::npos ) {
+				// The end of the header block. Dump this line as well to the
+				// headerBlock and we're done.
+				readingHeader = false;
+				headerBlock += currentLine + "\n";
+			}
+			else if ( readingHeader ) {
+				// We are in the process of reading the header block. Dump the
+				// line to haderBlock.
+				headerBlock += currentLine + "\n";
+			}
+			else if ( readingInit ) {
+				// Here we found a comment line. Dump it to initComments.
+				initComments += currentLine + "\n";
+			}
+			else {
+				// We found some other stuff outside the standard tags.
+				outsideBlock += currentLine + "\n";
+			}
+		}
+		if ( !file ) heprup.NPRUP = -42;
 	}
-	heprup.resize();
-
-	for ( int i = 0; i < heprup.NPRUP; ++i ) {
-	  getline();
-	  std::istringstream iss(currentLine);
-	  if ( !( iss >> heprup.XSECUP[i] >> heprup.XERRUP[i]
-	              >> heprup.XMAXUP[i] >> heprup.LPRUP[i] ) ) {
-	    heprup.NPRUP = -42;
-	    return;
-	  }
-	}
-      }
-	    else if ( currentLine.find("<BDX>") != std::string::npos ) {
-		    readingBDX = true;
-		    headerBlock += currentLine + "\n";
-	    }
-	    else if ( currentLine.find("</BDX>") != std::string::npos ) {
-		    readingBDX = false;
-		    headerBlock += currentLine + "\n";
-	    }
-      else if ( currentLine.find("</header>") != std::string::npos ) {
-	// The end of the header block. Dump this line as well to the
-	// headerBlock and we're done.
-	readingHeader = false;
-	headerBlock += currentLine + "\n";
-      }
-      else if ( readingHeader ) {
-	// We are in the process of reading the header block. Dump the
-	// line to haderBlock.
-	headerBlock += currentLine + "\n";
-      }
-      else if ( readingInit ) {
-	// Here we found a comment line. Dump it to initComments.
-	initComments += currentLine + "\n";
-      }
-      else {
-	// We found some other stuff outside the standard tags.
-	outsideBlock += currentLine + "\n";
-      }
-    }
-    if ( !file ) heprup.NPRUP = -42;
-  }
 
 public:
 
-  int getNumberOfEvents()
-  {
-    int counter = 0;
-    int position = file.tellg();
-    file.seekg(0, std::ios::beg);
+	int getNumberOfEvents()
+	{
+		int counter = 0;
+		int position = file.tellg();
+		file.seekg(0, std::ios::beg);
 
-    file.clear();
+		file.clear();
 
-    while(getline())
-    {
-      if(currentLine.find("<event") != std::string::npos) ++counter;
-    }
+		while(getline())
+		{
+			if(currentLine.find("<event") != std::string::npos) ++counter;
+		}
 
-    file.clear();
+		file.clear();
 
-    file.seekg(position, std::ios::beg);
+		file.seekg(position, std::ios::beg);
 
-    return counter;
-  }
+		return counter;
+	}
 
-  /**
-   * Read an event from the file and store it in the hepeup
-   * object. Optional comment lines are stored i the eventComments
-   * member variable.
-   * @return true if the read sas successful.
-   */
-  bool readEvent() {
+	/**
+	 * Read an event from the file and store it in the hepeup
+	 * object. Optional comment lines are stored i the eventComments
+	 * member variable.
+	 * @return true if the read sas successful.
+	 */
+	bool readEvent() {
 
-    // Check if the initialization was successful. Otherwise we will
-    // not read any events.
-    if ( heprup.NPRUP < 0 ) return false;
-    eventComments = "";
-    outsideBlock = "";
-    hepeup.NUP = 0;
+		// Check if the initialization was successful. Otherwise we will
+		// not read any events.
+		if ( heprup.NPRUP < 0 ) return false;
+		eventComments = "";
+		outsideBlock = "";
+		hepeup.NUP = 0;
 
-    // Keep reading lines until we hit the next event or the end of
-    // the event block. Save any inbetween lines. Exit if we didn't
-    // find an event.
-    while ( getline() && currentLine.find("<event") == std::string::npos )
-      outsideBlock += currentLine + "\n";
-    if ( !getline()  ) return false;
-    
-    // We found an event. The first line determines how many
-    // subsequent particle lines we have.
-    std::istringstream iss(currentLine);
-    if ( !( iss >> hepeup.NUP >> hepeup.IDPRUP >> hepeup.XWGTUP
-	        >> hepeup.SCALUP >> hepeup.AQEDUP >> hepeup.AQCDUP ) )
-      return false;
-    hepeup.resize();
+		// Keep reading lines until we hit the next event or the end of
+		// the event block. Save any inbetween lines. Exit if we didn't
+		// find an event.
+		while ( getline() && currentLine.find("<event") == std::string::npos )
+			outsideBlock += currentLine + "\n";
+		if ( !getline()  ) return false;
 
-    // Read all particle lines.
-    for ( int i = 0; i < hepeup.NUP; ++i ) {
-      if ( !getline() ) return false;
-      std::istringstream iss(currentLine);
-      if ( !( iss >> hepeup.IDUP[i] >> hepeup.ISTUP[i]
-	          >> hepeup.MOTHUP[i].first >> hepeup.MOTHUP[i].second
-         	  >> hepeup.ICOLUP[i].first >> hepeup.ICOLUP[i].second
-	          >> hepeup.PUP[i][0] >> hepeup.PUP[i][1] >> hepeup.PUP[i][2]
-	          >> hepeup.PUP[i][3] >> hepeup.PUP[i][4]
-        	  >> hepeup.VTIMUP[i] >> hepeup.SPINUP[i] ) )
-	return false;
-    }
+		// We found an event. The first line determines how many
+		// subsequent particle lines we have.
+		std::istringstream iss(currentLine);
+		if ( !( iss >> hepeup.NUP >> hepeup.IDPRUP >> hepeup.XWGTUP
+				>> hepeup.SCALUP >> hepeup.AQEDUP >> hepeup.AQCDUP ) )
+			return false;
+		hepeup.resize();
 
-    // Now read any additional comments.
-    while ( getline() && currentLine.find("</event>") == std::string::npos )
-      eventComments += currentLine + "\n";
+		// Read all particle lines.
+		for ( int i = 0; i < hepeup.NUP; ++i ) {
+			if ( !getline() ) return false;
+			std::istringstream iss(currentLine);
+			if ( !( iss >> hepeup.IDUP[i] >> hepeup.ISTUP[i]
+			                                              >> hepeup.MOTHUP[i].first >> hepeup.MOTHUP[i].second
+			                                              >> hepeup.ICOLUP[i].first >> hepeup.ICOLUP[i].second
+			                                              >> hepeup.PUP[i][0] >> hepeup.PUP[i][1] >> hepeup.PUP[i][2]
+			                                                                                                       >> hepeup.PUP[i][3] >> hepeup.PUP[i][4]
+			                                                                                                                                            >> hepeup.VTIMUP[i] >> hepeup.SPINUP[i] ) )
+				return false;
+		}
 
-    if ( !file ) return false;
-    return true;
+		// Now read any additional comments.
+		while ( getline() && currentLine.find("</event>") == std::string::npos )
+			eventComments += currentLine + "\n";
 
-  }
+		if ( !file ) return false;
+		return true;
 
-protected:
-
-  /**
-   * Used internally to read a single line from the stream.
-   */
-  bool getline() {
-    return ( std::getline(file, currentLine) );
-  }
+	}
 
 protected:
 
-  /**
-   * A local stream which is unused if a stream is supplied from the
-   * outside.
-   */
-  std::ifstream intstream;
+	/**
+	 * Used internally to read a single line from the stream.
+	 */
+	bool getline() {
+		return ( std::getline(file, currentLine) );
+	}
 
-  /**
-   * The stream we are reading from. This may be a reference to an
-   * external stream or the internal intstream.
-   */
-  std::istream & file;
+protected:
 
-  /**
-   * The last line read in from the stream in getline().
-   */
-  std::string currentLine;
+	/**
+	 * A local stream which is unused if a stream is supplied from the
+	 * outside.
+	 */
+	std::ifstream intstream;
+
+	/**
+	 * The stream we are reading from. This may be a reference to an
+	 * external stream or the internal intstream.
+	 */
+	std::istream & file;
+
+	/**
+	 * The last line read in from the stream in getline().
+	 */
+	std::string currentLine;
 
 public:
 
-  /**
-   * All lines (since the last readEvent()) outside the header, init
-   * and event tags.
-   */
-  std::string outsideBlock;
+	/**
+	 * All lines (since the last readEvent()) outside the header, init
+	 * and event tags.
+	 */
+	std::string outsideBlock;
 
-  /**
-   * All lines from the header block.
-   */
-  std::string headerBlock;
+	/**
+	 * All lines from the header block.
+	 */
+	std::string headerBlock;
 
-  /**
-   * The standard init information.
-   */
-  HEPRUP heprup;
+	/**
+	 * The standard init information.
+	 */
+	HEPRUP heprup;
 
-  /**
-   * Additional comments found in the init block.
-   */
-  std::string initComments;
+	/**
+	 * Additional comments found in the init block.
+	 */
+	std::string initComments;
 
-  /**
-   * The standard information about the last read event.
-   */
-  HEPEUP hepeup;
+	/**
+	 * The standard information about the last read event.
+	 */
+	HEPEUP hepeup;
 
-  /**
-   * Additional comments found with the last read event.
-   */
-  std::string eventComments;
+	/**
+	 * Additional comments found with the last read event.
+	 */
+	std::string eventComments;
 
 private:
 
-  /**
-   * The default constructor should never be used.
-   */
-  Reader();
+	/**
+	 * The default constructor should never be used.
+	 */
+	Reader();
 
-  /**
-   * The copy constructor should never be used.
-   */
-  Reader(const Reader &);
+	/**
+	 * The copy constructor should never be used.
+	 */
+	Reader(const Reader &);
 
-  /**
-   * The Reader cannot be assigned to.
-   */
-  Reader & operator=(const Reader &);
+	/**
+	 * The Reader cannot be assigned to.
+	 */
+	Reader & operator=(const Reader &);
 
 };
 
@@ -812,212 +856,212 @@ class Writer {
 
 public:
 
-  /**
-   * Create a Writer object giving a stream to write to.
-   * @param os the stream where the event file is written.
-   */
-  Writer(std::ostream & os)
-    : file(os) {
-    // Write out the standard XML tag for the event file.
-    file << "<LesHouchesEvents version=\"1.0\">\n";
-  }
+	/**
+	 * Create a Writer object giving a stream to write to.
+	 * @param os the stream where the event file is written.
+	 */
+	Writer(std::ostream & os)
+: file(os) {
+		// Write out the standard XML tag for the event file.
+		file << "<LesHouchesEvents version=\"1.0\">\n";
+	}
 
-  /**
-   * Create a Writer object giving a filename to write to.
-   * @param filename the name of the event file to be written.
-   */
-  Writer(std::string filename)
-    : intstream(filename.c_str()), file(intstream) {
-    // Write out the standard XML tag for the event file.
-    file << "<LesHouchesEvents version=\"1.0\">\n";
-  }
+	/**
+	 * Create a Writer object giving a filename to write to.
+	 * @param filename the name of the event file to be written.
+	 */
+	Writer(std::string filename)
+	: intstream(filename.c_str()), file(intstream) {
+		// Write out the standard XML tag for the event file.
+		file << "<LesHouchesEvents version=\"1.0\">\n";
+	}
 
-  /**
-   * The destructor writes out the final XML end-tag.
-   */
-  ~Writer() {
-    file << "</LesHouchesEvents>" << std::endl;
-  }
+	/**
+	 * The destructor writes out the final XML end-tag.
+	 */
+	~Writer() {
+		file << "</LesHouchesEvents>" << std::endl;
+	}
 
-  /**
-   * Add header lines consisting of XML code with this stream.
-   */
-  std::ostream & headerBlock() {
-    return headerStream;
-  }
+	/**
+	 * Add header lines consisting of XML code with this stream.
+	 */
+	std::ostream & headerBlock() {
+		return headerStream;
+	}
 
-  /**
-   * Add comment lines to the init block with this stream.
-   */
-  std::ostream & initComments() {
-    return initStream;
-  }
+	/**
+	 * Add comment lines to the init block with this stream.
+	 */
+	std::ostream & initComments() {
+		return initStream;
+	}
 
-  /**
-   * Add comment lines to the next event to be written out with this stream.
-   */
-  std::ostream & eventComments() {
-    return eventStream;
-  }
+	/**
+	 * Add comment lines to the next event to be written out with this stream.
+	 */
+	std::ostream & eventComments() {
+		return eventStream;
+	}
 
-  /**
-   * Write out an optional header block followed by the standard init
-   * block information together with any comment lines.
-   */
-  void init() {
+	/**
+	 * Write out an optional header block followed by the standard init
+	 * block information together with any comment lines.
+	 */
+	void init() {
 
-    file << std::setprecision(8);
+		file << std::setprecision(8);
 
-    using std::setw;
+		using std::setw;
 
-    std::string headerBlock = headerStream.str();
-    if ( headerBlock.length() ) {
-      if ( headerBlock.find("<header>") == std::string::npos )
-	file << "<header>\n";
-      if ( headerBlock[headerBlock.length() - 1] != '\n' )
-	headerBlock += '\n';
-      file << headerBlock;
-      if ( headerBlock.find("</header>") == std::string::npos )
-	file << "</header>\n";
-    }
-    file << "<init>\n"
-	 << " " << setw(8) << heprup.IDBMUP.first
-	 << " " << setw(8) << heprup.IDBMUP.second
-	 << " " << setw(14) << heprup.EBMUP.first
-	 << " " << setw(14) << heprup.EBMUP.second
-	 << " " << setw(4) << heprup.PDFGUP.first
-	 << " " << setw(4) << heprup.PDFGUP.second
-	 << " " << setw(4) << heprup.PDFSUP.first
-	 << " " << setw(4) << heprup.PDFSUP.second
-	 << " " << setw(4) << heprup.IDWTUP
-	 << " " << setw(4) << heprup.NPRUP << std::endl;
-    heprup.resize();
-    for ( int i = 0; i < heprup.NPRUP; ++i )
-      file << " " << setw(14) << heprup.XSECUP[i]
-	   << " " << setw(14) << heprup.XERRUP[i]
-	   << " " << setw(14) << heprup.XMAXUP[i]
-	   << " " << setw(6) << heprup.LPRUP[i] << std::endl;
-    file << hashline(initStream.str()) << "</init>" << std::endl;
-    eventStream.str("");
-  }
+		std::string headerBlock = headerStream.str();
+		if ( headerBlock.length() ) {
+			if ( headerBlock.find("<header>") == std::string::npos )
+				file << "<header>\n";
+			if ( headerBlock[headerBlock.length() - 1] != '\n' )
+				headerBlock += '\n';
+			file << headerBlock;
+			if ( headerBlock.find("</header>") == std::string::npos )
+				file << "</header>\n";
+		}
+		file << "<init>\n"
+				<< " " << setw(8) << heprup.IDBMUP.first
+				<< " " << setw(8) << heprup.IDBMUP.second
+				<< " " << setw(14) << heprup.EBMUP.first
+				<< " " << setw(14) << heprup.EBMUP.second
+				<< " " << setw(4) << heprup.PDFGUP.first
+				<< " " << setw(4) << heprup.PDFGUP.second
+				<< " " << setw(4) << heprup.PDFSUP.first
+				<< " " << setw(4) << heprup.PDFSUP.second
+				<< " " << setw(4) << heprup.IDWTUP
+				<< " " << setw(4) << heprup.NPRUP << std::endl;
+		heprup.resize();
+		for ( int i = 0; i < heprup.NPRUP; ++i )
+			file << " " << setw(14) << heprup.XSECUP[i]
+			                                         << " " << setw(14) << heprup.XERRUP[i]
+			                                                                             << " " << setw(14) << heprup.XMAXUP[i]
+			                                                                                                                 << " " << setw(6) << heprup.LPRUP[i] << std::endl;
+		file << hashline(initStream.str()) << "</init>" << std::endl;
+		eventStream.str("");
+	}
 
-  /**
-   * Write out the event stored in hepeup, followed by optional
-   * comment lines.
-   */
-  bool writeEvent() {
+	/**
+	 * Write out the event stored in hepeup, followed by optional
+	 * comment lines.
+	 */
+	bool writeEvent() {
 
-    using std::setw;
+		using std::setw;
 
-    file << "<event>\n";
-    file << " " << setw(4) << hepeup.NUP
-	 << " " << setw(6) << hepeup.IDPRUP
-	 << " " << setw(14) << hepeup.XWGTUP
-	 << " " << setw(14) << hepeup.SCALUP
-	 << " " << setw(14) << hepeup.AQEDUP
-	 << " " << setw(14) << hepeup.AQCDUP << "\n";
-    hepeup.resize();
+		file << "<event>\n";
+		file << " " << setw(4) << hepeup.NUP
+				<< " " << setw(6) << hepeup.IDPRUP
+				<< " " << setw(14) << hepeup.XWGTUP
+				<< " " << setw(14) << hepeup.SCALUP
+				<< " " << setw(14) << hepeup.AQEDUP
+				<< " " << setw(14) << hepeup.AQCDUP << "\n";
+		hepeup.resize();
 
-    for ( int i = 0; i < hepeup.NUP; ++i )
-      file << " " << setw(8) << hepeup.IDUP[i]
-	   << " " << setw(2) << hepeup.ISTUP[i]
-	   << " " << setw(4) << hepeup.MOTHUP[i].first
-	   << " " << setw(4) << hepeup.MOTHUP[i].second
-	   << " " << setw(4) << hepeup.ICOLUP[i].first
-	   << " " << setw(4) << hepeup.ICOLUP[i].second
-	   << " " << setw(14) << hepeup.PUP[i][0]
-	   << " " << setw(14) << hepeup.PUP[i][1]
-	   << " " << setw(14) << hepeup.PUP[i][2]
-	   << " " << setw(14) << hepeup.PUP[i][3]
-	   << " " << setw(14) << hepeup.PUP[i][4]
-	   << " " << setw(1) << hepeup.VTIMUP[i]
-	   << " " << setw(1) << hepeup.SPINUP[i] << std::endl;
+		for ( int i = 0; i < hepeup.NUP; ++i )
+			file << " " << setw(8) << hepeup.IDUP[i]
+			                                      << " " << setw(2) << hepeup.ISTUP[i]
+			                                                                        << " " << setw(4) << hepeup.MOTHUP[i].first
+			                                                                        << " " << setw(4) << hepeup.MOTHUP[i].second
+			                                                                        << " " << setw(4) << hepeup.ICOLUP[i].first
+			                                                                        << " " << setw(4) << hepeup.ICOLUP[i].second
+			                                                                        << " " << setw(14) << hepeup.PUP[i][0]
+			                                                                                                            << " " << setw(14) << hepeup.PUP[i][1]
+			                                                                                                                                                << " " << setw(14) << hepeup.PUP[i][2]
+			                                                                                                                                                                                    << " " << setw(14) << hepeup.PUP[i][3]
+			                                                                                                                                                                                                                        << " " << setw(14) << hepeup.PUP[i][4]
+			                                                                                                                                                                                                                                                            << " " << setw(1) << hepeup.VTIMUP[i]
+			                                                                                                                                                                                                                                                                                               << " " << setw(1) << hepeup.SPINUP[i] << std::endl;
 
-    file << hashline(eventStream.str()) << "</event>\n";
+		file << hashline(eventStream.str()) << "</event>\n";
 
-    eventStream.str("");
+		eventStream.str("");
 
-    if ( !file ) return false;
+		if ( !file ) return false;
 
-    return true;
+		return true;
 
-  }
-
-protected:
-
-  /**
-   * Make sure that each line in the string \a s starts with a
-   * #-character and that the string ends with a new-line.
-   */
-  std::string hashline(std::string s) {
-    std::string ret;
-    std::istringstream is(s);
-    std::string ss;
-    while ( getline(is, ss) ) {
-      if ( ss.find('#') == std::string::npos ||
-	   ss.find('#') != ss.find_first_not_of(" \t") ) ss = "# " + ss;
-      ret += ss + '\n';
-    }
-    return ret;
-  }
+	}
 
 protected:
 
-  /**
-   * A local stream which is unused if a stream is supplied from the
-   * outside.
-   */
-  std::ofstream intstream;
+	/**
+	 * Make sure that each line in the string \a s starts with a
+	 * #-character and that the string ends with a new-line.
+	 */
+	std::string hashline(std::string s) {
+		std::string ret;
+		std::istringstream is(s);
+		std::string ss;
+		while ( getline(is, ss) ) {
+			if ( ss.find('#') == std::string::npos ||
+					ss.find('#') != ss.find_first_not_of(" \t") ) ss = "# " + ss;
+			ret += ss + '\n';
+		}
+		return ret;
+	}
 
-  /**
-   * The stream we are writing to. This may be a reference to an
-   * external stream or the internal intstream.
-   */
-  std::ostream & file;
+protected:
+
+	/**
+	 * A local stream which is unused if a stream is supplied from the
+	 * outside.
+	 */
+	std::ofstream intstream;
+
+	/**
+	 * The stream we are writing to. This may be a reference to an
+	 * external stream or the internal intstream.
+	 */
+	std::ostream & file;
 
 public:
 
-  /**
-   * Stream to add all lines in the header block.
-   */
-  std::ostringstream headerStream;
+	/**
+	 * Stream to add all lines in the header block.
+	 */
+	std::ostringstream headerStream;
 
-  /**
-   * The standard init information.
-   */
-  HEPRUP heprup;
+	/**
+	 * The standard init information.
+	 */
+	HEPRUP heprup;
 
-  /**
-   * Stream to add additional comments to be put in the init block.
-   */
-  std::ostringstream initStream;
+	/**
+	 * Stream to add additional comments to be put in the init block.
+	 */
+	std::ostringstream initStream;
 
-  /**
-   * The standard information about the event we will write next.
-   */
-  HEPEUP hepeup;
+	/**
+	 * The standard information about the event we will write next.
+	 */
+	HEPEUP hepeup;
 
-  /**
-   * Stream to add additional comments to be written together the next event.
-   */
-  std::ostringstream eventStream;
+	/**
+	 * Stream to add additional comments to be written together the next event.
+	 */
+	std::ostringstream eventStream;
 
 private:
 
-  /**
-   * The default constructor should never be used.
-   */
-  Writer();
+	/**
+	 * The default constructor should never be used.
+	 */
+	Writer();
 
-  /**
-   * The copy constructor should never be used.
-   */
-  Writer(const Writer &);
+	/**
+	 * The copy constructor should never be used.
+	 */
+	Writer(const Writer &);
 
-  /**
-   * The Writer cannot be assigned to.
-   */
-  Writer & operator=(const Writer &);
+	/**
+	 * The Writer cannot be assigned to.
+	 */
+	Writer & operator=(const Writer &);
 
 };
 
@@ -1035,7 +1079,7 @@ private:
     There is also a sample
     <A HREF="http://www.thep.lu.se/~leif/LHEF/ttbar.lhef">event file</A>
     to try it on.
-*/
+ */
 
 /**\mainpage Les Houches Event File
 

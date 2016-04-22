@@ -210,7 +210,7 @@ else:
     os.system(command)
     #run it
     lhefname = MadGraphEventsLocation+"/"+run_name+"_unweighted_events.lhe"
-    lhefnameOUT = DetectorInteractionEventsLocation+"/"+run_name+"_unweighted_events.lhe"
+    lhefnameOUT = DetectorInteractionEventsLocation+"/"+run_name
     command = "./DetectorInteraction.exe "+lhefname+" "+lhefnameOUT  
     os.system(command)
     os.chdir(EventGeneratorLocation)

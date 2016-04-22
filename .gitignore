@@ -40,6 +40,8 @@ run/*.txt
 #MadGraph events
 *.lhe.gz
 *.lhe
+*.dat
+*.lund
 *.gz
 *banner.txt
 

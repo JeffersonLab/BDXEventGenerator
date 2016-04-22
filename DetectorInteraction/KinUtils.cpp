@@ -5,7 +5,7 @@
 
 using namespace std;
 
-KinUtils::KinUtils(const double &m_Ebeam,const double &m_Mchi,const double &m_Maprime,const double &m_Msplit,const double &m_Epsilon,const double &m_alphaD,const double &m_Ethr,const double &m_Pthr,const int &m_Seed):
+KinUtils::KinUtils(const double &m_Ebeam,const double &m_Mchi,const double &m_Maprime,const double &m_Msplit,const double &m_Epsilon,const double &m_alphaD,const double &m_Ethr,const double &m_Pthr,const double &m_Pbinding,const int &m_Seed):
 Ebeam(m_Ebeam),
 Mchi(m_Mchi),
 Maprime(m_Maprime),
@@ -13,6 +13,7 @@ Msplit(m_Msplit),
 Seed(m_Seed),
 Ethr(m_Ethr),
 Pthr(m_Pthr),
+Pbinding(m_Pbinding),
 Epsilon(m_Epsilon),
 AlphaDark(m_alphaD),
 Alpha(1./137.){
@@ -46,6 +47,7 @@ Alpha(1./137.){
 }
 
 void KinUtils::PrintParameters(){
+			cout<<endl;
 			cout<<"KinUtils Parameters:"<<endl;
 			cout<<"e- beam (GeV): \t\t"<<Ebeam<<endl;
 			cout<<"Maprime (GeV): \t \t"<<Maprime<<endl;
@@ -122,7 +124,7 @@ double KinUtils::Er_chipXsection(double *x,double *par){
 
 /*double Er_chieXsection
  Returns the chi e -> chi e DIFFERENTIAL cross section, dsigma/dEr, where Er is the recoil electron total energy
- Parameters: x[0]: recoil KINETIC energy Er
+ Parameters: x[0]: recoil electron total energy Er
            par[0]: E0, kinetic energy of incoming chi
 */
 double KinUtils::Er_chieXsection(double *x,double *par){
@@ -177,6 +179,7 @@ double KinUtils::Er_chieXsection(double *x,double *par){
  * estracts the recoil kinematics.
  * procID is an integer, for the process under study:
  *
+ * 22/04/2016: this function now correct for the proton binding energy!
  * Returns: the total cross-section, in cm2, for the interaction process, integrated over final state (with the kinetic energy cut)
  */
 
@@ -187,7 +190,7 @@ double KinUtils::doElasticRecoil(const TLorentzVector &chi,TLorentzVector &recoi
 	TVector3 p0,pr,pchi;
 	double E0,Er,Echi;
 	double P0,Pr,Pchi;
-	double ctheta_r,stheta_r,phi_r,ret;
+	double ctheta_r,stheta_r,phi_r,sigma;
 	int ii;
 	E0=chi.E();
 	P0=chi.P();
@@ -196,17 +199,24 @@ double KinUtils::doElasticRecoil(const TLorentzVector &chi,TLorentzVector &recoi
 	/*1: extract the recoil total energy from the cross-section*/
 	ii=0;
 	ii=(int)(E0/(Ebeam/nFunctionsElastic));
-	if (ii>=nFunctionsElastic) ii=nFunctionsElastic-1; //should not happen
+	if (ii>=nFunctionsElastic) ii=nFunctionsElastic-1; //should not happen!!!
 
 	if (procID==Proc_Pelastic){
-		if (Pthr>(E0-Mchi)) return 0; //this event is not compatible with the threshold.	
+		if ((Pthr+Pbinding)>(E0-Mchi)) return 0; //this event is not compatible with the threshold, it is useless to proceed further
 	}	
-	if (procID==Proc_Eelastic){
-		if (Ethr>(E0-Mchi)) return 0; //this event is not compatible with the threshold.	
+	else if (procID==Proc_Eelastic){
+		if (Ethr>(E0-Mchi)) return 0; //this event is not compatible with the threshold, it is useless to proceed further
 	}
 	
-	(procID==Proc_Pelastic ? Er=f_chipXsection[ii]->GetRandom(Pthr+Mn,E0+Mn-Mchi):Er=f_chieXsection[ii]->GetRandom(Ethr+Me,E0+Me-Mchi));
-	
+	(procID==Proc_Pelastic ? Er=f_chipXsection[ii]->GetRandom(Pthr+Pbinding+Mn,E0+Mn-Mchi):Er=f_chieXsection[ii]->GetRandom(Ethr+Me,E0+Me-Mchi));
+	/*1a: correct the proton energy for binding effects*/
+	if (procID==Proc_Pelastic){
+		Er=Er-Pbinding; /*Effective binding energy correction*/
+	}
+
+	/*1b: compute x-section total . No time consuming, since integrals are cached!*/
+	(procID==Proc_Pelastic ? sigma=f_chipXsection[ii]->Integral(Pthr+Pbinding+Mn,E0+Mn-Mchi):sigma=f_chieXsection[ii]->Integral(Ethr+Me,E0+Me-Mchi));
+
 	/*2: compute recoil chi total energy*/
 	(procID==Proc_Pelastic ? Echi=E0+Mn-Er : Echi=E0+Me-Er);
 	
@@ -246,11 +256,8 @@ double KinUtils::doElasticRecoil(const TLorentzVector &chi,TLorentzVector &recoi
 	recoil_chi.SetVect(pchi);
 	recoil_chi.SetE(Echi);
 
-	//no time consuming, since integrals are cached!
-	(procID==Proc_Pelastic ? ret=f_chipXsection[ii]->Integral(Pthr+Mn,E0+Mn-Mchi):ret=f_chieXsection[ii]->Integral(Ethr+Me,E0+Me-Mchi));
-	
-	
-	return ret;
+
+	return sigma;
 
 
 }
@@ -278,7 +285,7 @@ double KinUtils::findInteractionPoint(const TLorentzVector &chi,const TVector3 &
 	int sigPx,sigPy;
 
 	sigPx = ( chi.Px()>0 ? 1 : -1);
-        sigPy = ( chi.Py()>0 ? 1 : -1);
+    sigPy = ( chi.Py()>0 ? 1 : -1);
 
 	tz=fiducialV.Z()/chi.Pz();
 	tx=(sigPx*fiducialV.X()/2-vin.X())/chi.Px();

@@ -32,6 +32,7 @@ class KinUtils{
 		double Epsilon,AlphaDark,Alpha;
 
 		double Pthr,Ethr; //the two thresholds in GeV for the recoil proton kinetic energy and the recoil electron kinetic energy.
+		double Pbinding; //the proton binding energy in GeV (for the recoil proton);
 		int Seed;
 		TRandom3 Rand;
 
@@ -41,7 +42,7 @@ class KinUtils{
 	public:
 
 
-		KinUtils(const double &m_Ebeam,const double &m_Mchi,const double &m_Maprime,const double &m_Msplit,const double &m_Epsilon,const double &m_alphaD,const double &m_Pthr,const double &m_Ethr,const int &m_Seed);
+		KinUtils(const double &m_Ebeam,const double &m_Mchi,const double &m_Maprime,const double &m_Msplit,const double &m_Epsilon,const double &m_alphaD,const double &m_Pthr,const double &m_Pbinding,const double &m_Ethr,const int &m_Seed);
 		void PrintParameters();
 		void setAlpha(double m_Alpha){Alpha=m_Alpha;};
 		void setAlphaD(double m_AlphaDark){AlphaDark=m_AlphaDark;};
