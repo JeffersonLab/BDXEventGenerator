@@ -29,15 +29,17 @@ Alpha(1./137.){
 		 */
 		cout<<"KinUtils::KinUtils setting the cross-section functions";
 		for (int ii = 0; ii < nFunctionsElastic; ii++) {
-			f_chipXsection[ii] = new TF1(Form("f_chipXsection_%i", ii),this,&KinUtils::Er_chipXsection, Pthr+Mn, Ebeam+Mn-Mchi, 1);
+			f_chipXsection[ii] = new TF1(Form("f_chipXsection_%i", ii),this,&KinUtils::Er_chipXsection, Pthr+Pbinding+Mn, Ebeam+Mn-Mchi, 1);
 			f_chipXsection[ii]->SetNpx(1000);
 			f_chipXsection[ii]->FixParameter(0, (ii + 1) * Ebeam / nFunctionsElastic);
+
 			f_chieXsection[ii] = new TF1(Form("f_chieXsection_%i", ii),this,&KinUtils::Er_chieXsection, Ethr+Me, Ebeam+Me-Mchi, 1);
 			f_chieXsection[ii]->SetNpx(1000);
 			f_chieXsection[ii]->FixParameter(0, (ii + 1) * Ebeam / nFunctionsElastic);
-			//cout<<f_chipXsection[ii]->Integral(Pthr+Mn,Ebeam)<<" "<<f_chieXsection[ii]->Integral(Ethr+Me,Ebeam)<<endl;
-			if (Pthr<(Ebeam-Mchi))	f_chipXsection[ii]->Integral(Pthr+Mn,Ebeam+Mn-Mchi);
-			if (Ethr<(Ebeam-Mchi))  f_chieXsection[ii]->Integral(Ethr+Me,Ebeam+Me-Mchi);
+
+			/*Cache the integrals*/
+			if ((Pbinding+Pthr)<(Ebeam-Mchi))	f_chipXsection[ii]->Integral(Pthr+Pbinding+Mn,Ebeam+Mn-Mchi);
+			if (Ethr<(Ebeam-Mchi)) 				f_chieXsection[ii]->Integral(Ethr+Me,Ebeam+Me-Mchi);
 		}
 
 		cout<<"KinUtils::KinUtils created"<<endl;
@@ -207,12 +209,13 @@ double KinUtils::doElasticRecoil(const TLorentzVector &chi,TLorentzVector &recoi
 	else if (procID==Proc_Eelastic){
 		if (Ethr>(E0-Mchi)) return 0; //this event is not compatible with the threshold, it is useless to proceed further
 	}
-	
+
 	(procID==Proc_Pelastic ? Er=f_chipXsection[ii]->GetRandom(Pthr+Pbinding+Mn,E0+Mn-Mchi):Er=f_chieXsection[ii]->GetRandom(Ethr+Me,E0+Me-Mchi));
 	/*1a: correct the proton energy for binding effects*/
 	if (procID==Proc_Pelastic){
 		Er=Er-Pbinding; /*Effective binding energy correction*/
 	}
+
 
 	/*1b: compute x-section total . No time consuming, since integrals are cached!*/
 	(procID==Proc_Pelastic ? sigma=f_chipXsection[ii]->Integral(Pthr+Pbinding+Mn,E0+Mn-Mchi):sigma=f_chieXsection[ii]->Integral(Ethr+Me,E0+Me-Mchi));
@@ -255,7 +258,6 @@ double KinUtils::doElasticRecoil(const TLorentzVector &chi,TLorentzVector &recoi
 	recoil.SetE(Er);
 	recoil_chi.SetVect(pchi);
 	recoil_chi.SetE(Echi);
-
 
 	return sigma;
 

@@ -130,7 +130,7 @@
  18.0 = MCz	      ! To write out the LUND file, the fiducial volume FRONT-FACE center-z in MC coordinates (m) 
  0    = MCy           ! To write out the LUND file, the fiducial volume FRONT-FACE center-y in MC coordinates (m) 
  0    = MCx           ! To write out the LUND file, the fiducial volume FRONT-FACE center-x in MC coordinates (m) 
- 1 = procid           ! which process to simulate after MADGRAPH: 0 none, 1 proton elastic, 2 electron elastic, 3 inelastic 
+ 2 = procid           ! which process to simulate after MADGRAPH: 0 none, 1 proton elastic, 2 electron elastic, 3 inelastic 
  5E-3 = pTHR          ! The recoil proton kinetic energy threshold GeV. Used only in the second stage (after MADGRAPH) 
  8.5E-3 = pBINDING    ! Proton binding energy in the detector nuclei, for the proton quasi-elastic case, in GeV. Used only in the second stage (after MADGRAPH) 
  10E-3 = eTHR         ! The recoil electron kinetic energy threshold GeV. Used only in the second stage (after MADGRAPH) 

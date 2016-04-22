@@ -123,6 +123,8 @@ void writeLund(ofstream &ofile,LHEF::HEPEUP &data){
 
 
 double AnalyseParticles(LHEF::Reader *reader) {
+
+
 	LHEF::HEPEUP &hepeup = reader->hepeup;              /*This is a reference!*/
 	const LHEF::HEPRUP &heprup = reader->heprup; 		/*This is a reference!*/
 	long PID;
@@ -178,6 +180,7 @@ double AnalyseParticles(LHEF::Reader *reader) {
 			continue;
 		}
 	}
+
 	//now we know how many chis are inside (n_inside). Take 1 random.
 	if (n_inside!=0){
 		std::random_shuffle (ii_inside.begin(), ii_inside.end() );
@@ -350,8 +353,8 @@ int main(int argc, char *argv[]) {
 
 			}
 			//This is the function that triggers the interaction in the fiducial volume.
-			if (inputReader->heprup.procid)
-				thisW=AnalyseParticles(inputReader); //this also returns the "corrected" event weight (production weight * interaction probability * dump luminosity)
+			thisW=0;
+			if (inputReader->heprup.procid)	thisW=AnalyseParticles(inputReader); //this also returns the "corrected" event weight (production weight * interaction probability * dump luminosity)
 			W+=thisW;
 			if (thisW>0){
 				Nin++;
@@ -364,6 +367,7 @@ int main(int argc, char *argv[]) {
 
 			progressBar.Update(entry);
 			++entry;
+
 		}
 		progressBar.Finish();
 	}
