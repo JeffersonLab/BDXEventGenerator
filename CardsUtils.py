@@ -63,16 +63,16 @@ def CheckElectronShowering(run_card_name,verbose=False):
         #Now check values
         #E0
         if (name=="ebeam1"):
-            Emax = val;
+            Emax = float(val);
         elif ((isBDX==True)and(name=="USESHOWERING")):
-            if (val>=1):
+            if (int(val)>=1):
                  useShowering = True;
             else:
                  useShowering = False;
         elif ((isBDX==True)and(name=="EMINSHOWERING")):
-            Emin = val;
+            Emin = float(val);
         elif ((isBDX==True)and(name=="NBINSSHOWERING")):
-            n = val;
+            n = int(val);
     run_card.close();
     
     if (verbose==True):

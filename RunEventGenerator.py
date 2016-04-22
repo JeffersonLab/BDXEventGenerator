@@ -82,9 +82,6 @@ print bcolors.OKGREEN,"Requested: ",NrequestedTOT," events "
 #next, check if, in the run_card, an option to use electron showering in the dump was implemented
 #This will return a bool (yes/no), the Emin value,the Emax==Ebin value, the number of bins to use
 UseElectronShowering,Emin,Emax,nbins = CheckElectronShowering(run_card_name,True)
-Emin = float(Emin)
-Emax = float(Emax)
-nbins= int(nbins)
 deltaE = (Emax-Emin)/(nbins);
 
 if (no_showering==True):
@@ -173,7 +170,7 @@ else:
     for ii in range(nbins):
          nRequestedEvents.append(int(NormWeights[ii]*NrequestedTOT));
          print bcolors.OKGREEN,"Bin ",ii," with energy ",Energy[ii]," requested: ",nRequestedEvents[ii]," events, available: ",nGeneratedEvents[ii]," events ",bcolors.ENDC
-    
+     
     #Now check if ALL the bins have the necessary events. If not, we need to rescale.
     frac=1.
     fracMin=1.
@@ -200,17 +197,19 @@ else:
          lhefnameThisRun = MadGraphEventsLocation+"/"+run_name+"_"+str(ii)+"_unweighted_events.lhe"
          AppendEventsToLHEFileNewWeight(nRequestedEvents[ii],totalWeight/NTOT,lhefnameThisRun,lhefname)
     CloseLHEFile(lhefname)
-    print bcolors.OKGREEN,"LHE file was written",bcolors.ENDC         
+    print bcolors.OKGREEN,"LHE file was written...",bcolors.ENDC         
 
-#At this point, we have generated chi-chi events in MadGraph, and we have also computed correctly the total cross-section.
-#Second part: detector interaction  
-    os.chdir(DetectorInteractionLocation);
-    #Force recompilation
-    command = "make clean ; make"
-    os.system(command)
-    #run it
-    lhefname = MadGraphEventsLocation+"/"+run_name+"_unweighted_events.lhe"
-    lhefnameOUT = DetectorInteractionEventsLocation+"/"+run_name
-    command = "./DetectorInteraction.exe "+lhefname+" "+lhefnameOUT  
-    os.system(command)
-    os.chdir(EventGeneratorLocation)
+#   At this point, we have generated chi-chi events in MadGraph, and we have also computed correctly the total cross-section.
+    #Second part: detector interaction  
+print bcolors.OKGREEN," Compiling DetectorInteraction ",bcolors.ENDC
+os.chdir(DetectorInteractionLocation);
+#Force recompilation
+command = "make clean ; make"
+os.system(command)
+#run it 
+print bcolors.OKGREEN," Running DetectorInteraction ",bcolors.ENDC
+lhefname = MadGraphEventsLocation+"/"+run_name+"_unweighted_events.lhe"
+lhefnameOUT = DetectorInteractionEventsLocation+"/"+run_name
+command = "./DetectorInteraction.exe "+lhefname+" "+lhefnameOUT  
+os.system(command)
+os.chdir(EventGeneratorLocation)

@@ -41,7 +41,7 @@ double msigma=0;
 double mL=0;
 
 /*These are here for writeLund*/
-TVector3 vin, vhit,vout, fiducialV;
+TVector3 vin, vhit,vout, fiducialV,vMC;
 
 //---------------------------------------------------------------------------
 
@@ -68,7 +68,7 @@ void writeLund(ofstream &ofile,LHEF::HEPEUP &data){
 
 			vx=vhit.X();
 			vy=vhit.Y();
-			vz=vhit.Z();
+			vz=vhit.Z(); /*in cm*/
 
 		}
 		else if (pdg==9611){
@@ -149,6 +149,10 @@ double AnalyseParticles(LHEF::Reader *reader) {
 	//init vout
 	vout.SetXYZ(0.,0.,0.);
 
+	//Set the coordinate of the fiducial volume front face center in MC-Geant4 coordinates
+	vMC.SetXYZ(heprup.MCcenterX,heprup.MCcenterY,heprup.MCcenterZ); //by definition this point, in the "MadGraph" reference, is at (0,0,ldet)
+
+
 	w=hepeup.XWGTUP; //this is the event weight, in pbarn, as given by Madgraph. --> Cross section is the sum over the events of the event weight
 	ndet=heprup.NDET;
 	for (particle = 0; particle < hepeup.NUP; ++particle) {
@@ -205,6 +209,12 @@ double AnalyseParticles(LHEF::Reader *reader) {
 				L=L*100; //since the above returns it in m;
 				mL+=L;
 				w=w*L*heprup.NDET*sigma;      /*Multiply the total cross-section * interaction length of this event * weight (pbarn) of this event*/
+
+				//correct the particles positions in Geant4-MC format//
+				vin.SetXYZ(vin.X()+vMC.X(),vin.Y()+vMC.Y(),vin.Z()+vMC.Z()-heprup.ldet);
+				vout.SetXYZ(vout.X()+vMC.X(),vout.Y()+vMC.Y(),vout.Z()+vMC.Z()-heprup.ldet);
+				vhit.SetXYZ(vhit.X()+vMC.X(),vhit.Y()+vMC.Y(),vhit.Z()+vMC.Z()-heprup.ldet);
+
 				//add particles to hepeup
 				//final state chi
 				hepeup.IDUP.push_back(9611);
