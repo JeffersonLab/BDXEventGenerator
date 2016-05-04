@@ -66,9 +66,9 @@ void writeLund(ofstream &ofile,LHEF::HEPEUP &data){
 			if (pdg==911) charge=-1;
 			else if (pdg==92212) charge=1;
 
-			vx=vhit.X();
-			vy=vhit.Y();
-			vz=vhit.Z(); /*in cm*/
+			vx=vhit.X()*100;
+			vy=vhit.Y()*100;
+			vz=vhit.Z()*100; /*in cm*/
 
 		}
 		else if (pdg==9611){
@@ -83,9 +83,7 @@ void writeLund(ofstream &ofile,LHEF::HEPEUP &data){
 			}
 		}
 	}
-
 	if (isGood!=7){
-		cout<<isGood<<" BBB "<<endl;
 		return; /*For same reasons, in this events not all the particles where there??*/
 	}
 	else{
@@ -259,7 +257,6 @@ double AnalyseParticles(LHEF::Reader *reader) {
 			cout << "Error, interaction not recognized" << endl;
 			break;
 		}
-
 	}
 	/*use the eventComments for the vertex location (in m, in the form x y z)
 	use the eventComments also to report the "production weight * interaction probability * dump luminosity".
