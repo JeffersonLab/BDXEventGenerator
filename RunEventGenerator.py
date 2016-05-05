@@ -39,6 +39,7 @@ parser.add_argument('--run_name',type=str,required=True,help="Run name",default=
 parser.add_argument('--run_card',type=str, required=True,help='Run card to use')
 parser.add_argument('--param_card',type=str,help='Param card to use',default='Cards/param_card.dat');
 parser.add_argument('--proc_card',type=str,help='Proc card to use',default='Cards/proc_card.dat');
+parser.add_argument('--max_attempts',type=int,default=3,help="Number of attempts per bin");
 parser.set_defaults(no_showering=False);
 
 parser.add_argument('--force_no_showering',dest='no_showering',action='store_true',help='Ignore showering effects, no matter what is used in the run_card');
@@ -50,7 +51,7 @@ run_name = args.run_name;
 run_card_name=args.run_card;
 param_card_name=args.param_card;
 proc_card_name=args.proc_card;
-
+max_attempts=args.max_attempts;
 
 Energy = [];               #Array  of bin-center energy (GeV)
 nGeneratedEvents = [];     #Array  of number of generated events per energy bin
@@ -128,33 +129,48 @@ else:
     print bcolors.OKGREEN,"Calling MadGraph ",nbins," times for run name: ",run_name,bcolors.ENDC
     
     for ii in range(nbins):
-        Ei = Emin + deltaE/2 + deltaE * ii;                                                      #This is the energy to be used in this run
-        CreateRunCardDifferentEnergy(Ei,run_card_name,MadGraphCardsLocation+"/run_card.dat");  #This function create the run card
-        shutil.copy(proc_card_name,MadGraphCardsLocation);
-        shutil.copy(param_card_name,MadGraphCardsLocation);
-        print  bcolors.OKGREEN,"Energy: ",Ei,bcolors.ENDC
-        os.chdir(MadGraphLocation)
-        this_run_name=run_name+"_"+str(ii)
-        command = "./bin/generate_events_new 0 "+this_run_name;  
-        os.system(command)  
-        command = "cd Events ; gzip -d "+this_run_name+"_unweighted_events.lhe.gz"     #Ok, this seems stupid since I am using gzip -d after MadGraph did a gzip. But I do not want to touch madgraph  
-        lhefname = MadGraphEventsLocation+"/"+this_run_name+"_unweighted_events.lhe"
-        os.system(command)
-        
-        os.chdir(EventGeneratorLocation)  
-        os.remove(MadGraphCardsLocation+"/run_card.dat");
-        os.remove(MadGraphCardsLocation+"/proc_card.dat");
-        os.remove(MadGraphCardsLocation+"/param_card.dat");
-        
-        nGeneratedEventsThisRun,sigmaThisRun = GetGeneratedEventsNandSigma(lhefname)
-        nGeneratedEvents.append(nGeneratedEventsThisRun);
-        Energy.append(Ei);
-        Sigmas.append(sigmaThisRun);
-        DensityThisRun = dNdEIntegral(Ei)*deltaE;
-        WeightThisRun = DensityThisRun * sigmaThisRun;
-        Density.append(DensityThisRun);
-        Weights.append(WeightThisRun);
-        print bcolors.OKGREEN,"DONE: number of generated events is: ",nGeneratedEventsThisRun," cross section pb is: ",sigmaThisRun," density is: ",DensityThisRun,bcolors.ENDC
+
+        flagThisLoopIteration=True;
+        attemptsThisBin = 0;
+        while(flagThisLoopIteration):
+            Ei = Emin + deltaE/2 + deltaE * ii;                                                      #This is the energy to be used in this run
+            CreateRunCardDifferentEnergy(Ei,run_card_name,MadGraphCardsLocation+"/run_card.dat");    #This function create the run card
+            shutil.copy(proc_card_name,MadGraphCardsLocation);
+            shutil.copy(param_card_name,MadGraphCardsLocation);
+            print  bcolors.OKGREEN,"Energy: ",Ei,bcolors.ENDC
+            os.chdir(MadGraphLocation)
+            this_run_name=run_name+"_"+str(ii)
+            command = "./bin/generate_events_new 0 "+this_run_name;  
+            os.system(command)  
+            command = "cd Events ; gzip -d "+this_run_name+"_unweighted_events.lhe.gz"     #Ok, this seems stupid since I am using gzip -d after MadGraph did a gzip. But I do not want to touch madgraph  
+            lhefname = MadGraphEventsLocation+"/"+this_run_name+"_unweighted_events.lhe"
+            os.system(command)
+            
+            os.chdir(EventGeneratorLocation)  
+            os.remove(MadGraphCardsLocation+"/run_card.dat");
+            os.remove(MadGraphCardsLocation+"/proc_card.dat");
+            os.remove(MadGraphCardsLocation+"/param_card.dat");
+            
+            nGeneratedEventsThisRun,sigmaThisRun = GetGeneratedEventsNandSigma(lhefname)
+            if (nGeneratedEventsThisRun==0):
+                print bcolors.WARNING,"Error! 0 events generated. Trying again this bin. Next attempt is: ",str(attemptsThisBin),bcolors.ENDC
+                attemptsThisBin = attemptsThisBin+1
+                if (attemptsThisBin == max_attempts):
+                    print bcolors.FAIL,"Error Error Error",bcolor.ENDC  
+                    print bcolors.FAIL,"Error Error Error: max number of attempts exceeded. End Program here!",bcolors.ENDC
+                    sys.exit(0)  
+            else:   
+                flagThisLoopIteration=False;  #This will break the while loop
+                nGeneratedEvents.append(nGeneratedEventsThisRun);
+                Energy.append(Ei);
+                Sigmas.append(sigmaThisRun);
+                DensityThisRun = dNdEIntegral(Ei)*deltaE;
+                WeightThisRun = DensityThisRun * sigmaThisRun;
+                Density.append(DensityThisRun);
+                Weights.append(WeightThisRun);
+                print bcolors.OKGREEN,"DONE. This attempt was: ",str(attemptsThisBin),bcolors.ENDC
+                print bcolors.OKGREEN,"DONE: number of generated events is: ",nGeneratedEventsThisRun," cross section pb is: ",sigmaThisRun," density is: ",DensityThisRun,bcolors.ENDC
+                print ""
         
     #At this point, we have generated madgraph events for all the energies Ei. We also have ALL the cross-sections and all the dn/dE|E=Ei    
  

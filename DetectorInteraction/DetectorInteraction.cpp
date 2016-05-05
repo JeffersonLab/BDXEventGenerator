@@ -115,7 +115,7 @@ void writeLund(ofstream &ofile,LHEF::HEPEUP &data){
 		pdg=data.IDUP[idParticle];
 		if (pdg==911) pdg=11;
 		else if (pdg==92212) pdg=2212;
-		ofile<<"3 1 "<<charge<<" "<<pdg<<" 0 0 "<<Px<<" "<<Py<<" "<<Pz<<" "<<E<<" "<<M<<" "<<vx<<" "<<vy<<" "<<vz<<endl;
+		ofile<<"3 "<<charge<<" 1 "<<pdg<<" 0 0 "<<Px<<" "<<Py<<" "<<Pz<<" "<<E<<" "<<M<<" "<<vx<<" "<<vy<<" "<<vz<<endl;
 	}
 }
 
