@@ -123,11 +123,11 @@
 # 
 #*******************                                                 
 # <BDX> DO NOT TOUCH THIS TAG
- 19.99 = ldet            ! distance between beam-dump front face and fiducial volume front face in meters 
+ 20.07 = ldet            ! distance between beam-dump front face and fiducial volume front face in meters 
  2.97 = fiduciallz       ! fiducial volume length along z (along primary beam axis) in meters 
- 0.554 = fiducially     ! fiducial volume length along y (vertical)   in meters 
+ 0.574 = fiducially     ! fiducial volume length along y (vertical)   in meters 
  0.514 = fiduciallx    ! fiducial volume length along x (horizontal) in meters 
- 18.098 = MCz	      ! To write out the LUND file, the fiducial volume FRONT-FACE center-z in MC coordinates (m) 
+ 18.09 = MCz	      ! To write out the LUND file, the fiducial volume FRONT-FACE center-z in MC coordinates (m) 
  0    = MCy           ! To write out the LUND file, the fiducial volume FRONT-FACE center-y in MC coordinates (m) 
  0    = MCx           ! To write out the LUND file, the fiducial volume FRONT-FACE center-x in MC coordinates (m) 
  2 = procid           ! which process to simulate after MADGRAPH: 0 none, 1 proton elastic, 2 electron elastic, 3 inelastic 
