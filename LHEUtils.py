@@ -1,6 +1,6 @@
 #!/usr/local/bin/python
 import string,math,os
-from utils import is_number
+
 
 #This function reads the LHE file given and returns:
 # the number of actually generated events present in the file

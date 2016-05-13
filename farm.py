@@ -1,13 +1,13 @@
 #!/usr/local/bin/python
 
-import string,math,os,sys,subprocess,shutil,utils
+import string,math,os,sys,subprocess,shutil
 
 EventGeneratorLocation=os.environ['BDX_EVENT_GENERATOR']
 os.chdir(EventGeneratorLocation)
 runList=open("run/runs.dat", "r")
 lines = runList.readlines()
 #each line must be written as:
-#TAG Ma Mchi epsilon alphaD Nevents Ebeam Ldump Lx Ly Lz
+#TAG Ma Mchi epsilon alphaD Nevents Ebeam Ldump Lx Ly Lz procid
 #each line starting with "#" is a comment
 command = "rm run/log*"
 os.system(command)

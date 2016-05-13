@@ -20,15 +20,89 @@ import numpy
 ## 2)Ein: the energy in GeV 
 ## dNdE Integral
 
-## dNdEintegral is the dn/dE(t) integrated OVER t between tMIN and tMAX. 
-## Parameters are:
-## 1) Ein: the electron energy in MeV
-## 2) cut: the integration range in radiation units!
-
 def dNdEIntegrand(x,Ein):
     par=[]
-    par.append(0.) # Par0
-    par.append(481.2) # Par1
+    par.append(0.)  #useless parameter
+    par.append(787.)
+    par.append(-108.6)
+    par.append(1.564)
+    par.append(2445)
+    par.append(29920)
+    par.append(0.1122)
+    par.append(632.5)
+    par.append(-583.1)
+    par.append(7208)
+    par.append(1.055)
+    par.append(0.8282)
+    par.append(1.795)
+    par.append(-0.07442)
+    par.append(0.0287)
+
+
+    ret=0.
+    termp=0.
+    N1=0.
+    E1=1000000.
+    N2=0.
+    E2=0.009
+    E0=11000.
+    Ecut=1000.
+    Norm=1.
+    E=Ein*1000.
+
+    #N1
+    N1p0 = par[1]
+    N1p1 = par[2]
+    N1p2 = par[3]
+    u = x-0.1    
+    f= u*(N1p2*u*u+N1p1*u+N1p0)*(1-math.exp(-u/0.4))*math.exp(-u/8);
+    if(f>0. and u>0.):
+        N1  =  f
+
+    #E1
+    E1p0 = par[4]
+    if(x>0.01):
+        E1 = E1p0/math.pow(x,3./4.);
+        
+    # N2 
+    N2p0 = par[5];
+    N2p1 = par[6];
+    N2p2 = par[7];
+    N2p3 = par[8];
+    if(x < 0.5):
+        N2  =  N2p0*math.exp(-x/N2p1);
+    else:
+        temp = N2p2 + N2p3*x;
+        if(temp>0):
+            N2 = temp
+      
+    #E2
+    E2p0 = par[9];
+    if(x>0.01):
+        E2 = (E2p0*x*x)*(1-math.exp(-x/0.09))
+
+    #normalization
+    Normp0 = par[10]
+    Normp1 = par[11]
+    Normp2 = par[12]
+    Normp3 = par[13]
+    Normp4 = par[14]
+        
+    Norm = math.exp(-x*Normp0)*(1+Normp1*x+Normp2*x*x+Normp3*x*x*x+Normp4*x*x*x*x);
+
+    deltaE = E0-Ecut;
+
+    ret = Norm*(N1*math.exp(-(E-Ecut)/E1) + N2*math.exp((E-E0)/E2))/(E1*N1*(1 - math.exp(-deltaE/E1)) + E2*N2*(1 - math.exp(-deltaE/E2)));
+    
+    ret*=1000; #This is necessary, since the dN/dE was with E in MeV (there is a differential factor)
+    return ret; 
+
+
+
+def dNdEIntegrand_nopositrons(x,Ein):
+    par=[]
+    par.append(0.)     # Par0
+    par.append(481.2)  # Par1
     par.append(-82.23) # Par2
     par.append(2.878)  # Par3
     par.append(2600.)  # Par4
@@ -97,6 +171,12 @@ def dNdEIntegrandTsaiFormula(x,Ein0):
     integrand*=1000;#This is necessary, since the dN/dE was with E in MeV (there is a differential factor)
     return integrand
 
+
+
+## dNdEintegral is the dn/dE(t) integrated OVER t between tMIN and tMAX. 
+## Parameters are:
+## 1) Ein: the electron energy in MeV
+## 2) cut: the integration range in radiation units!
 
 
 

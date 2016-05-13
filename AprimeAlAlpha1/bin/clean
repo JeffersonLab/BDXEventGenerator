@@ -27,7 +27,7 @@ if [[ -d SubProcesses ]]; then
 	rm -f madevent >& /dev/null
 	rm -f *ajob* >& /dev/null
 	rm -f gensym >& /dev/null
-        rm -f G*/ftn* >& /dev/null
+    rm -f G*/ftn* >& /dev/null
 	rm -f G*/events.lhe >& /dev/null
 	cd ..
     done

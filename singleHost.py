@@ -1,6 +1,6 @@
 #!/usr/local/bin/python
 
-import string,math,os,sys,subprocess,shutil,utils
+import string,math,os,sys,subprocess,shutil,CardsUtils
 
 EventGeneratorLocation=os.environ['BDX_EVENT_GENERATOR']
 os.chdir(EventGeneratorLocation)
@@ -34,16 +34,16 @@ for line in lines:
 			word=word+"\t"
 			sys.stdout.write(word)
 		print ""
-		utils.createRunCard(nevents,eBeam,ldet,Lx,Ly,Lz,procid)
-		utils.createParamCard(mA,mChi,eps,alphaD)
+		CardsUtils.createRunCard(nevents,eBeam,ldet,Lx,Ly,Lz,procid)
+		CardsUtils.createParamCard(mA,mChi,eps,alphaD)
 		runfile = open("run/tmp.csh", "w")
 		runfile.write("#!/bin/tcsh -f\n")
 		runfile.write("cd "+EventGeneratorLocation+" \n")
-		runfile.write("cp run/run_card.dat AprimeAlAlpha1/Cards\n")
-		runfile.write("cp run/param_card.dat AprimeAlAlpha1/Cards\n")
-		runfile.write("cd AprimeAlAlpha1 \n")
+		runfile.write("mv run/run_card.dat Cards\n")
+		runfile.write("mv run/param_card.dat Cards\n")
+		runfile.write("cd $BDX_EVENT_GENERATOR \n")
 		runfile.write("pwd \n")
-		runfile.write("./bin/generate_events 0 "+tag+"\n")
+		runfile.write("python RunEventGenerator.py --run_name "+tag+" --run_card Cards/run_card.dat --param_card Cards/param_card.dat \n")
 		runfile.close()
 		os.chmod("run/tmp.csh",0755)
 		subprocess.call("run/tmp.csh",shell=True)

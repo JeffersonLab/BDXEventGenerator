@@ -17,7 +17,7 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
-
+print "BDX EVENT GENERATOR PYTHON SCRIPT"
 
 #check current working dir
 EventGeneratorLocation  = os.environ['BDX_EVENT_GENERATOR']
