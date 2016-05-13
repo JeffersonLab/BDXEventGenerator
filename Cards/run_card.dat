@@ -123,23 +123,23 @@
 # 
 #*******************                                                 
 # <BDX> DO NOT TOUCH THIS TAG
- 20 = ldet ! distance between beam-dump front face and fiducial volume front face in meters 
- 2.9 = fiduciallz ! fiducial volume length along z (along primary beam axis) in meters 
- 0.5 = fiducially ! fiducial volume length along y (vertical) in meters 
- 0.56 = fiduciallx ! fiducial volume length along x (horizontal) in meters 
- 18.0 = MCz ! To write out the LUND file, the fiducial volume FRONT-FACE center-z in MC coordinates (m) 
- 0 = MCy ! To write out the LUND file, the fiducial volume FRONT-FACE center-y in MC coordinates (m) 
- 0 = MCx ! To write out the LUND file, the fiducial volume FRONT-FACE center-x in MC coordinates (m) 
- 1 = procid ! which process to simulate after MADGRAPH: 0 none, 1 proton elastic, 2 electron elastic, 3 inelastic 
- 5E-3 = pTHR ! The recoil proton kinetic energy threshold GeV. Used only in the second stage (after MADGRAPH) 
- 8.5E-3 = pBINDING ! Proton binding energy in the detector nuclei, for the proton quasi-elastic case, in GeV. Used only in the second stage (after MADGRAPH) 
- 10E-3 = eTHR ! The recoil electron kinetic energy threshold GeV. Used only in the second stage (after MADGRAPH) 
- 1.127E24 = NDET ! The number of scatter centers per unit of volume in the detector (cm^-3), Nav/A * rho * Z (valid both for e- scattering and quasi-elastic) 
- 6.02E22 = NDUMP ! The number of scatter centers per unit of volume in the dump (cm^-3), Nav/A * rho (if we consider the interaction with the dump nuclei as a whole) 
- 8.9 = LDUMP ! The dump radiation length in cm 
- 1 = USESHOWERING ! Include - or not - the showering effect in the dump 
- 1 = EMINSHOWERING ! The minimum energy to consider for e- when considering the showering, in GeV 
- 10 = NBINSSHOWERING ! The number of discrete bins to consider for the showering 
+ 19.99 = ldet            ! distance between beam-dump front face and fiducial volume front face in meters 
+ 2.97 = fiduciallz       ! fiducial volume length along z (along primary beam axis) in meters 
+ 0.554 = fiducially     ! fiducial volume length along y (vertical)   in meters 
+ 0.514 = fiduciallx    ! fiducial volume length along x (horizontal) in meters 
+ 18.098 = MCz	      ! To write out the LUND file, the fiducial volume FRONT-FACE center-z in MC coordinates (m) 
+ 0    = MCy           ! To write out the LUND file, the fiducial volume FRONT-FACE center-y in MC coordinates (m) 
+ 0    = MCx           ! To write out the LUND file, the fiducial volume FRONT-FACE center-x in MC coordinates (m) 
+ 2 = procid           ! which process to simulate after MADGRAPH: 0 none, 1 proton elastic, 2 electron elastic, 3 inelastic 
+ 5E-3 = pTHR          ! The recoil proton kinetic energy threshold GeV. Used only in the second stage (after MADGRAPH) 
+ 8.5E-3 = pBINDING    ! Proton binding energy in the detector nuclei, for the proton quasi-elastic case, in GeV. Used only in the second stage (after MADGRAPH) 
+ 10E-3 = eTHR         ! The recoil electron kinetic energy threshold GeV. Used only in the second stage (after MADGRAPH) 
+ 1.127E24 = NDET      ! The number of scatter centers per unit of volume in the detector (cm^-3), Nav/A * rho * Z (valid both for e- scattering and quasi-elastic) 
+ 6.02E22 = NDUMP      ! The number of scatter centers per unit of volume in the dump (cm^-3), Nav/A * rho (if we consider the interaction with the dump nuclei as a whole) 
+ 8.9 = LDUMP          ! The dump radiation length in cm
+ 1   = USESHOWERING   ! Include - or not - the showering effect in the dump
+ 1   = EMINSHOWERING  ! The minimum energy to consider for e- when considering the showering, in GeV
+ 10  = NBINSSHOWERING ! The number of discrete bins to consider for the showering
 # </BDX> DO NOT TOUCH THIS TAG
 # 
 #*******************                                                 
