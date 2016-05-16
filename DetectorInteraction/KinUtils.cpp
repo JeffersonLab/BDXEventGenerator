@@ -24,11 +24,20 @@ Alpha(1./137.){
 
 		/*This part is really critical. The cross-section is a function of the final state recoil energy, and as "parameter" needs the incoming
 		 * chi energy. However, if event-by-event we set this parameter, and then call a "GetRandom", we trigger the integration computation for ALL events,
-		 * and this is very time-consuming.
+		 * and this is very time-consuming. Instead, if the integration is already performed, a second integration (even in a different range) is not time-consuming.
 		 * Instead, I "bin" wrt the incoming chi energy (100 bins), and then extract the random number from the function defining the energy in that bin!
+		 *
+		 * MINIMUM value of the recoil total energy: its mass + threshold + binding energy
+		 * MAXIMUM value: the actual form of the maximum value is complicated (see below), but a very upper limit is: primary e- beam energy + its mass - chi mass.
+		 *
+		 * It should be fine to use this MAX value to cache integrals, the actual max value is seen below.
 		 */
+
+
 		cout<<"KinUtils::KinUtils setting the cross-section functions";
+		double Trmax_protonElastic,Trmax_electronElastic;
 		for (int ii = 0; ii < nFunctionsElastic; ii++) {
+
 			f_chipXsection[ii] = new TF1(Form("f_chipXsection_%i", ii),this,&KinUtils::Er_chipXsection, Pthr+Pbinding+Mn, Ebeam+Mn-Mchi, 1);
 			f_chipXsection[ii]->SetNpx(1000);
 			f_chipXsection[ii]->FixParameter(0, (ii + 1) * Ebeam / nFunctionsElastic);
@@ -191,6 +200,7 @@ double KinUtils::doElasticRecoil(const TLorentzVector &chi,TLorentzVector &recoi
 	TVector3 v0,v1,v2;
 	TVector3 p0,pr,pchi;
 	double E0,Er,Echi;
+	double Tr_max; //this is the maximum recoil KINETIC energy for this incoming chi
 	double P0,Pr,Pchi;
 	double ctheta_r,stheta_r,phi_r,sigma;
 	int ii;
@@ -204,13 +214,15 @@ double KinUtils::doElasticRecoil(const TLorentzVector &chi,TLorentzVector &recoi
 	if (ii>=nFunctionsElastic) ii=nFunctionsElastic-1; //should not happen!!!
 
 	if (procID==Proc_Pelastic){
-		if ((Pthr+Pbinding)>(E0-Mchi)) return 0; //this event is not compatible with the threshold, it is useless to proceed further
+		Tr_max = (2*Mn*(E0*E0-Mchi*Mchi))/(2*E0*Mn+Mn*Mn+Mchi*Mchi);
+		if (Tr_max<(Pthr+Pbinding)) return 0; //this event is not compatible with the threshold, it is useless to proceed further
 	}	
 	else if (procID==Proc_Eelastic){
-		if (Ethr>(E0-Mchi)) return 0; //this event is not compatible with the threshold, it is useless to proceed further
+		Tr_max = (2*Me*(E0*E0-Mchi*Mchi))/(2*E0*Me+Me*Me+Mchi*Mchi);
+		if (Tr_max < Ethr) return 0; //this event is not compatible with the threshold, it is useless to proceed further
 	}
 
-	(procID==Proc_Pelastic ? Er=f_chipXsection[ii]->GetRandom(Pthr+Pbinding+Mn,E0+Mn-Mchi):Er=f_chieXsection[ii]->GetRandom(Ethr+Me,E0+Me-Mchi));
+	(procID==Proc_Pelastic ? Er=f_chipXsection[ii]->GetRandom(Pthr+Pbinding+Mn,Tr_max+Mn):Er=f_chieXsection[ii]->GetRandom(Ethr+Me,Tr_max+Me));
 	/*1a: correct the proton energy for binding effects*/
 	if (procID==Proc_Pelastic){
 		Er=Er-Pbinding; /*Effective binding energy correction*/
@@ -218,7 +230,7 @@ double KinUtils::doElasticRecoil(const TLorentzVector &chi,TLorentzVector &recoi
 
 
 	/*1b: compute x-section total . No time consuming, since integrals are cached!*/
-	(procID==Proc_Pelastic ? sigma=f_chipXsection[ii]->Integral(Pthr+Pbinding+Mn,E0+Mn-Mchi):sigma=f_chieXsection[ii]->Integral(Ethr+Me,E0+Me-Mchi));
+	(procID==Proc_Pelastic ? sigma=f_chipXsection[ii]->Integral(Pthr+Pbinding+Mn,Tr_max+Mn):sigma=f_chieXsection[ii]->Integral(Ethr+Me,Tr_max+Me));
 
 	/*2: compute recoil chi total energy*/
 	(procID==Proc_Pelastic ? Echi=E0+Mn-Er : Echi=E0+Me-Er);
