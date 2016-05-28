@@ -115,7 +115,7 @@ def CreateRunCardDifferentEnergy(Ei,src_run_card_name,dest_run_card_name):
     
 def createParamCard(aMass,chiMass,epsilon,alphaD):
     print "CREATE PARAM CARD"
-    paramcardIN = open("run/param_card_base.dat", "r")
+    paramcardIN = open("Cards/param_card.dat", "r")
     paramcardOUT = open("run/param_card.dat","w")
     lines = paramcardIN.readlines()
     iii = 0
@@ -148,7 +148,7 @@ def createParamCard(aMass,chiMass,epsilon,alphaD):
     
 def createRunCard(nevents,eBeam,ldet,fiduciallx,fiducially,fiduciallz,procid):
     print "CREATE RUN CARD"
-    runcardIN = open("run/run_card_base.dat", "r")
+    runcardIN = open("Cards/run_card.dat", "r")
     runcardOUT = open("run/run_card.dat","w")
     lines = runcardIN.readlines()
     iii = 0

@@ -185,7 +185,7 @@ else:
     #Compute requested events per bin
     for ii in range(nbins):
          nRequestedEvents.append(int(NormWeights[ii]*NrequestedTOT));
-         print bcolors.OKGREEN,"Bin ",ii," with energy ",Energy[ii]," requested: ",nRequestedEvents[ii]," events, available: ",nGeneratedEvents[ii]," events ",bcolors.ENDC
+         print bcolors.OKGREEN,"Bin ",ii," with energy ",Energy[ii],"sigma: ",Sigmas[ii]," density: ",Density[ii]," requested: ",nRequestedEvents[ii]," events, available: ",nGeneratedEvents[ii]," events ",bcolors.ENDC
      
     #Now check if ALL the bins have the necessary events. If not, we need to rescale.
     frac=1.

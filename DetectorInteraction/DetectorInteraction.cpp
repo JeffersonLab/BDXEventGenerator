@@ -258,6 +258,9 @@ double AnalyseParticles(LHEF::Reader *reader) {
 			break;
 		}
 	}
+	else{ //ninside=0;
+		w=0;
+	}
 	/*use the eventComments for the vertex location (in m, in the form x y z)
 	use the eventComments also to report the "production weight * interaction probability * dump luminosity".
 	In this way, the output file is self-consistent. To have the number of events per EOT, it is sufficient to sum these weights.
@@ -368,8 +371,10 @@ int main(int argc, char *argv[]) {
 		}
 		progressBar.Finish();
 	}
-	cout<< " Events per EOT: "<<W<<endl;
 	cout << "** Exiting..." << endl;
+	cout<<" Original number of events in the file: "<<allEntries<<endl;
+	cout<<" Number  of entries actually written in output: "<<Nin<<endl;
+	cout<< " Events per EOT: "<<W<<endl;
 
 	cout<< " mean sigma: "<<msigma/Nin<<endl;
 	cout<< " mean L: "<<mL/Nin<<endl;

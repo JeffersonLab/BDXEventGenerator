@@ -214,12 +214,15 @@ double KinUtils::doElasticRecoil(const TLorentzVector &chi,TLorentzVector &recoi
 	if (ii>=nFunctionsElastic) ii=nFunctionsElastic-1; //should not happen!!!
 
 	if (procID==Proc_Pelastic){
-		Tr_max = (2*Mn*(E0*E0-Mchi*Mchi))/(2*E0*Mn+Mn*Mn+Mchi*Mchi);
+		Tr_max = (2*Mn*(E0*E0-Mchi*Mchi))/(2*E0*Mn+Mn*Mn+Mchi*Mchi);//maximum energy transfer
 		if (Tr_max<(Pthr+Pbinding)) return 0; //this event is not compatible with the threshold, it is useless to proceed further
 	}	
 	else if (procID==Proc_Eelastic){
-		Tr_max = (2*Me*(E0*E0-Mchi*Mchi))/(2*E0*Me+Me*Me+Mchi*Mchi);
-		if (Tr_max < Ethr) return 0; //this event is not compatible with the threshold, it is useless to proceed further
+		Tr_max = (2*Me*(E0*E0-Mchi*Mchi))/(2*E0*Me+Me*Me+Mchi*Mchi); //maximum energy transfer
+		if (Tr_max < Ethr){
+			//cout<<"THR IS: "<<Ethr<<" "<<Tr_max<<" "<<E0<<endl;
+			return 0; //this event is not compatible with the threshold, it is useless to proceed further
+		}
 	}
 
 	(procID==Proc_Pelastic ? Er=f_chipXsection[ii]->GetRandom(Pthr+Pbinding+Mn,Tr_max+Mn):Er=f_chieXsection[ii]->GetRandom(Ethr+Me,Tr_max+Me));

@@ -14,7 +14,7 @@ import numpy
 #The following two functions are,respectively:
 
 ## dNdEIntegrand is dn/dE(t), i.e. the number of electrons in the dump,
-## differential wrt the electron energy, at depth t (in rad. units), normalized to a single impinging electron
+## differential wrt the electron energy (in GeV), at depth t (in rad. units), normalized to a single impinging electron
 ## Parameters are: 
 ## 1)x:   the depth  in the dump
 ## 2)Ein: the energy in GeV 
@@ -182,6 +182,15 @@ def dNdEIntegrandTsaiFormula(x,Ein0):
 
 
 def dNdEIntegral(Ein,cut=[0.03,8.0]):
-    dNdE=quad(lambda x: dNdEIntegrand(x,Ein),cut[0],cut[1],epsabs=1.0e-04, epsrel=1.0e-04, limit=50000)[0]   
-   # dNdE=quad(lambda x: dNdEIntegrandTsaiFormula(x,Ein),cut[0],cut[1],epsabs=1.0e-04, epsrel=1.0e-04, limit=50000)[0]
+    ##dNdE=quad(lambda x: dNdEIntegrand(x,Ein),cut[0],cut[1],epsabs=1.0e-04, epsrel=1.0e-04, limit=50000)[0]   
+    dNdE=quad(lambda x: dNdEIntegrandTsaiFormula(x,Ein),cut[0],cut[1],epsabs=1.0e-04, epsrel=1.0e-04, limit=50000)[0]
+    fun=[0.180397,0.00408945,0.0014456,0.00069525,0.00040535,0.00027905,0.00019845,0.00016875,0.00012625,0.0001152,9.36e-05,8.74e-05,6.83e-05,7.13e-05,5.955e-05,5.82e-05,6.355e-05,6.905e-05,6.725e-05,0.00027065];
+
+    bin=(int)(Ein);
+    if (bin<0):
+	       bin=0
+    elif (bin>=19):
+	       bin=20
+   #dNdE=fun[bin]*1000; 
+
     return dNdE
