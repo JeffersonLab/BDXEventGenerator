@@ -448,6 +448,7 @@ private:
 		bool readingHeader = false;
 		bool readingInit = false;
 		bool readingBDX = false;
+		bool readingBDXComment=false;
 
 		std::string word;
 		std::stringstream stream;
@@ -465,6 +466,10 @@ private:
 		// Loop over all lines until we hit the </init> tag.
 		// Here we have info about ALL the cuts!
 		while ( getline() && currentLine.find("</init>") == std::string::npos ) {
+
+
+			readingBDXComment = (readingBDX)&&(currentLine[0]!='#');
+
 			if ( currentLine.find("<header") != std::string::npos ) {
 				// We have hit the header block, so we should dump this all
 				// following lines to headerBlock until we hit the end of it.
@@ -517,101 +522,98 @@ private:
 				std::cout<<"ALPHAD: "<<heprup.ALPHAD<<std::endl;
 				headerBlock += currentLine + "\n";
 			}
-			else if (readingBDX && ( currentLine.find("ldet") != std::string::npos) ){
+			else if (readingBDXComment && ( currentLine.find("ldet") != std::string::npos) ){
 				stream.str(currentLine);
 				stream >> word;
 				heprup.ldet=atof(word.c_str());
 				std::cout<<"ldet: "<<heprup.ldet<<std::endl;
 				headerBlock += currentLine + "\n";
 			}
-			else if (readingBDX  && ( currentLine.find("MCx") != std::string::npos) ){
+			else if (readingBDXComment  && ( currentLine.find("MCx") != std::string::npos) ){
 				stream.str(currentLine);
 				stream >> word;
 				heprup.MCcenterX=atof(word.c_str());
 				std::cout<<"MCcenterX: "<<heprup.MCcenterX<<std::endl;
 				headerBlock += currentLine + "\n";
 			}
-			else if (readingBDX  && ( currentLine.find("MCy") != std::string::npos) ){
+			else if (readingBDXComment  && ( currentLine.find("MCy") != std::string::npos) ){
 				stream.str(currentLine);
 				stream >> word;
 				heprup.MCcenterY=atof(word.c_str());
 				std::cout<<"MCcenterY: "<<heprup.MCcenterY<<std::endl;
 				headerBlock += currentLine + "\n";
 			}
-			else if (readingBDX  && ( currentLine.find("MCz") != std::string::npos) ){
+			else if (readingBDXComment  && ( currentLine.find("MCz") != std::string::npos) ){
 				stream.str(currentLine);
 				stream >> word;
 				heprup.MCcenterZ=atof(word.c_str());
 				std::cout<<"MCcenterZ: "<<heprup.MCcenterZ<<std::endl;
 				headerBlock += currentLine + "\n";
 			}
-			else if (readingBDX  && ( currentLine.find("fiduciallx") != std::string::npos) ){
+			else if (readingBDXComment  && ( currentLine.find("fiduciallx") != std::string::npos) ){
 				stream.str(currentLine);
 				stream >> word;
 				heprup.lx=atof(word.c_str());
 				std::cout<<"lx: "<<heprup.lx<<std::endl;
 				headerBlock += currentLine + "\n";
 			}
-
-
-
-			else if (readingBDX  && ( currentLine.find("fiducially") != std::string::npos) ){
+			else if (readingBDXComment  && ( currentLine.find("fiducially") != std::string::npos) ){
 				stream.str(currentLine);
 				stream >> word;
 				heprup.ly=atof(word.c_str());
 				std::cout<<"ly: "<<heprup.ly<<std::endl;
 				headerBlock += currentLine + "\n";
 			}
-			else if (readingBDX  && ( currentLine.find("fiduciallz") != std::string::npos) ){
+			else if (readingBDXComment  && ( currentLine.find("fiduciallz") != std::string::npos) ){
 				stream.str(currentLine);
 				stream >> word;
 				heprup.lz=atof(word.c_str());
 				std::cout<<"lz: "<<heprup.lz<<std::endl;
 				headerBlock += currentLine + "\n";
 			}
-			else if (readingBDX  && ( currentLine.find("procid") != std::string::npos) ){
+			else if (readingBDXComment  && ( currentLine.find("procid") != std::string::npos) ){
 				stream.str(currentLine);
 				stream >> word;
 				heprup.procid=atoi(word.c_str());
 				std::cout<<"procid: "<<heprup.procid<<std::endl;
 				headerBlock += currentLine + "\n";
 			}
-			else if (readingBDX  && ( currentLine.find("eTHR") != std::string::npos) ){
+			else if (readingBDXComment  && ( currentLine.find("eTHR") != std::string::npos) ){
 				stream.str(currentLine);
 				stream >> word;
 				heprup.eTHR=atof(word.c_str());
 				std::cout<<"eTHR: "<<heprup.eTHR<<std::endl;
 				headerBlock += currentLine + "\n";
 			}
-			else if (readingBDX  && ( currentLine.find("pTHR") != std::string::npos) ){
+			else if (readingBDXComment  && ( currentLine.find("pTHR") != std::string::npos) ){
 				stream.str(currentLine);
 				stream >> word;
 				heprup.pTHR=atof(word.c_str());
 				std::cout<<"pTHR: "<<heprup.pTHR<<std::endl;
 				headerBlock += currentLine + "\n";
 			}
-			else if (readingBDX  && ( currentLine.find("pBINDING") != std::string::npos) ){
+			else if (readingBDXComment  && ( currentLine.find("pBINDING") != std::string::npos) ){
 				stream.str(currentLine);
 				stream >> word;
 				heprup.pBINDING=atof(word.c_str());
 				std::cout<<"pBINDING: "<<heprup.pBINDING<<std::endl;
 				headerBlock += currentLine + "\n";
 			}
-			else if (readingBDX  && ( currentLine.find("NDET") != std::string::npos) ){
+			else if (readingBDXComment  && ( currentLine.find("NDET") != std::string::npos) ){
 				stream.str(currentLine);
 				stream >> word;
 				heprup.NDET=atof(word.c_str());
 				std::cout<<"NDET: "<<heprup.NDET<<std::endl;
 				headerBlock += currentLine + "\n";
 			}
-			else if (readingBDX  && ( currentLine.find("NDUMP") != std::string::npos) ){
+			else if (readingBDXComment  && ( currentLine.find("NDUMP") != std::string::npos) ){
 				stream.str(currentLine);
 				stream >> word;
 				heprup.NDUMP=atof(word.c_str());
 				std::cout<<"NDUMP: "<<heprup.NDUMP<<std::endl;
 				headerBlock += currentLine + "\n";
 			}
-			else if (readingBDX  && ( currentLine.find("LDUMP") != std::string::npos) ){
+			else if (readingBDXComment  && ( currentLine.find("LDUMP") != std::string::npos) ){
 				stream.str(currentLine);
 				stream >> word;
 				heprup.LDUMP=atof(word.c_str());
