@@ -268,12 +268,12 @@ double AnalyseParticles(LHEF::Reader *reader) {
 	w=w*n_inside*1E-36;//by multiplying per n_inside, automatically I correct for the fact I have two chis, potentially both in the detector.
 	//the factor 1E-36 is the conversion pbarn ---> cm2
 	w*=heprup.NDUMP*heprup.LDUMP;
-
 	reader->eventComments  = Form("IN: %f %f %f \n",vin.X(),vin.Y(),vin.Z());
 	reader->eventComments += Form("OUT: %f %f %f \n", vout.X(), vout.Y(), vout.Z());
 	reader->eventComments += Form("HIT: %f %f %f \n", vhit.X(), vhit.Y(), vhit.Z());
 	reader->eventComments += Form("L: %f \n",L);
-	reader->eventComments += Form("W: %e",w);
+	reader->eventComments += Form("W: %e \n",w);
+	reader->eventComments += Form("Sigma: %e",sigma);
 	return w;
 }
 

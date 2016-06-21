@@ -1,6 +1,6 @@
 #!/usr/local/bin/python
 import string,math,os
-
+from ROOT import *
 
 #This function reads the LHE file given and returns:
 # the number of actually generated events present in the file
@@ -109,12 +109,8 @@ def AppendEventsToLHEFileNewWeight(Nevents,weight,src_lhe_filename,dest_lhe_file
     isEvent = False
     isHeader = False
     NwrittenEvents=0;
-    
     lines =  src_lhefile.readlines()
-    
-    
     for line in lines:
-      
         if (line.find("<event>") != -1):
             isEvent = True
             isHeader = True
@@ -132,7 +128,49 @@ def AppendEventsToLHEFileNewWeight(Nevents,weight,src_lhe_filename,dest_lhe_file
             dest_lhefile.write(line)
         if (NwrittenEvents==Nevents):
             break;        
-            
+
+def RotateLHEFEvents(src_lhe_filename,hAngleTMP):
+    src_lhefile=open(src_lhe_filename,"r");
+    dest_lhefile=open(src_lhe_filename+".tmp","a");
+    isFirstParticle = False
+    isEvent = False
+    isHeader = False
+    lines =  src_lhefile.readlines()
+    random=TRandom3(0)
+    for line in lines:
+        if (line.find("<event>") != -1):
+            isFirstParticle = True
+            isEvent = True
+            isHeader = True
+            dest_lhefile.write(line)
+        elif (isHeader):
+            isHeader=False;
+            dest_lhefile.write(line)
+        elif (line.find("</event>") != -1):    
+            isEvent = False
+            dest_lhefile.write(line)
+        elif (isEvent):
+            x=line.split()  
+            px=(float)(x[6])
+            py=(float)(x[7])
+            pz=(float)(x[8])
+            vector=TVector3(px,py,pz)
+            if (isFirstParticle):
+                ctheta=hAngleTMP.GetRandom()
+                theta=TMath.ACos(ctheta)
+                phi=random.Uniform(0,2*TMath.Pi())
+                isFirstParticle=False
+            vector.RotateY(theta)
+            vector.RotateZ(phi)
+            newline=x[0]+" "+x[1]+" "+x[2]+" "+x[3]+" "+x[4]+" "+x[5]+" "+str(vector.Px())+" "+str(vector.Py())+" "+str(vector.Pz())+" "+x[9]+" "+x[10]+" "+x[11]+" "+x[12]+"\n";
+            dest_lhefile.write(newline)
+            continue;
+        else:
+            dest_lhefile.write(line)
+    src_lhefile.close()
+    dest_lhefile.close()
+    os.rename(src_lhe_filename+".tmp",src_lhe_filename)
+
 def CloseLHEFile(dest_lhe_filename):        
     dest_lhefile=open(dest_lhe_filename,"a");
     line="</LesHouchesEvents>"

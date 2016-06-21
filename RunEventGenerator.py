@@ -6,6 +6,8 @@ import argparse
 from CardsUtils import *
 from LHEUtils import *
 from DumpUtils import *
+from ROOT import *
+
 
 class bcolors:
     HEADER = '\033[95m'
@@ -35,14 +37,13 @@ os.chdir(EventGeneratorLocation)
 parser = argparse.ArgumentParser(description='BDX event generator')
 
 parser.add_argument('--run_name',type=str,required=True,help="Run name",default='BDX');
-
 parser.add_argument('--run_card',type=str, required=True,help='Run card to use')
 parser.add_argument('--param_card',type=str,help='Param card to use',default='Cards/param_card.dat');
 parser.add_argument('--proc_card',type=str,help='Proc card to use',default='Cards/proc_card.dat');
 parser.add_argument('--max_attempts',type=int,default=3,help="Number of attempts per bin");
 parser.set_defaults(no_showering=False);
-
 parser.add_argument('--force_no_showering',dest='no_showering',action='store_true',help='Ignore showering effects, no matter what is used in the run_card');
+parser.add_argument('--root_file',type=str,default="dump.root",help="The root file with the data from the beam-dump simulation. In particular, the histogram (named hEall) containing dN/dE per incident electron and the histogram (named hE_angle_all) with the dN/dEdcosTheta. These two MUST have same binning wrt to x axis (energy axis)")
 args = parser.parse_args()
 
 no_showering = args.no_showering;
@@ -63,6 +64,14 @@ NormWeights= [];           #Array  of the normalized weights (to the weights sum
 totalWeight=0;
 NrequestedTOT=0;
 NTOT = 0;
+
+deltaE=0;
+
+#root stuff
+rootFile=0;
+hEall=0;
+hE_angle_all=0;
+
 #Check if the cards exist
 if (os.path.isfile(run_card_name)==False):
      print >> sys.stderr, bcolors.FAIL,"error: run card "+run_card_name+" does not exists!",bcolors.ENDC
@@ -78,19 +87,35 @@ if (os.path.isfile(param_card_name)==False):
      
 #Get the number of requested events from the run card
 NrequestedTOT =  GetRequestedEvents(run_card_name)   
-print bcolors.OKGREEN,"Requested: ",NrequestedTOT," events "
+print bcolors.OKGREEN,"Requested: ",NrequestedTOT," events ",bcolors.ENDC
 
 #next, check if, in the run_card, an option to use electron showering in the dump was implemented
 #This will return a bool (yes/no), the Emin value,the Emax==Ebin value, the number of bins to use
-UseElectronShowering,Emin,Emax,nbins = CheckElectronShowering(run_card_name,True)
-deltaE = (Emax-Emin)/(nbins);
+UseElectronShowering,Emin,Emax = CheckElectronShoweringNew(run_card_name,True)
+
 
 if (no_showering==True):
     print bcolors.WARNING,"Overriding electron showering, not using it",bcolors.ENDC
     UseElectronShowering=False
 
+#Get from the provided root files the histogram with the <dN/dE> - integrated over t - , normalized to incident electrons
+else:
+    rootFile=TFile(args.root_file);
+    hEall=rootFile.Get("hEall");
+    hE_angle_all=rootFile.Get("hE_angle_all")
+    deltaE = hEall.GetXaxis().GetBinWidth(1)
+    #Check Emax
+    if (hEall.GetXaxis().GetXmax()!=Emax):
+        print bcolors.WARNING," Emax in the run card: ",Emax," different from Emax in the histogram: ",hEall.GetXaxis().GetXmax(),bcolors.ENDC
+        print bcolors.WARNING," using as Emax the one from histogram ",bcolors.ENDC
+        Emax=hEall.GetXaxis().GetXmax()
+    #need to compute here the number of bins
+    nMin=hEall.FindBin(Emin)
+    nMax=hEall.FindBin(Emax)
+    nbins=(nMax-nMin)
+    print "deltaE is: ",deltaE," nBins is: ",nbins
 
- 
+
 #Now, two opposite cases can happen. 
 #First case: no showering case.
 #This is the simplest scenario. We just need to call MadGraph once, with the RunCard provided
@@ -133,11 +158,12 @@ else:
         flagThisLoopIteration=True;
         attemptsThisBin = 0;
         while(flagThisLoopIteration):
-            Ei = Emin + deltaE/2 + deltaE * ii;                                                      #This is the energy to be used in this run
+#            Ei = Emin + deltaE/2 + deltaE * ii;        #This is the energy to be used in this run
+            Ei = hEall.GetBinCenter(nMin+ii);
+            print  bcolors.OKGREEN,"Energy: ",Ei,bcolors.ENDC
             CreateRunCardDifferentEnergy(Ei,run_card_name,MadGraphCardsLocation+"/run_card.dat");    #This function create the run card
             shutil.copy(proc_card_name,MadGraphCardsLocation);
             shutil.copy(param_card_name,MadGraphCardsLocation);
-            print  bcolors.OKGREEN,"Energy: ",Ei,bcolors.ENDC
             os.chdir(MadGraphLocation)
             this_run_name=run_name+"_"+str(ii)
             command = "./bin/generate_events_new 0 "+this_run_name;  
@@ -164,10 +190,16 @@ else:
                 nGeneratedEvents.append(nGeneratedEventsThisRun);
                 Energy.append(Ei);
                 Sigmas.append(sigmaThisRun);
-                DensityThisRun = dNdEIntegral(Ei)*deltaE;
+                DensityThisRun =  hEall.GetBinContent(hEall.FindBin(Ei))*deltaE;
                 WeightThisRun = DensityThisRun * sigmaThisRun;
                 Density.append(DensityThisRun);
                 Weights.append(WeightThisRun);
+
+                #Rotate the events
+                print bcolors.OKGREEN,"Now rotate events. Projecting bin: ",nMin+ii," Check, bin center is: ",hE_angle_all.GetXaxis().GetBinCenter(nMin+ii),bcolors.ENDC
+                hAngleTMP=hE_angle_all.ProjectionY("_py",nMin+ii,nMin+ii)
+                RotateLHEFEvents(lhefname,hAngleTMP)
+
                 print bcolors.OKGREEN,"DONE. This attempt was: ",str(attemptsThisBin),bcolors.ENDC
                 print bcolors.OKGREEN,"DONE: number of generated events is: ",nGeneratedEventsThisRun," cross section pb is: ",sigmaThisRun," density is: ",DensityThisRun,bcolors.ENDC
                 print ""

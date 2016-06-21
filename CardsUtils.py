@@ -90,7 +90,65 @@ def CheckElectronShowering(run_card_name,verbose=False):
     
     return useShowering,Emin,Emax,n
     
+
+#This function reads the provided run_card, and checks if the electron showering option was asked for - or not.
+#The relevant informations are in the "<BDX>" section
+#This will return:
+# useShowering: bool,   use or not the showering
+# Emin        : double, minimum electron energy
+# Emax        : double, maximum electron energy
+def CheckElectronShoweringNew(run_card_name,verbose=False):
     
+    isBDX = False;
+  
+    name = ""
+    val = 0
+    
+    useShowering = False;
+    Emax=11;
+    Emin=1;
+    n = 10;
+    
+    run_card=open(run_card_name,"r")
+    lines = run_card.readlines()
+    
+    for line in lines:
+        x = line.split()
+        if (len(x)==0):
+             continue;
+        elif (line.find("<BDX>") != -1):  #This line starts the BDX part
+            isBDX=True
+        
+        elif (line.find("</BDX>") != -1): #This line ends the BDX part
+            isBDX=False
+
+        elif (is_number(x[0])and(len(x)>=2)): #This line reads a number
+            val = x[0];
+            name = x[2];
+            
+        #Now check values
+        #E0
+        if (name=="ebeam1"):
+            Emax = float(val);
+        elif ((isBDX==True)and(name=="USESHOWERING")):
+            if (int(val)>=1):
+                 useShowering = True;
+            else:
+                 useShowering = False;
+        elif ((isBDX==True)and(name=="EMINSHOWERING")):
+            Emin = float(val);
+    run_card.close();
+    
+    if (verbose==True):
+        print "CheckElectronShowering:"
+        print "useShowering: ",useShowering
+        print "Emin:         ",Emin
+        print "Emax:         ",Emax
+    
+    return useShowering,Emin,Emax 
+
+
+
 def CreateRunCardDifferentEnergy(Ei,src_run_card_name,dest_run_card_name):    
     src_run_card=open(src_run_card_name,"r")
     dest_run_card=open(dest_run_card_name,"w")
