@@ -2,17 +2,16 @@
 
 #$1: tag name.
 #File name with the parameters is: run/$1.txt
-#TAG mA mCHI eps alphaD Nevents Ebeam Ldump Lx Ly Lz procid
-#0   1  2     3   4      5       6     7     8  9  10 11
-
 
 if ($#argv != 1) then
         echo "Usage: $0 tag name"
         goto done
 endif
 
-echo "go to scrach"
-cd /scratch
+set rootfile="20GeV.Al.root"
+
+echo "go to work dir"
+cd /project/Gruppo3/fiber5/celentano/EventGenerator/runDir
 echo "ls:"
 ls -ltrah
 echo "done"
@@ -27,6 +26,8 @@ endif
 mkdir $workdir
 echo "ls again:"
 ls -ltrah
+echo "where is ld?:"
+which ld
 echo "done"
 
 #0: set new variables
@@ -38,20 +39,19 @@ echo "orig: $BDX_EVENT_GENERATOR_ORIG"
 echo "new : $BDX_EVENT_GENERATOR"
 
 #1: copy everything here in the work dir
-cp -Rp $BDX_EVENT_GENERATOR_ORIG/* $workdir
-#2: clean some space, we do not need events 
-cd $workdir
-mv $workdir/AprimeAlAlpha1/Events/banner_header.txt ./tmp_header
-rm -rf $workdir/AprimeAlAlpha1/Events/*
-mv ./tmp_header $workdir/AprimeAlAlpha1/Events/banner_header.txt 
-rm -rf $workdir/DetectorInteraction/Events/*
-echo "ls again"
-ls $workdir
-ls $workdir/AprimeAlAlpha1
+rsync -rl --exclude .git --exclude run --exclude DetectorInteraction/Events/ --exclude AprimeAlAlpha1/Events/ --exclude html --exclude runDir --exclude log $BDX_EVENT_GENERATOR_ORIG/ $workdir
+#2: missing dirs
+cd $workdir/AprimeAlAlpha1
+mkdir Events
+cd Events
+cp $BDX_EVENT_GENERATOR_ORIG/AprimeAlAlpha1/Events/banner_header.txt ./
+cd $workdir/DetectorInteraction
+mkdir Events
 
 #3: prepare the cards
 cd $workdir
-set fname=run/$1.txt
+mkdir run
+set fname=$BDX_EVENT_GENERATOR_ORIG/run/$1.txt
 python -c "import CardsUtils;CardsUtils.createCards('$fname')"
 #echo $?
 #4: copy the cards
@@ -68,7 +68,7 @@ cat $workdir/Cards/run_card.dat
 echo "this is the param card"
 cat $workdir/Cards/param_card.dat
 echo "RUN RUN RUN"
-python -u RunEventGenerator.py --run_name $1 --run_card $workdir/Cards/run_card.dat --param_card $workdir/Cards/param_card.dat
+python -u RunEventGenerator.py --run_name $1 --run_card $workdir/Cards/run_card.dat --param_card $workdir/Cards/param_card.dat --root_file $rootfile 
 #7 copy the events we got back to the main place
 cd $workdir/DetectorInteraction/Events
 cp -rp * $BDX_EVENT_GENERATOR_ORIG/DetectorInteraction/Events

@@ -15,7 +15,7 @@ $(OBJ_DIR)/%.o: src/%.cc
 
 src/ExRootAnalysisDict.cc:
 	rootcint -f $@ -c include/ExRootAnalysisLinkDef.h
-	mv src/ExRootAnalysisDict.h ./include
+#	mv src/ExRootAnalysisDict.h ./include
 	mv src/ExRootAnalysisDict.cc src/ExRootAnalysisDict.cc.base	
 	echo "#define private public" > src/ExRootAnalysisDict.cc.arch
 	echo "#define protected public" >> src/ExRootAnalysisDict.cc.arch

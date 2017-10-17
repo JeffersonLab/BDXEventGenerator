@@ -294,6 +294,7 @@ double KinUtils::doElasticRecoil(const TLorentzVector &chi,TLorentzVector &recoi
  *  determine the interaction point within the fiducial volume and save it in vhit.
     Use a random distribution along the chi flight path, with uniform probability
     This function returns the length (in m) of the trajectory within the fiducial volume.
+    Displacement is the lateral displacement (in m) of the detector, along x
 */
 double KinUtils::findInteractionPoint(const TLorentzVector &chi,const TVector3 &fiducialV,const TVector3 &vin,TVector3 &vout,TVector3 &vhit){
 
@@ -322,6 +323,7 @@ double KinUtils::findInteractionPoint(const TLorentzVector &chi,const TVector3 &
 	vhit.SetXYZ(Rand.Uniform(vin.X(),vout.X()),Rand.Uniform(vin.Y(),vout.Y()),Rand.Uniform(vin.Z(),vout.Z()));
 	L=(vout-vin).Mag();
 	
+
 
 
 

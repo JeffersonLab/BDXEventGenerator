@@ -38,6 +38,6 @@ for line in lines:
 		runfile = open(fname,"w")
 		runfile.write(x[0]+" "+x[1]+" "+x[2]+" "+x[3]+" "+x[4]+" "+x[5]+" "+x[6]+" "+x[7]+" "+x[8]+" "+x[9]+" "+x[10]+" "+x[11]+"\n")
 		runfile.close()
-		command = "bsub -q long -P sl6_64 -o run/log"+tag+".o -e run/log"+tag+".e -R \"rusage[mem=500,swp=1000]\" ./job.csh "+tag
+		command = "bsub -q aiace -P sl6_64 -o run/log"+tag+".o -e run/log"+tag+".e -R \"hname!=jlab01 rusage[mem=2000,swp=2000]\" ./job.csh "+tag
 		print command
 		os.system(command)

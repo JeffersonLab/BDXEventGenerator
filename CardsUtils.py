@@ -84,19 +84,16 @@ def CheckElectronShowering(run_card_name,verbose=False):
     if (verbose==True):
         print "CheckElectronShowering:"
         print "useShowering: ",useShowering
-        print "Emin:         ",Emin
-        print "Emax:         ",Emax
-        print "n:            ",n
+        print "Ebeam:        ",Emax
     
-    return useShowering,Emin,Emax,n
+    return useShowering,Emax,n
     
 
 #This function reads the provided run_card, and checks if the electron showering option was asked for - or not.
 #The relevant informations are in the "<BDX>" section
 #This will return:
 # useShowering: bool,   use or not the showering
-# Emin        : double, minimum electron energy
-# Emax        : double, maximum electron energy
+# Ebeam        : double, beam energy
 def CheckElectronShoweringNew(run_card_name,verbose=False):
     
     isBDX = False;
@@ -105,9 +102,8 @@ def CheckElectronShoweringNew(run_card_name,verbose=False):
     val = 0
     
     useShowering = False;
-    Emax=11;
-    Emin=1;
-    n = 10;
+    Ebeam=11;
+  
     
     run_card=open(run_card_name,"r")
     lines = run_card.readlines()
@@ -129,23 +125,20 @@ def CheckElectronShoweringNew(run_card_name,verbose=False):
         #Now check values
         #E0
         if (name=="ebeam1"):
-            Emax = float(val);
+            Ebeam = float(val);
         elif ((isBDX==True)and(name=="USESHOWERING")):
             if (int(val)>=1):
                  useShowering = True;
             else:
                  useShowering = False;
-        elif ((isBDX==True)and(name=="EMINSHOWERING")):
-            Emin = float(val);
     run_card.close();
     
     if (verbose==True):
         print "CheckElectronShowering:"
-        print "useShowering: ",useShowering
-        print "Emin:         ",Emin
-        print "Emax:         ",Emax
+        print "useShowering set to: ",useShowering
+        print "Ebeam:        ",Ebeam
     
-    return useShowering,Emin,Emax 
+    return useShowering,Ebeam
 
 
 
@@ -246,6 +239,7 @@ def createCards(fname):
     print "CREATE CARDS"
     print fname
     if (os.path.isfile(fname)==False):
+        print "file does not exist"
         sys.exit(1)        
     else:
         cardIN = open(fname, "r")

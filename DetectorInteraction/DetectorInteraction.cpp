@@ -119,8 +119,8 @@ void writeLund(ofstream &ofile,LHEF::HEPEUP &data){
 	}
 }
 
-
-double AnalyseParticles(LHEF::Reader *reader) {
+//Return: the production weight (first) and the interaction weight(second)
+std::pair<double,double> AnalyseParticles(LHEF::Reader *reader) {
 
 
 	LHEF::HEPEUP &hepeup = reader->hepeup;              /*This is a reference!*/
@@ -128,17 +128,24 @@ double AnalyseParticles(LHEF::Reader *reader) {
 	long PID;
 	Int_t particle, n_inside;
 
-	Double_t signPz, cosTheta,M;
+	Double_t signPz, cosTheta,sinTheta,cosPhi,sinPhi,M;
 	Double_t w,L,ndet,sigma;
-	Double_t xthetaxfmin, xthetaxfmax, xthetayfmin, xthetayfmax;
+	Double_t xmin,xmax,ymin,ymax;
+	Double_t x,y;
 	TLorentzVector chi, recoil_chi, recoil_elastic;
 
 	vector<double> tmp_v;
 	vector<int> ii_inside;
 	n_inside = 0;
-	xthetaxfmin = xthetayfmin = 0;
-	xthetaxfmax = (heprup.lx / (2 * heprup.ldet)); //ok without ATAN for this check
-	xthetayfmax = (heprup.ly / (2 * heprup.ldet)); //ok without ATAN for this check
+
+
+	xmin=-heprup.lx/2+heprup.displacement;
+	xmax=heprup.lx/2+heprup.displacement;
+	ymin=-heprup.ly/2;
+	ymax=heprup.ly/2;
+
+
+
 
 	//set the fiducial volume "box", with respect to the z axis.
 	fiducialV.SetXYZ(heprup.lx, heprup.ly, heprup.lz);
@@ -164,15 +171,26 @@ double AnalyseParticles(LHEF::Reader *reader) {
 		M = hepeup.PUP[particle][4];
 		chi.SetPxPyPzE(hepeup.PUP[particle][0], hepeup.PUP[particle][1],hepeup.PUP[particle][2], hepeup.PUP[particle][3]);
 		cosTheta = TMath::Abs(chi.CosTheta());
+		sinTheta = sqrt(1-cosTheta*cosTheta);
+
+		cosPhi = cos(chi.Phi());
+		sinPhi = sin(chi.Phi());
+
+		x=heprup.ldet*(sinTheta/cosTheta)*cosPhi;
+		y=heprup.ldet*(sinTheta/cosTheta)*sinPhi;
+
+
 		signPz = (chi.Pz() >= 0.0) ? 1.0 : -1.0;
 		/* I need now to apply the fiducial cuts.
 		 I need to find which of the chis are inside (if more than one), and use that for the interaction.
 		 If both are inside, I take only one.*/
-		if ((fabs(chi.Px() / chi.Pz()) < xthetaxfmax)&& (fabs(chi.Py() / chi.Pz()) < xthetayfmax)){
+
+		if ((x>xmin)&&(x<xmax)&&(y>ymin)&&(y<ymax)){
 			n_inside++;
 			ii_inside.push_back(particle);
 			hepeup.ISTUP[particle] = 1;
 		}
+
 		else { //for now, just mark this chi out of the fiducial volume with a status "0"
 			hepeup.ISTUP[particle] = 0;
 			continue;
@@ -184,7 +202,14 @@ double AnalyseParticles(LHEF::Reader *reader) {
 		std::random_shuffle (ii_inside.begin(), ii_inside.end() );
 		chi.SetPxPyPzE(hepeup.PUP[ii_inside.at(0)][0], hepeup.PUP[ii_inside.at(0)][1],hepeup.PUP[ii_inside.at(0)][2],hepeup.PUP[ii_inside.at(0)][3]);
 
-		vin.SetXYZ((chi.Px() / chi.Pz()) * heprup.ldet, (chi.Py() / chi.Pz()) * heprup.ldet, heprup.ldet); //the chi hit position in the fiducial volume front-face
+		cosTheta = TMath::Abs(chi.CosTheta());
+		sinTheta = sqrt(1-cosTheta*cosTheta);
+		cosPhi = cos(chi.Phi());
+		sinPhi = sin(chi.Phi());
+		x=heprup.ldet*(sinTheta/cosTheta)*cosPhi;
+		y=heprup.ldet*(sinTheta/cosTheta)*sinPhi;
+
+		vin.SetXYZ(x,y,heprup.ldet); //the chi hit position in the fiducial volume front-face
 
 		//mark this chi with status "11":
 		hepeup.ISTUP[ii_inside.at(0)]=11;
@@ -206,7 +231,14 @@ double AnalyseParticles(LHEF::Reader *reader) {
 				break;
 			}
 			else{
-				L=m_utils->findInteractionPoint(chi, fiducialV, vin,vout, vhit);
+
+				/*No need to re-write displacement routine!*/
+				vin.SetX(vin.X()-heprup.displacement);
+				L=m_utils->findInteractionPoint(chi, fiducialV,vin,vout, vhit);
+
+				vin.SetX(vin.X()+heprup.displacement);
+				vout.SetX(vout.X()+heprup.displacement);
+				vhit.SetX(vhit.X()+heprup.displacement);
 				L=L*100; //since the above returns it in m;
 				mL+=L;
 				w=w*L*heprup.NDET*sigma;      /*Multiply the total cross-section * interaction length of this event * weight (pbarn) of this event*/
@@ -268,13 +300,19 @@ double AnalyseParticles(LHEF::Reader *reader) {
 	w=w*n_inside*1E-36;//by multiplying per n_inside, automatically I correct for the fact I have two chis, potentially both in the detector.
 	//the factor 1E-36 is the conversion pbarn ---> cm2
 	w*=heprup.NDUMP*heprup.LDUMP;
+
+	//also write the PRODUCTION cross section, multiplied by NDUMP and LDUMP, to have the number of total chi-chibar pairs produced by summing over this number
+	sigma=hepeup.XWGTUP*heprup.NDUMP*heprup.LDUMP*1E-36; 	//the factor 1E-36 is the conversion pbarn ---> cm2
+
 	reader->eventComments  = Form("IN: %f %f %f \n",vin.X(),vin.Y(),vin.Z());
 	reader->eventComments += Form("OUT: %f %f %f \n", vout.X(), vout.Y(), vout.Z());
 	reader->eventComments += Form("HIT: %f %f %f \n", vhit.X(), vhit.Y(), vhit.Z());
 	reader->eventComments += Form("L: %f \n",L);
 	reader->eventComments += Form("W: %e \n",w);
 	reader->eventComments += Form("Sigma: %e",sigma);
-	return w;
+
+	std::pair<double,double> ret=std::make_pair(sigma,w);
+	return ret;
 }
 
 //------------------------------------------------------------------------------
@@ -295,8 +333,9 @@ int main(int argc, char *argv[]) {
 
 	int appargc = 1;
 	char *appargv[] = { appName };
-	double W,L;
-	double thisW;
+	double W,L,Sigma;
+	double thisW,thisSigma;
+	std::pair<double,double> retVal;
 	int Nin=0;
 	// Open a stream connected to an event file:
 	string outputFileEOTName(argv[2]);
@@ -354,8 +393,15 @@ int main(int argc, char *argv[]) {
 			}
 			//This is the function that triggers the interaction in the fiducial volume.
 			thisW=0;
-			if (inputReader->heprup.procid)	thisW=AnalyseParticles(inputReader); //this also returns the "corrected" event weight (production weight * interaction probability * dump luminosity)
+			thisSigma=0;
+			if (inputReader->heprup.procid){
+
+				retVal=AnalyseParticles(inputReader); //this also returns the "corrected" event weight (production weight * interaction probability * dump luminosity)
+				thisW=retVal.second;
+				thisSigma=retVal.first;
+			}
 			W+=thisW;
+			Sigma+=thisSigma;
 			if (thisW>0){
 				Nin++;
 			}
@@ -378,7 +424,10 @@ int main(int argc, char *argv[]) {
 
 	cout<< " mean sigma: "<<msigma/Nin<<endl;
 	cout<< " mean L: "<<mL/Nin<<endl;
-	outputFileEOT<<"Number of events per EOT: "<<endl;
+
+	outputFileEOT<<"Number of produced A' (chi pairs) per EOT: "<<endl;
+	outputFileEOT<<Sigma<<endl;
+	outputFileEOT<<"Number of interacting events per EOT: "<<endl;
 	outputFileEOT<<W<<endl;
 	outputFileEOT.close();
 

@@ -5,7 +5,7 @@ import argparse
 
 from CardsUtils import *
 from LHEUtils import *
-from DumpUtils import *
+#from DumpUtils import *
 from ROOT import *
 
 
@@ -32,8 +32,6 @@ DetectorInteractionEventsLocation = DetectorInteractionLocation+"/Events"
 os.chdir(EventGeneratorLocation)
 
 
-#no_showering=False
-
 parser = argparse.ArgumentParser(description='BDX event generator')
 
 parser.add_argument('--run_name',type=str,required=True,help="Run name",default='BDX');
@@ -54,15 +52,18 @@ param_card_name=args.param_card;
 proc_card_name=args.proc_card;
 max_attempts=args.max_attempts;
 
+ 
 Energy = [];               #Array  of bin-center energy (GeV)
 nGeneratedEvents = [];     #Array  of number of generated events per energy bin
+nIdeallyTotalEvents = [];  #Array  of number of total events corresponding to this bin (nGeneratedEvents / normWeight)
 nRequestedEvents = [];     #Array  of number of events that needs to be taken from this bin
 Sigmas = [];               #Array  of total chi-chi production cross-section sigma(Ei) in pbarn per energy bin
-Density= [];               #Array  of the quantity <dn/dE>*deltaE computed at the bin center, where <dn/dE> is the t-integrated, energy-differential, distribution of electrons in the dump per incident electron.
+Density= [];               #Array  of the quantity <dn/dE>* computed at the bin center, where <dn/dE> is the t-integrated, energy-differential, distribution of electrons in the dump per incident electron.
 Weights= [];               #Array  of the quantity sigma(Ei)*<dn/dE>*deltaE computed at the bin center
 NormWeights= [];           #Array  of the normalized weights (to the weights sum)
 totalWeight=0;
 NrequestedTOT=0;
+NrequestedMAX=0;
 NTOT = 0;
 
 deltaE=0;
@@ -90,8 +91,8 @@ NrequestedTOT =  GetRequestedEvents(run_card_name)
 print bcolors.OKGREEN,"Requested: ",NrequestedTOT," events ",bcolors.ENDC
 
 #next, check if, in the run_card, an option to use electron showering in the dump was implemented
-#This will return a bool (yes/no), the Emin value,the Emax==Ebin value, the number of bins to use
-UseElectronShowering,Emin,Emax = CheckElectronShoweringNew(run_card_name,True)
+#This will return a bool (yes/no) and the BeamEnergy
+UseElectronShowering,Ebeam = CheckElectronShoweringNew(run_card_name,True)
 
 
 if (no_showering==True):
@@ -103,17 +104,17 @@ else:
     rootFile=TFile(args.root_file);
     hEall=rootFile.Get("hEall");
     hE_angle_all=rootFile.Get("hE_angle_all")
-    deltaE = hEall.GetXaxis().GetBinWidth(1)
+    deltaE = hEall.GetXaxis().GetBinWidth(1) #this is the bin width
+    nbins = hEall.GetNbinsX(); #this is the number of bins
+    Emin= hEall.GetBinCenter(1)-deltaE/2;
+    Emax= hEall.GetBinCenter(nbins)+deltaE/2;
+    
     #Check Emax
-    if (hEall.GetXaxis().GetXmax()!=Emax):
-        print bcolors.WARNING," Emax in the run card: ",Emax," different from Emax in the histogram: ",hEall.GetXaxis().GetXmax(),bcolors.ENDC
+    if (Ebeam!=Emax):
+        print bcolors.WARNING," Ebeam in the run card: ",Ebeam," different from Emax in the histogram: ",Emax,bcolors.ENDC
         print bcolors.WARNING," using as Emax the one from histogram ",bcolors.ENDC
-        Emax=hEall.GetXaxis().GetXmax()
     #need to compute here the number of bins
-    nMin=hEall.FindBin(Emin)
-    nMax=hEall.FindBin(Emax)
-    nbins=(nMax-nMin)
-    print "deltaE is: ",deltaE," nBins is: ",nbins
+    print "deltaE is: ",deltaE," nBins is: ",nbins, " eMin is: ",Emin," eMax is: ",Emax
 
 
 #Now, two opposite cases can happen. 
@@ -143,7 +144,7 @@ if (UseElectronShowering==False):
     print bcolors.OKGREEN,"DONE: number of generated events is: ",nGeneratedEventsThisRun," cross section pb is: ",sigmaThisRun,bcolors.ENDC
     nGeneratedEvents.append(nGeneratedEventsThisRun);
     Sigmas.append(sigmaThisRun);
-    Energy.append(Emax);
+    Energy.append(Ebeam);
     Density.append(1.);  #It is correct to keep this to one -> There is exactly one electron per incident electron.
     Weights.append(sigmaThisRun);
     NormWeights.append(1.);
@@ -159,7 +160,7 @@ else:
         attemptsThisBin = 0;
         while(flagThisLoopIteration):
 #            Ei = Emin + deltaE/2 + deltaE * ii;        #This is the energy to be used in this run
-            Ei = hEall.GetBinCenter(nMin+ii);
+            Ei = hEall.GetBinCenter(ii+1);
             print  bcolors.OKGREEN,"Energy: ",Ei,bcolors.ENDC
             CreateRunCardDifferentEnergy(Ei,run_card_name,MadGraphCardsLocation+"/run_card.dat");    #This function create the run card
             shutil.copy(proc_card_name,MadGraphCardsLocation);
@@ -182,23 +183,26 @@ else:
                 print bcolors.WARNING,"Error! 0 events generated. Trying again this bin. Next attempt is: ",str(attemptsThisBin),bcolors.ENDC
                 attemptsThisBin = attemptsThisBin+1
                 if (attemptsThisBin == max_attempts):
-                    print bcolors.FAIL,"Error Error Error",bcolor.ENDC  
+                    print bcolors.FAIL,"Error Error Error",bcolors.ENDC  
                     print bcolors.FAIL,"Error Error Error: max number of attempts exceeded. End Program here!",bcolors.ENDC
                     sys.exit(0)  
             else:   
                 flagThisLoopIteration=False;  #This will break the while loop
                 nGeneratedEvents.append(nGeneratedEventsThisRun);
+                print "This run generated ",nGeneratedEventsThisRun
                 Energy.append(Ei);
                 Sigmas.append(sigmaThisRun);
-                DensityThisRun =  hEall.GetBinContent(hEall.FindBin(Ei))*deltaE;
+                DensityThisRun =  hEall.GetBinContent(hEall.FindBin(Ei))*deltaE;    #This is for histogram
+          ##      DensityThisRun = dNdEIntegral(Ei)*deltaE;                             #This is for analytical
                 WeightThisRun = DensityThisRun * sigmaThisRun;
                 Density.append(DensityThisRun);
                 Weights.append(WeightThisRun);
 
                 #Rotate the events
-                print bcolors.OKGREEN,"Now rotate events. Projecting bin: ",nMin+ii," Check, bin center is: ",hE_angle_all.GetXaxis().GetBinCenter(nMin+ii),bcolors.ENDC
-                hAngleTMP=hE_angle_all.ProjectionY("_py",nMin+ii,nMin+ii)
-                RotateLHEFEvents(lhefname,hAngleTMP)
+                print bcolors.OKGREEN,"Now rotate events. Projecting bin: ",ii," Check, bin center is: ",hE_angle_all.GetXaxis().GetBinCenter(ii+1),bcolors.ENDC
+                hAngleTMP=hE_angle_all.ProjectionY("_py",ii+1,ii+1)
+                print lhefname
+#               RotateLHEFEvents(lhefname,hAngleTMP)
 
                 print bcolors.OKGREEN,"DONE. This attempt was: ",str(attemptsThisBin),bcolors.ENDC
                 print bcolors.OKGREEN,"DONE: number of generated events is: ",nGeneratedEventsThisRun," cross section pb is: ",sigmaThisRun," density is: ",DensityThisRun,bcolors.ENDC
@@ -214,10 +218,17 @@ else:
     for ii in range(nbins):
         NormWeights.append(Weights[ii]/totalWeight)
     
-    #Compute requested events per bin
+    #Compute requested events per bin. Actually, I want to maximize the number of events!!
     for ii in range(nbins):
-         nRequestedEvents.append(int(NormWeights[ii]*NrequestedTOT));
-         print bcolors.OKGREEN,"Bin ",ii," with energy ",Energy[ii],"sigma: ",Sigmas[ii]," density: ",Density[ii]," requested: ",nRequestedEvents[ii]," events, available: ",nGeneratedEvents[ii]," events ",bcolors.ENDC
+         nIdeallyTotalEvents.append(nGeneratedEvents[ii]/NormWeights[ii])
+         print bcolors.OKBLUE,"Bin ",ii," nIdeallyTotalevents: ",nIdeallyTotalEvents[ii],bcolors.ENDC            
+    nRequestedMAX=min(nIdeallyTotalEvents)
+    nRequestedMAX=(int)(nRequestedMAX-1) #just for safety
+    print bcolors.OKGREEN,"Min is: ",nRequestedMAX
+    
+    for ii in range (nbins):   
+         nRequestedEvents.append(int(NormWeights[ii]*nRequestedMAX));
+         print bcolors.OKGREEN,"Bin ",ii," with energy ",Energy[ii],"sigma: ",Sigmas[ii],"normweight: ",NormWeights[ii]," density: ",Density[ii]," requested: ",nRequestedEvents[ii]," events, available: ",nGeneratedEvents[ii]," events ",bcolors.ENDC
      
     #Now check if ALL the bins have the necessary events. If not, we need to rescale.
     frac=1.
@@ -247,8 +258,8 @@ else:
     CloseLHEFile(lhefname)
     print bcolors.OKGREEN,"LHE file was written...",bcolors.ENDC         
 
-#   At this point, we have generated chi-chi events in MadGraph, and we have also computed correctly the total cross-section.
-    #Second part: detector interaction  
+#    At this point, we have generated chi-chi events in MadGraph, and we have also computed correctly the total cross-section.
+#    Second part: detector interaction  
 print bcolors.OKGREEN," Compiling DetectorInteraction ",bcolors.ENDC
 os.chdir(DetectorInteractionLocation);
 #Force recompilation

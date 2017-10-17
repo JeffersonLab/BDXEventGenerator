@@ -5,7 +5,6 @@
 // This is the declaration of the Les Houches Event File classes.
 //
 
-
 #include <iostream>
 #include <iomanip>
 #include <sstream>
@@ -34,25 +33,17 @@ public:
 	/**
 	 * Default constructor.
 	 */
-	HEPRUP()
-: IDWTUP(0), NPRUP(0) {}
+	HEPRUP() :
+			IDWTUP(0), NPRUP(0) {
+	}
 
 	/**
 	 * Copy-constructor.
 	 */
-	HEPRUP(const HEPRUP & x)
-	: IDBMUP(x.IDBMUP), EBMUP(x.EBMUP),
-	  PDFGUP(x.PDFGUP), PDFSUP(x.PDFSUP), IDWTUP(x.IDWTUP),
-	  NPRUP(x.NPRUP), XSECUP(x.XSECUP), XERRUP(x.XERRUP),
-	  XMAXUP(x.XMAXUP), LPRUP(x.LPRUP),
-	  procid(x.procid), lx(x.lx), ly(x.ly), lz(x.lz),
-	  APMASS(x.APMASS),FMASS(x.FMASS),EBEAM(x.EBEAM),
-	  SEED(x.SEED),eTHR(x.eTHR),pTHR(x.pTHR),pBINDING(x.pBINDING),
-	  ALPHAD(x.ALPHAD),EPSILON(x.EPSILON),
-	  MCcenterX(x.MCcenterX), MCcenterY(x.MCcenterY),MCcenterZ(x.MCcenterZ),
-	  NDET(x.NDET),NDUMP(x.NDUMP),LDUMP(x.LDUMP)
-	{}
-
+	HEPRUP(const HEPRUP & x) :
+			IDBMUP(x.IDBMUP), EBMUP(x.EBMUP), PDFGUP(x.PDFGUP), PDFSUP(x.PDFSUP), IDWTUP(x.IDWTUP), NPRUP(x.NPRUP), XSECUP(x.XSECUP), XERRUP(x.XERRUP), XMAXUP(x.XMAXUP), LPRUP(x.LPRUP), procid(x.procid), lx(x.lx), ly(x.ly), lz(x.lz), APMASS(x.APMASS), FMASS(x.FMASS), EBEAM(
+					x.EBEAM), SEED(x.SEED), eTHR(x.eTHR), pTHR(x.pTHR), pBINDING(x.pBINDING), ALPHAD(x.ALPHAD), EPSILON(x.EPSILON), MCcenterX(x.MCcenterX), MCcenterY(x.MCcenterY), MCcenterZ(x.MCcenterZ), NDET(x.NDET), NDUMP(x.NDUMP), LDUMP(x.LDUMP),displacement(x.displacement) {
+	}
 
 	/**
 	 * Assignment operator.
@@ -75,25 +66,27 @@ public:
 		MCcenterX = x.MCcenterX;
 		MCcenterY = x.MCcenterY;
 		MCcenterZ = x.MCcenterZ;
+		displacement = x.displacement;
 		APMASS = x.APMASS;
-		FMASS  = x.FMASS;
-		ALPHAD=x.ALPHAD;
-		EPSILON=x.EPSILON;
+		FMASS = x.FMASS;
+		ALPHAD = x.ALPHAD;
+		EPSILON = x.EPSILON;
 		EBEAM = x.EBEAM;
-		SEED=x.SEED;
-		pTHR=x.pTHR;
-		pBINDING=x.pBINDING;
-		eTHR=x.eTHR;
-		NDET=x.NDET;
-		NDUMP=x.NDUMP;
-		LDUMP=x.LDUMP;
+		SEED = x.SEED;
+		pTHR = x.pTHR;
+		pBINDING = x.pBINDING;
+		eTHR = x.eTHR;
+		NDET = x.NDET;
+		NDUMP = x.NDUMP;
+		LDUMP = x.LDUMP;
 		return *this;
 	}
 
 	/**
 	 * Destructor.
 	 */
-	~HEPRUP() {}
+	~HEPRUP() {
+	}
 	//@}
 
 public:
@@ -125,24 +118,24 @@ public:
 	/**
 	 * PDG id's of beam particles. (first/second is in +/-z direction).
 	 */
-	std::pair<long,long> IDBMUP;
+	std::pair<long, long> IDBMUP;
 
 	/**
 	 * Energy of beam particles given in GeV.
 	 */
-	std::pair<double,double> EBMUP;
+	std::pair<double, double> EBMUP;
 
 	/**
 	 * The author group for the PDF used for the beams according to the
 	 * PDFLib specification.
 	 */
-	std::pair<int,int> PDFGUP;
+	std::pair<int, int> PDFGUP;
 
 	/**
 	 * The id number the PDF used for the beams according to the
 	 * PDFLib specification.
 	 */
-	std::pair<int,int> PDFSUP;
+	std::pair<int, int> PDFSUP;
 
 	/**
 	 * Master switch indicating how the ME generator envisages the
@@ -179,7 +172,7 @@ public:
 	std::vector<int> LPRUP;
 
 	/**
-  A. Celentano: insert here the code to store the settings for BDX, i.e. the fiducial volume and the process to simulate
+	 A. Celentano: insert here the code to store the settings for BDX, i.e. the fiducial volume and the process to simulate
 	 */
 	int procid;
 	double ldet; //distance in m between dump front-face and detector front face (m)
@@ -191,6 +184,8 @@ public:
 	double MCcenterY;
 	double MCcenterZ;
 
+	double displacement; //displacement lateral (m)
+
 	// the Aprime and the chi mass. We need them before starting to read events!
 	double APMASS; //GeV
 	double FMASS;  //GeV
@@ -198,16 +193,15 @@ public:
 	//the random generator SEED
 	int SEED;
 	//alpha-dark and epsilon
-	double ALPHAD,EPSILON;
+	double ALPHAD, EPSILON;
 	//the thresholds (GeV) for the scattered particles kinetic energies
-	double eTHR,pTHR;
+	double eTHR, pTHR;
 	//the proton binding energy (GeV)
 	double pBINDING;
-	double NDET,NDUMP; //the number of targets per unit of volume (cm^-3) in the DETector and in the DUMP
+	double NDET, NDUMP; //the number of targets per unit of volume (cm^-3) in the DETector and in the DUMP
 	double LDUMP;      //the dump radiation lenght (cm).
 
 };
-
 
 /**
  * The HEPEUP class is a simple container corresponding to the Les Houches accord
@@ -226,18 +220,16 @@ public:
 	/**
 	 * Default constructor.
 	 */
-	HEPEUP()
-: NUP(0), IDPRUP(0), XWGTUP(0.0), XPDWUP(0.0, 0.0),
-  SCALUP(0.0), AQEDUP(0.0), AQCDUP(0.0) {}
+	HEPEUP() :
+			NUP(0), IDPRUP(0), XWGTUP(0.0), XPDWUP(0.0, 0.0), SCALUP(0.0), AQEDUP(0.0), AQCDUP(0.0) {
+	}
 
 	/**
 	 * Copy-constructor.
 	 */
-	HEPEUP(const HEPEUP & x)
-	: NUP(x.NUP), IDPRUP(x.IDPRUP), XWGTUP(x.XWGTUP), XPDWUP(x.XPDWUP),
-	  SCALUP(x.SCALUP), AQEDUP(x.AQEDUP), AQCDUP(x.AQCDUP), IDUP(x.IDUP),
-	  ISTUP(x.ISTUP), MOTHUP(x.MOTHUP), ICOLUP(x.ICOLUP),
-	  PUP(x.PUP), VTIMUP(x.VTIMUP), SPINUP(x.SPINUP) {}
+	HEPEUP(const HEPEUP & x) :
+			NUP(x.NUP), IDPRUP(x.IDPRUP), XWGTUP(x.XWGTUP), XPDWUP(x.XPDWUP), SCALUP(x.SCALUP), AQEDUP(x.AQEDUP), AQCDUP(x.AQCDUP), IDUP(x.IDUP), ISTUP(x.ISTUP), MOTHUP(x.MOTHUP), ICOLUP(x.ICOLUP), PUP(x.PUP), VTIMUP(x.VTIMUP), SPINUP(x.SPINUP) {
+	}
 
 	/**
 	 * Assignment operator.
@@ -260,11 +252,12 @@ public:
 		return *this;
 	}
 
-
 	/**
 	 * Destructor.
 	 */
-	~HEPEUP() {};
+	~HEPEUP() {
+	}
+	;
 	//@}
 
 public:
@@ -317,7 +310,7 @@ public:
 	 * (<A HREF="http://arxiv.org/abs/hep-ph/0109068">hep-ph/0109068</A>),
 	 * hopefully it will be present in a future accord.
 	 */
-	std::pair<double,double> XPDWUP;
+	std::pair<double, double> XPDWUP;
 
 	/**
 	 * The scale in GeV used in the calculation of the PDF's in this
@@ -349,19 +342,19 @@ public:
 	 * Indices for the first and last mother for the particle entries in
 	 * this event.
 	 */
-	std::vector< std::pair<int,int> > MOTHUP;
+	std::vector<std::pair<int, int> > MOTHUP;
 
 	/**
 	 * The colour-line indices (first(second) is (anti)colour) for the
 	 * particle entries in this event.
 	 */
-	std::vector< std::pair<int,int> > ICOLUP;
+	std::vector<std::pair<int, int> > ICOLUP;
 
 	/**
 	 * Lab frame momentum (Px, Py, Pz, E and M in GeV) for the particle
 	 * entries in this event.
 	 */
-	std::vector< std::vector<double> > PUP;
+	std::vector<std::vector<double> > PUP;
 
 	/**
 	 * Invariant lifetime (c*tau, distance from production to decay in
@@ -408,8 +401,8 @@ public:
 	 *
 	 * @param is the stream to read from.
 	 */
-	Reader(std::istream & is)
-: file(is) {
+	Reader(std::istream & is) :
+			file(is) {
 		init();
 	}
 
@@ -423,8 +416,8 @@ public:
 	 *
 	 * @param filename the name of the file to read from.
 	 */
-	Reader(std::string filename)
-	: intstream(filename.c_str()), file(intstream) {
+	Reader(std::string filename) :
+			intstream(filename.c_str()), file(intstream) {
 		init();
 	}
 
@@ -436,191 +429,176 @@ private:
 	 */
 	void init() {
 
-		heprup.ldet=-1;
-		heprup.lx=-1;
-		heprup.ly=-1;
-		heprup.lz=-1;
-		heprup.MCcenterX=0;
-		heprup.MCcenterY=0;
-		heprup.MCcenterZ=0;
-		heprup.procid=0;
+		heprup.ldet = -1;
+		heprup.lx = -1;
+		heprup.ly = -1;
+		heprup.lz = -1;
+		heprup.displacement = -1;
+		heprup.MCcenterX = 0;
+		heprup.MCcenterY = 0;
+		heprup.MCcenterZ = 0;
+		heprup.procid = 0;
 
 		bool readingHeader = false;
 		bool readingInit = false;
 		bool readingBDX = false;
-		bool readingBDXComment=false;
+		bool readingBDXComment = false;
 
 		std::string word;
 		std::stringstream stream;
 
 		// Make sure we are reading a LHEF file:
 		getline();
-		if ( currentLine.find("<LesHouchesEvents" ) == std::string::npos )
-			throw std::runtime_error
-			("Tried to read a file which does not start with the "
-					"LesHouchesEvents tag.");
-		if ( currentLine.find("version=\"1.0\"" ) == std::string::npos )
-			throw std::runtime_error
-			("Tried to read a LesHouchesEvents file which is not version 1.0.");
+		if (currentLine.find("<LesHouchesEvents") == std::string::npos) throw std::runtime_error("Tried to read a file which does not start with the "
+				"LesHouchesEvents tag.");
+		if (currentLine.find("version=\"1.0\"") == std::string::npos) throw std::runtime_error("Tried to read a LesHouchesEvents file which is not version 1.0.");
 
 		// Loop over all lines until we hit the </init> tag.
 		// Here we have info about ALL the cuts!
-		while ( getline() && currentLine.find("</init>") == std::string::npos ) {
+		while (getline() && currentLine.find("</init>") == std::string::npos) {
 
+			readingBDXComment = (readingBDX) && (currentLine[0] != '#');
 
-			readingBDXComment = (readingBDX)&&(currentLine[0]!='#');
-
-			if ( currentLine.find("<header") != std::string::npos ) {
+			if (currentLine.find("<header") != std::string::npos) {
 				// We have hit the header block, so we should dump this all
 				// following lines to headerBlock until we hit the end of it.
 				readingHeader = true;
 				headerBlock = currentLine + "\n";
-			}
-			else if (readingHeader && ( currentLine.find("APMASS") != std::string::npos)){
+			} else if (readingHeader && (currentLine.find("APMASS") != std::string::npos)) {
 				stream.str(currentLine);
 				stream >> word;
 				stream >> word;
-				heprup.APMASS=atof(word.c_str());
-				std::cout<<"APMASS: "<<heprup.APMASS<<std::endl;
+				heprup.APMASS = atof(word.c_str());
+				std::cout << "APMASS: " << heprup.APMASS << std::endl;
 				headerBlock += currentLine + "\n";
-			}
-			else if (readingHeader && ( currentLine.find("FMASS") != std::string::npos)){
+			} else if (readingHeader && (currentLine.find("FMASS") != std::string::npos)) {
 				stream.str(currentLine);
 				stream >> word;
 				stream >> word;
-				heprup.FMASS=atof(word.c_str());
-				std::cout<<"FMASS: "<<heprup.FMASS<<std::endl;
+				heprup.FMASS = atof(word.c_str());
+				std::cout << "FMASS: " << heprup.FMASS << std::endl;
 				headerBlock += currentLine + "\n";
-			}
-			else if (readingHeader && ( currentLine.find("ebeam1") != std::string::npos)){
+			} else if (readingHeader && (currentLine.find("ebeam1") != std::string::npos)) {
 				stream.str(currentLine);
 				stream >> word;
-				heprup.EBEAM=atof(word.c_str());
-				std::cout<<"EBEAM: "<<heprup.EBEAM<<std::endl;
+				heprup.EBEAM = atof(word.c_str());
+				std::cout << "EBEAM: " << heprup.EBEAM << std::endl;
 				headerBlock += currentLine + "\n";
-			}
-			else if (readingHeader && ( currentLine.find("iseed") != std::string::npos)){
+			} else if (readingHeader && (currentLine.find("iseed") != std::string::npos)) {
 				stream.str(currentLine);
 				stream >> word;
-				heprup.SEED=atoi(word.c_str());
-				std::cout<<"SEED: "<<heprup.SEED<<std::endl;
+				heprup.SEED = atoi(word.c_str());
+				std::cout << "SEED: " << heprup.SEED << std::endl;
 				headerBlock += currentLine + "\n";
-			}
-			else if (readingHeader && ( currentLine.find("epsilon") != std::string::npos)){
+			} else if (readingHeader && (currentLine.find("epsilon") != std::string::npos)) {
 				stream.str(currentLine);
 				stream >> word; //ignore first word
 				stream >> word;
-				heprup.EPSILON=atof(word.c_str());
-				std::cout<<"EPSILON: "<<heprup.EPSILON<<std::endl;
+				heprup.EPSILON = atof(word.c_str());
+				std::cout << "EPSILON: " << heprup.EPSILON << std::endl;
 				headerBlock += currentLine + "\n";
-			}
-			else if (readingHeader && ( currentLine.find("alphaD") != std::string::npos)){
+			} else if (readingHeader && (currentLine.find("alphaD") != std::string::npos)) {
 				stream.str(currentLine);
 				stream >> word; //ignore first word
 				stream >> word;
-				heprup.ALPHAD=atof(word.c_str());
-				std::cout<<"ALPHAD: "<<heprup.ALPHAD<<std::endl;
+				heprup.ALPHAD = atof(word.c_str());
+				std::cout << "ALPHAD: " << heprup.ALPHAD << std::endl;
 				headerBlock += currentLine + "\n";
-			}
-			else if (readingBDXComment && ( currentLine.find("ldet") != std::string::npos) ){
+			} else if (readingBDXComment && (currentLine.find("ldet") != std::string::npos)) {
 				stream.str(currentLine);
 				stream >> word;
-				heprup.ldet=atof(word.c_str());
-				std::cout<<"ldet: "<<heprup.ldet<<std::endl;
+				heprup.ldet = atof(word.c_str());
+				std::cout << "ldet: " << heprup.ldet << std::endl;
 				headerBlock += currentLine + "\n";
 			}
-			else if (readingBDXComment  && ( currentLine.find("MCx") != std::string::npos) ){
+
+			else if (readingBDXComment && (currentLine.find("displacement") != std::string::npos)) {
 				stream.str(currentLine);
 				stream >> word;
-				heprup.MCcenterX=atof(word.c_str());
-				std::cout<<"MCcenterX: "<<heprup.MCcenterX<<std::endl;
+				heprup.displacement = atof(word.c_str());
+				std::cout << "displacement: " << heprup.displacement << std::endl;
 				headerBlock += currentLine + "\n";
 			}
-			else if (readingBDXComment  && ( currentLine.find("MCy") != std::string::npos) ){
+
+			else if (readingBDXComment && (currentLine.find("MCx") != std::string::npos)) {
 				stream.str(currentLine);
 				stream >> word;
-				heprup.MCcenterY=atof(word.c_str());
-				std::cout<<"MCcenterY: "<<heprup.MCcenterY<<std::endl;
+				heprup.MCcenterX = atof(word.c_str());
+				std::cout << "MCcenterX: " << heprup.MCcenterX << std::endl;
 				headerBlock += currentLine + "\n";
-			}
-			else if (readingBDXComment  && ( currentLine.find("MCz") != std::string::npos) ){
+			} else if (readingBDXComment && (currentLine.find("MCy") != std::string::npos)) {
 				stream.str(currentLine);
 				stream >> word;
-				heprup.MCcenterZ=atof(word.c_str());
-				std::cout<<"MCcenterZ: "<<heprup.MCcenterZ<<std::endl;
+				heprup.MCcenterY = atof(word.c_str());
+				std::cout << "MCcenterY: " << heprup.MCcenterY << std::endl;
 				headerBlock += currentLine + "\n";
-			}
-			else if (readingBDXComment  && ( currentLine.find("fiduciallx") != std::string::npos) ){
+			} else if (readingBDXComment && (currentLine.find("MCz") != std::string::npos)) {
 				stream.str(currentLine);
 				stream >> word;
-				heprup.lx=atof(word.c_str());
-				std::cout<<"lx: "<<heprup.lx<<std::endl;
+				heprup.MCcenterZ = atof(word.c_str());
+				std::cout << "MCcenterZ: " << heprup.MCcenterZ << std::endl;
 				headerBlock += currentLine + "\n";
-			}
-			else if (readingBDXComment  && ( currentLine.find("fiducially") != std::string::npos) ){
+			} else if (readingBDXComment && (currentLine.find("fiduciallx") != std::string::npos)) {
 				stream.str(currentLine);
 				stream >> word;
-				heprup.ly=atof(word.c_str());
-				std::cout<<"ly: "<<heprup.ly<<std::endl;
+				heprup.lx = atof(word.c_str());
+				std::cout << "lx: " << heprup.lx << std::endl;
 				headerBlock += currentLine + "\n";
-			}
-			else if (readingBDXComment  && ( currentLine.find("fiduciallz") != std::string::npos) ){
+			} else if (readingBDXComment && (currentLine.find("fiducially") != std::string::npos)) {
 				stream.str(currentLine);
 				stream >> word;
-				heprup.lz=atof(word.c_str());
-				std::cout<<"lz: "<<heprup.lz<<std::endl;
+				heprup.ly = atof(word.c_str());
+				std::cout << "ly: " << heprup.ly << std::endl;
 				headerBlock += currentLine + "\n";
-			}
-			else if (readingBDXComment  && ( currentLine.find("procid") != std::string::npos) ){
+			} else if (readingBDXComment && (currentLine.find("fiduciallz") != std::string::npos)) {
 				stream.str(currentLine);
 				stream >> word;
-				heprup.procid=atoi(word.c_str());
-				std::cout<<"procid: "<<heprup.procid<<std::endl;
+				heprup.lz = atof(word.c_str());
+				std::cout << "lz: " << heprup.lz << std::endl;
 				headerBlock += currentLine + "\n";
-			}
-			else if (readingBDXComment  && ( currentLine.find("eTHR") != std::string::npos) ){
+			} else if (readingBDXComment && (currentLine.find("procid") != std::string::npos)) {
 				stream.str(currentLine);
 				stream >> word;
-				heprup.eTHR=atof(word.c_str());
-				std::cout<<"eTHR: "<<heprup.eTHR<<std::endl;
+				heprup.procid = atoi(word.c_str());
+				std::cout << "procid: " << heprup.procid << std::endl;
 				headerBlock += currentLine + "\n";
-			}
-			else if (readingBDXComment  && ( currentLine.find("pTHR") != std::string::npos) ){
+			} else if (readingBDXComment && (currentLine.find("eTHR") != std::string::npos)) {
 				stream.str(currentLine);
 				stream >> word;
-				heprup.pTHR=atof(word.c_str());
-				std::cout<<"pTHR: "<<heprup.pTHR<<std::endl;
+				heprup.eTHR = atof(word.c_str());
+				std::cout << "eTHR: " << heprup.eTHR << std::endl;
 				headerBlock += currentLine + "\n";
-			}
-			else if (readingBDXComment  && ( currentLine.find("pBINDING") != std::string::npos) ){
+			} else if (readingBDXComment && (currentLine.find("pTHR") != std::string::npos)) {
 				stream.str(currentLine);
 				stream >> word;
-				heprup.pBINDING=atof(word.c_str());
-				std::cout<<"pBINDING: "<<heprup.pBINDING<<std::endl;
+				heprup.pTHR = atof(word.c_str());
+				std::cout << "pTHR: " << heprup.pTHR << std::endl;
 				headerBlock += currentLine + "\n";
-			}
-			else if (readingBDXComment  && ( currentLine.find("NDET") != std::string::npos) ){
+			} else if (readingBDXComment && (currentLine.find("pBINDING") != std::string::npos)) {
 				stream.str(currentLine);
 				stream >> word;
-				heprup.NDET=atof(word.c_str());
-				std::cout<<"NDET: "<<heprup.NDET<<std::endl;
+				heprup.pBINDING = atof(word.c_str());
+				std::cout << "pBINDING: " << heprup.pBINDING << std::endl;
 				headerBlock += currentLine + "\n";
-			}
-			else if (readingBDXComment  && ( currentLine.find("NDUMP") != std::string::npos) ){
+			} else if (readingBDXComment && (currentLine.find("NDET") != std::string::npos)) {
 				stream.str(currentLine);
 				stream >> word;
-				heprup.NDUMP=atof(word.c_str());
-				std::cout<<"NDUMP: "<<heprup.NDUMP<<std::endl;
+				heprup.NDET = atof(word.c_str());
+				std::cout << "NDET: " << heprup.NDET << std::endl;
 				headerBlock += currentLine + "\n";
-			}
-			else if (readingBDXComment  && ( currentLine.find("LDUMP") != std::string::npos) ){
+			} else if (readingBDXComment && (currentLine.find("NDUMP") != std::string::npos)) {
 				stream.str(currentLine);
 				stream >> word;
-				heprup.LDUMP=atof(word.c_str());
-				std::cout<<"LDUMP: "<<heprup.LDUMP<<std::endl;
+				heprup.NDUMP = atof(word.c_str());
+				std::cout << "NDUMP: " << heprup.NDUMP << std::endl;
 				headerBlock += currentLine + "\n";
-			}
-			else if ( currentLine.find("<init") != std::string::npos ) {
+			} else if (readingBDXComment && (currentLine.find("LDUMP") != std::string::npos)) {
+				stream.str(currentLine);
+				stream >> word;
+				heprup.LDUMP = atof(word.c_str());
+				std::cout << "LDUMP: " << heprup.LDUMP << std::endl;
+				headerBlock += currentLine + "\n";
+			} else if (currentLine.find("<init") != std::string::npos) {
 				// We have hit the init block, so we should expect to find the
 				// standard information in the following.
 				readingInit = true;
@@ -628,70 +606,57 @@ private:
 				// The first line tells us how many lines to read next.
 				getline();
 				std::istringstream iss(currentLine);
-				if ( !( iss >> heprup.IDBMUP.first >> heprup.IDBMUP.second
-						>> heprup.EBMUP.first >> heprup.EBMUP.second
-						>> heprup.PDFGUP.first >> heprup.PDFGUP.second
-						>> heprup.PDFSUP.first >> heprup.PDFSUP.second
-						>> heprup.IDWTUP >> heprup.NPRUP ) ) {
+				if (!(iss >> heprup.IDBMUP.first >> heprup.IDBMUP.second >> heprup.EBMUP.first >> heprup.EBMUP.second >> heprup.PDFGUP.first >> heprup.PDFGUP.second >> heprup.PDFSUP.first >> heprup.PDFSUP.second >> heprup.IDWTUP >> heprup.NPRUP)) {
 					heprup.NPRUP = -42;
 					return;
 				}
 				heprup.resize();
 
-				for ( int i = 0; i < heprup.NPRUP; ++i ) {
+				for (int i = 0; i < heprup.NPRUP; ++i) {
 					getline();
 					std::istringstream iss(currentLine);
-					if ( !( iss >> heprup.XSECUP[i] >> heprup.XERRUP[i]
-					                                                 >> heprup.XMAXUP[i] >> heprup.LPRUP[i] ) ) {
+					if (!(iss >> heprup.XSECUP[i] >> heprup.XERRUP[i] >> heprup.XMAXUP[i] >> heprup.LPRUP[i])) {
 						heprup.NPRUP = -42;
 						return;
 					}
 				}
-			}
-			else if ( currentLine.find("<BDX>") != std::string::npos ) {
+			} else if (currentLine.find("<BDX>") != std::string::npos) {
 				readingBDX = true;
 				headerBlock += currentLine + "\n";
-			}
-			else if ( currentLine.find("</BDX>") != std::string::npos ) {
+			} else if (currentLine.find("</BDX>") != std::string::npos) {
 				readingBDX = false;
 				headerBlock += currentLine + "\n";
-			}
-			else if ( currentLine.find("</header>") != std::string::npos ) {
+			} else if (currentLine.find("</header>") != std::string::npos) {
 				// The end of the header block. Dump this line as well to the
 				// headerBlock and we're done.
 				readingHeader = false;
 				headerBlock += currentLine + "\n";
-			}
-			else if ( readingHeader ) {
+			} else if (readingHeader) {
 				// We are in the process of reading the header block. Dump the
 				// line to haderBlock.
 				headerBlock += currentLine + "\n";
-			}
-			else if ( readingInit ) {
+			} else if (readingInit) {
 				// Here we found a comment line. Dump it to initComments.
 				initComments += currentLine + "\n";
-			}
-			else {
+			} else {
 				// We found some other stuff outside the standard tags.
 				outsideBlock += currentLine + "\n";
 			}
 		}
-		if ( !file ) heprup.NPRUP = -42;
+		if (!file) heprup.NPRUP = -42;
 	}
 
 public:
 
-	int getNumberOfEvents()
-	{
+	int getNumberOfEvents() {
 		int counter = 0;
 		int position = file.tellg();
 		file.seekg(0, std::ios::beg);
 
 		file.clear();
 
-		while(getline())
-		{
-			if(currentLine.find("<event") != std::string::npos) ++counter;
+		while (getline()) {
+			if (currentLine.find("<event") != std::string::npos) ++counter;
 		}
 
 		file.clear();
@@ -711,7 +676,7 @@ public:
 
 		// Check if the initialization was successful. Otherwise we will
 		// not read any events.
-		if ( heprup.NPRUP < 0 ) return false;
+		if (heprup.NPRUP < 0) return false;
 		eventComments = "";
 		outsideBlock = "";
 		hepeup.NUP = 0;
@@ -719,36 +684,29 @@ public:
 		// Keep reading lines until we hit the next event or the end of
 		// the event block. Save any inbetween lines. Exit if we didn't
 		// find an event.
-		while ( getline() && currentLine.find("<event") == std::string::npos )
+		while (getline() && currentLine.find("<event") == std::string::npos)
 			outsideBlock += currentLine + "\n";
-		if ( !getline()  ) return false;
+		if (!getline()) return false;
 
 		// We found an event. The first line determines how many
 		// subsequent particle lines we have.
 		std::istringstream iss(currentLine);
-		if ( !( iss >> hepeup.NUP >> hepeup.IDPRUP >> hepeup.XWGTUP
-				>> hepeup.SCALUP >> hepeup.AQEDUP >> hepeup.AQCDUP ) )
-			return false;
+		if (!(iss >> hepeup.NUP >> hepeup.IDPRUP >> hepeup.XWGTUP >> hepeup.SCALUP >> hepeup.AQEDUP >> hepeup.AQCDUP)) return false;
 		hepeup.resize();
 
 		// Read all particle lines.
-		for ( int i = 0; i < hepeup.NUP; ++i ) {
-			if ( !getline() ) return false;
+		for (int i = 0; i < hepeup.NUP; ++i) {
+			if (!getline()) return false;
 			std::istringstream iss(currentLine);
-			if ( !( iss >> hepeup.IDUP[i] >> hepeup.ISTUP[i]
-			                                              >> hepeup.MOTHUP[i].first >> hepeup.MOTHUP[i].second
-			                                              >> hepeup.ICOLUP[i].first >> hepeup.ICOLUP[i].second
-			                                              >> hepeup.PUP[i][0] >> hepeup.PUP[i][1] >> hepeup.PUP[i][2]
-			                                                                                                       >> hepeup.PUP[i][3] >> hepeup.PUP[i][4]
-			                                                                                                                                            >> hepeup.VTIMUP[i] >> hepeup.SPINUP[i] ) )
-				return false;
+			if (!(iss >> hepeup.IDUP[i] >> hepeup.ISTUP[i] >> hepeup.MOTHUP[i].first >> hepeup.MOTHUP[i].second >> hepeup.ICOLUP[i].first >> hepeup.ICOLUP[i].second >> hepeup.PUP[i][0] >> hepeup.PUP[i][1] >> hepeup.PUP[i][2] >> hepeup.PUP[i][3] >> hepeup.PUP[i][4]
+					>> hepeup.VTIMUP[i] >> hepeup.SPINUP[i])) return false;
 		}
 
 		// Now read any additional comments.
-		while ( getline() && currentLine.find("</event>") == std::string::npos )
+		while (getline() && currentLine.find("</event>") == std::string::npos)
 			eventComments += currentLine + "\n";
 
-		if ( !file ) return false;
+		if (!file) return false;
 		return true;
 
 	}
@@ -759,7 +717,7 @@ protected:
 	 * Used internally to read a single line from the stream.
 	 */
 	bool getline() {
-	  return ((bool)std::getline(file, currentLine) );
+		return ((bool) std::getline(file, currentLine));
 	}
 
 protected:
@@ -862,8 +820,8 @@ public:
 	 * Create a Writer object giving a stream to write to.
 	 * @param os the stream where the event file is written.
 	 */
-	Writer(std::ostream & os)
-: file(os) {
+	Writer(std::ostream & os) :
+			file(os) {
 		// Write out the standard XML tag for the event file.
 		file << "<LesHouchesEvents version=\"1.0\">\n";
 	}
@@ -872,8 +830,8 @@ public:
 	 * Create a Writer object giving a filename to write to.
 	 * @param filename the name of the event file to be written.
 	 */
-	Writer(std::string filename)
-	: intstream(filename.c_str()), file(intstream) {
+	Writer(std::string filename) :
+			intstream(filename.c_str()), file(intstream) {
 		// Write out the standard XML tag for the event file.
 		file << "<LesHouchesEvents version=\"1.0\">\n";
 	}
@@ -917,32 +875,17 @@ public:
 		using std::setw;
 
 		std::string headerBlock = headerStream.str();
-		if ( headerBlock.length() ) {
-			if ( headerBlock.find("<header>") == std::string::npos )
-				file << "<header>\n";
-			if ( headerBlock[headerBlock.length() - 1] != '\n' )
-				headerBlock += '\n';
+		if (headerBlock.length()) {
+			if (headerBlock.find("<header>") == std::string::npos) file << "<header>\n";
+			if (headerBlock[headerBlock.length() - 1] != '\n') headerBlock += '\n';
 			file << headerBlock;
-			if ( headerBlock.find("</header>") == std::string::npos )
-				file << "</header>\n";
+			if (headerBlock.find("</header>") == std::string::npos) file << "</header>\n";
 		}
-		file << "<init>\n"
-				<< " " << setw(8) << heprup.IDBMUP.first
-				<< " " << setw(8) << heprup.IDBMUP.second
-				<< " " << setw(14) << heprup.EBMUP.first
-				<< " " << setw(14) << heprup.EBMUP.second
-				<< " " << setw(4) << heprup.PDFGUP.first
-				<< " " << setw(4) << heprup.PDFGUP.second
-				<< " " << setw(4) << heprup.PDFSUP.first
-				<< " " << setw(4) << heprup.PDFSUP.second
-				<< " " << setw(4) << heprup.IDWTUP
-				<< " " << setw(4) << heprup.NPRUP << std::endl;
+		file << "<init>\n" << " " << setw(8) << heprup.IDBMUP.first << " " << setw(8) << heprup.IDBMUP.second << " " << setw(14) << heprup.EBMUP.first << " " << setw(14) << heprup.EBMUP.second << " " << setw(4) << heprup.PDFGUP.first << " " << setw(4) << heprup.PDFGUP.second
+				<< " " << setw(4) << heprup.PDFSUP.first << " " << setw(4) << heprup.PDFSUP.second << " " << setw(4) << heprup.IDWTUP << " " << setw(4) << heprup.NPRUP << std::endl;
 		heprup.resize();
-		for ( int i = 0; i < heprup.NPRUP; ++i )
-			file << " " << setw(14) << heprup.XSECUP[i]
-			                                         << " " << setw(14) << heprup.XERRUP[i]
-			                                                                             << " " << setw(14) << heprup.XMAXUP[i]
-			                                                                                                                 << " " << setw(6) << heprup.LPRUP[i] << std::endl;
+		for (int i = 0; i < heprup.NPRUP; ++i)
+			file << " " << setw(14) << heprup.XSECUP[i] << " " << setw(14) << heprup.XERRUP[i] << " " << setw(14) << heprup.XMAXUP[i] << " " << setw(6) << heprup.LPRUP[i] << std::endl;
 		file << hashline(initStream.str()) << "</init>" << std::endl;
 		eventStream.str("");
 	}
@@ -956,34 +899,19 @@ public:
 		using std::setw;
 
 		file << "<event>\n";
-		file << " " << setw(4) << hepeup.NUP
-				<< " " << setw(6) << hepeup.IDPRUP
-				<< " " << setw(14) << hepeup.XWGTUP
-				<< " " << setw(14) << hepeup.SCALUP
-				<< " " << setw(14) << hepeup.AQEDUP
-				<< " " << setw(14) << hepeup.AQCDUP << "\n";
+		file << " " << setw(4) << hepeup.NUP << " " << setw(6) << hepeup.IDPRUP << " " << setw(14) << hepeup.XWGTUP << " " << setw(14) << hepeup.SCALUP << " " << setw(14) << hepeup.AQEDUP << " " << setw(14) << hepeup.AQCDUP << "\n";
 		hepeup.resize();
 
-		for ( int i = 0; i < hepeup.NUP; ++i )
-			file << " " << setw(8) << hepeup.IDUP[i]
-			                                      << " " << setw(2) << hepeup.ISTUP[i]
-			                                                                        << " " << setw(4) << hepeup.MOTHUP[i].first
-			                                                                        << " " << setw(4) << hepeup.MOTHUP[i].second
-			                                                                        << " " << setw(4) << hepeup.ICOLUP[i].first
-			                                                                        << " " << setw(4) << hepeup.ICOLUP[i].second
-			                                                                        << " " << setw(14) << hepeup.PUP[i][0]
-			                                                                                                            << " " << setw(14) << hepeup.PUP[i][1]
-			                                                                                                                                                << " " << setw(14) << hepeup.PUP[i][2]
-			                                                                                                                                                                                    << " " << setw(14) << hepeup.PUP[i][3]
-			                                                                                                                                                                                                                        << " " << setw(14) << hepeup.PUP[i][4]
-			                                                                                                                                                                                                                                                            << " " << setw(1) << hepeup.VTIMUP[i]
-			                                                                                                                                                                                                                                                                                               << " " << setw(1) << hepeup.SPINUP[i] << std::endl;
+		for (int i = 0; i < hepeup.NUP; ++i)
+			file << " " << setw(8) << hepeup.IDUP[i] << " " << setw(2) << hepeup.ISTUP[i] << " " << setw(4) << hepeup.MOTHUP[i].first << " " << setw(4) << hepeup.MOTHUP[i].second << " " << setw(4) << hepeup.ICOLUP[i].first << " " << setw(4) << hepeup.ICOLUP[i].second << " "
+					<< setw(14) << hepeup.PUP[i][0] << " " << setw(14) << hepeup.PUP[i][1] << " " << setw(14) << hepeup.PUP[i][2] << " " << setw(14) << hepeup.PUP[i][3] << " " << setw(14) << hepeup.PUP[i][4] << " " << setw(1) << hepeup.VTIMUP[i] << " " << setw(1)
+					<< hepeup.SPINUP[i] << std::endl;
 
 		file << hashline(eventStream.str()) << "</event>\n";
 
 		eventStream.str("");
 
-		if ( !file ) return false;
+		if (!file) return false;
 
 		return true;
 
@@ -999,9 +927,8 @@ protected:
 		std::string ret;
 		std::istringstream is(s);
 		std::string ss;
-		while ( getline(is, ss) ) {
-			if ( ss.find('#') == std::string::npos ||
-					ss.find('#') != ss.find_first_not_of(" \t") ) ss = "# " + ss;
+		while (getline(is, ss)) {
+			if (ss.find('#') == std::string::npos || ss.find('#') != ss.find_first_not_of(" \t")) ss = "# " + ss;
 			ret += ss + '\n';
 		}
 		return ret;
@@ -1070,53 +997,52 @@ private:
 }
 
 /** \example LHEFReadEx.cc An example function which reads from a Les
-    Huches Event File: */
+ Huches Event File: */
 /** \example LHEFWriteEx.cc An example function which writes out a Les
-    Huches Event File: */
+ Huches Event File: */
 /** \example LHEFCat.cc This is a main function which simply reads a
-    Les Houches Event File from the standard input and writes it again
-    to the standard output. 
-    This file can be downloaded from
-    <A HREF="http://www.thep.lu.se/~leif/LHEF/LHEFCat.cc">here</A>. 
-    There is also a sample
-    <A HREF="http://www.thep.lu.se/~leif/LHEF/ttbar.lhef">event file</A>
-    to try it on.
+ Les Houches Event File from the standard input and writes it again
+ to the standard output.
+ This file can be downloaded from
+ <A HREF="http://www.thep.lu.se/~leif/LHEF/LHEFCat.cc">here</A>.
+ There is also a sample
+ <A HREF="http://www.thep.lu.se/~leif/LHEF/ttbar.lhef">event file</A>
+ to try it on.
  */
 
 /**\mainpage Les Houches Event File
 
-Why isn't any doxygen output generated by this text?
+ Why isn't any doxygen output generated by this text?
 
-Here are some example classes for reading and writing Les Houches
-Event Files according to the
-<A HREF="http://www.thep.lu.se/~torbjorn/lhef/lhafile2.pdf">proposal</A>
-by Torbj&ouml;rn Sj&ouml;strand discussed at the
-<A HREF="http://mc4lhc06.web.cern.ch/mc4lhc06/">MC4LHC</A>
-workshop at CERN 2006.
+ Here are some example classes for reading and writing Les Houches
+ Event Files according to the
+ <A HREF="http://www.thep.lu.se/~torbjorn/lhef/lhafile2.pdf">proposal</A>
+ by Torbj&ouml;rn Sj&ouml;strand discussed at the
+ <A HREF="http://mc4lhc06.web.cern.ch/mc4lhc06/">MC4LHC</A>
+ workshop at CERN 2006.
 
-In total there are four classes which are all available in a single
-header file called
-<A HREF="http://www.thep.lu.se/~leif/LHEF/LHEF.h">LHEF.h</A>.
+ In total there are four classes which are all available in a single
+ header file called
+ <A HREF="http://www.thep.lu.se/~leif/LHEF/LHEF.h">LHEF.h</A>.
 
-The two classes LHEF::HEPRUP and LHEF::HEPEUP are simple container
-classes which contain the same information as the Les Houches standard
-Fortran common blocks with the same names. The other two classes are
-called LHEF::Reader and LHEF::Writer and are used to read and write
-Les Houches Event Files
+ The two classes LHEF::HEPRUP and LHEF::HEPEUP are simple container
+ classes which contain the same information as the Les Houches standard
+ Fortran common blocks with the same names. The other two classes are
+ called LHEF::Reader and LHEF::Writer and are used to read and write
+ Les Houches Event Files
 
-Here are a few <A HREF="examples.html">examples</A> of how to use the
-classes:
+ Here are a few <A HREF="examples.html">examples</A> of how to use the
+ classes:
 
-\namespace LHEF The LHEF namespace contains some example classes for reading and writing Les Houches
-Event Files according to the
-<A HREF="http://www.thep.lu.se/~torbjorn/lhef/lhafile2.pdf">proposal</A>
-by Torbj&ouml;rn Sj&ouml;strand discussed at the
-<A HREF="http://mc4lhc06.web.cern.ch/mc4lhc06/">MC4LHC</A>
-workshop at CERN 2006.
+ \namespace LHEF The LHEF namespace contains some example classes for reading and writing Les Houches
+ Event Files according to the
+ <A HREF="http://www.thep.lu.se/~torbjorn/lhef/lhafile2.pdf">proposal</A>
+ by Torbj&ouml;rn Sj&ouml;strand discussed at the
+ <A HREF="http://mc4lhc06.web.cern.ch/mc4lhc06/">MC4LHC</A>
+ workshop at CERN 2006.
 
 
 
  */
-
 
 #endif /* THEPEG_LHEF_H */
