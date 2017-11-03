@@ -43,7 +43,7 @@ Block MGYUKAWA     # Yukawa masses m/v=y/sqrt(2)
  6  1.74300000E+02  #  mtop  for  the  Yukawa  y_t  
  15  1.77700000E+00  #  mtau  for  the  Yukawa  y_ta  
 Block MGCKM     # CKM elements for MadGraph
-     1   1     9.75000000E-01   # Vud for Cabibbo matrix
+ 1   1     9.75000000E-01   # Vud for Cabibbo matrix
 #===========================================================
 # QUANTUM NUMBERS OF NEW STATE(S) (NON SM PDG CODE) IF ANY
 # (see below for masses and decay tables)
@@ -78,9 +78,9 @@ Block MASS      #  Mass spectrum (kinematic masses)
  23  9.15445065E+01  #  Z  mass  
  24  8.02673592E+01  #  W  mass  
  25  1.20000000E+02  #  H  mass  
- 611  10E-3 	     #  FMASS  #This  is  the  chi  mass  in  GeV  
- 622  30E-3  	     #  APMASS  #This  is  the  A'  mass  in  GeV  
- 623  2.51267000e+01 #  HPMASS  (aluminum)  #This  is  the  nucleus  mass  in  GeV  (material  of  the  beam  dump)  
+ 611  150E-3  #  FMASS  #This  is  the  chi  mass  in  GeV  
+ 622  450E-3  #  APMASS  #This  is  the  A'  mass  in  GeV  
+ 623  25.13000E+00  #  HPMASS  (aluminum)  #This  is  the  nucleus  mass  in  GeV  (material  of  the  beam  dump)  
 #            PDG       Width
 DECAY       611     0.00000000e+00   # ELWIDTH
 DECAY       622     0.01             # APWIDTH
