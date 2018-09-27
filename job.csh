@@ -8,7 +8,10 @@ if ($#argv != 1) then
         goto done
 endif
 
-set rootfile="20GeV.Al.root"
+#set rootfile="2p2GeV.Al.root"
+#set rootfile="6GeV.Al.root"
+set rootfile="11GeV.Al.root"
+#set rootfile="4p315GeV.Al.root"
 
 echo "go to work dir"
 cd /project/Gruppo3/fiber5/celentano/EventGenerator/runDir

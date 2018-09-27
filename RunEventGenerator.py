@@ -202,7 +202,7 @@ else:
                 print bcolors.OKGREEN,"Now rotate events. Projecting bin: ",ii," Check, bin center is: ",hE_angle_all.GetXaxis().GetBinCenter(ii+1),bcolors.ENDC
                 hAngleTMP=hE_angle_all.ProjectionY("_py",ii+1,ii+1)
                 print lhefname
-#               RotateLHEFEvents(lhefname,hAngleTMP)
+                RotateLHEFEvents(lhefname,hAngleTMP)
 
                 print bcolors.OKGREEN,"DONE. This attempt was: ",str(attemptsThisBin),bcolors.ENDC
                 print bcolors.OKGREEN,"DONE: number of generated events is: ",nGeneratedEventsThisRun," cross section pb is: ",sigmaThisRun," density is: ",DensityThisRun,bcolors.ENDC

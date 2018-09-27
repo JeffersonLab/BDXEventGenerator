@@ -179,6 +179,9 @@ std::pair<double,double> AnalyseParticles(LHEF::Reader *reader) {
 		x=heprup.ldet*(sinTheta/cosTheta)*cosPhi;
 		y=heprup.ldet*(sinTheta/cosTheta)*sinPhi;
 
+	
+
+
 
 		signPz = (chi.Pz() >= 0.0) ? 1.0 : -1.0;
 		/* I need now to apply the fiducial cuts.
@@ -189,6 +192,7 @@ std::pair<double,double> AnalyseParticles(LHEF::Reader *reader) {
 			n_inside++;
 			ii_inside.push_back(particle);
 			hepeup.ISTUP[particle] = 1;
+
 		}
 
 		else { //for now, just mark this chi out of the fiducial volume with a status "0"
@@ -196,6 +200,8 @@ std::pair<double,double> AnalyseParticles(LHEF::Reader *reader) {
 			continue;
 		}
 	}
+
+
 
 	//now we know how many chis are inside (n_inside). Take 1 random.
 	if (n_inside!=0){

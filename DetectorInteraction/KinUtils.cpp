@@ -34,7 +34,7 @@ Alpha(1./137.){
 		 */
 
 
-		cout<<"KinUtils::KinUtils setting the cross-section functions";
+		cout<<"KinUtils::KinUtils setting the cross-section functions"<<endl;fflush(stdout);
 		double Trmax_protonElastic,Trmax_electronElastic;
 		for (int ii = 0; ii < nFunctionsElastic; ii++) {
 
@@ -51,7 +51,7 @@ Alpha(1./137.){
 			if (Ethr<(Ebeam-Mchi)) 				f_chieXsection[ii]->Integral(Ethr+Me,Ebeam+Me-Mchi);
 		}
 
-		cout<<"KinUtils::KinUtils created"<<endl;
+		cout<<"KinUtils::KinUtils created"<<endl;fflush(stdout);
 		PrintParameters();
 
 

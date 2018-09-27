@@ -433,7 +433,7 @@ private:
 		heprup.lx = -1;
 		heprup.ly = -1;
 		heprup.lz = -1;
-		heprup.displacement = -1;
+		heprup.displacement = 0;
 		heprup.MCcenterX = 0;
 		heprup.MCcenterY = 0;
 		heprup.MCcenterZ = 0;
