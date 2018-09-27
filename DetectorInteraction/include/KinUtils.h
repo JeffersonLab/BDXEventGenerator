@@ -18,7 +18,8 @@ enum ProcID{
 	Proc_Pelastic=1,
 	Proc_Eelastic=2,
 	Proc_Pinelastic=3,
-	Proc_Einelastic=4
+	Proc_Einelastic=4,
+	Proc_Nuclelastic=5
 };
 
 class KinUtils{
@@ -26,12 +27,15 @@ class KinUtils{
 	private:
 		TF1** f_chipXsection;
 		TF1** f_chieXsection;
+		TF1** f_chinuclXsection;
 
 		double Ebeam;
-		double Mchi,Maprime,Msplit; //chi and aprime mass in GeV
-		double Epsilon,AlphaDark,Alpha;
+		double Mchi,Maprime,Msplit,Mnucl; //chi and aprime mass in GeV
+		double Epsilon,AlphaDark,Alpha,Znucl;
 
-		double Pthr,Ethr; //the two thresholds in GeV for the recoil proton kinetic energy and the recoil electron kinetic energy.
+
+
+		double Pthr,Ethr,Nuclthr; //the two thresholds in GeV for the recoil proton kinetic energy and the recoil electron kinetic energy.
 		double Pbinding; //the proton binding energy in GeV (for the recoil proton);
 		int Seed;
 		TRandom3 Rand;
@@ -48,11 +52,15 @@ class KinUtils{
 		void setAlphaD(double m_AlphaDark){AlphaDark=m_AlphaDark;};
 		void setEpsilon(double m_Epsilon){Epsilon=m_Epsilon;};
 
+		void setMnucl(double m_Mnucl){Mnucl=m_Mnucl;};
+		void setZnucl(double m_Znucl){Znucl=m_Znucl;};
+
+
 		double doElasticRecoil(const TLorentzVector &chi,TLorentzVector &recoil,TLorentzVector &chiPrime,const int &procID);
 		double findInteractionPoint(const TLorentzVector &chi,const TVector3 &fiducialV,const TVector3 &vin,TVector3 &vout,TVector3 &vhit);
 		double Er_chipXsection(double *x,double *par);
 		double Er_chieXsection(double *x,double *par);
-
+		double Er_chinuclXsection(double *x,double *par);
 
 
 

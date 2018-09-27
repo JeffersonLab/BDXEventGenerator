@@ -106,7 +106,7 @@ void writeLund(ofstream &ofile,LHEF::HEPEUP &data){
 		M=data.PUP[idFinalChi][4];
 		ofile<<"2 0 0 9611 0 0 "<<Px<<" "<<Py<<" "<<Pz<<" "<<E<<" "<<M<<" "<<vx<<" "<<vy<<" "<<vz<<endl;
 
-		/*The final state SM particle - e- or P!*/
+		/*The final state SM particle - e- or P or nucleus*/
 		Px=data.PUP[idParticle][0];
 		Py=data.PUP[idParticle][1];
 		Pz=data.PUP[idParticle][2];
@@ -115,6 +115,7 @@ void writeLund(ofstream &ofile,LHEF::HEPEUP &data){
 		pdg=data.IDUP[idParticle];
 		if (pdg==911) pdg=11;
 		else if (pdg==92212) pdg=2212;
+		else if (pdg==999) pdg=999; //the nucleus TODO. For now 999
 		ofile<<"3 "<<charge<<" 1 "<<pdg<<" 0 0 "<<Px<<" "<<Py<<" "<<Pz<<" "<<E<<" "<<M<<" "<<vx<<" "<<vy<<" "<<vz<<endl;
 	}
 }
@@ -228,6 +229,7 @@ std::pair<double,double> AnalyseParticles(LHEF::Reader *reader) {
 			break;
 		case Proc_Pelastic: //proton elastic
 		case Proc_Eelastic: //electron elastic
+		case Proc_Nuclelastic: //nuclear elastic (coherent)
 			sigma=m_utils->doElasticRecoil(chi, recoil_elastic, recoil_chi,heprup.procid);		
 			msigma+=sigma;
 

@@ -21,11 +21,12 @@ Alpha(1./137.){
 		Rand.SetSeed(m_Seed);
 		f_chipXsection = new TF1*[nFunctionsElastic];
 		f_chieXsection = new TF1*[nFunctionsElastic];
+		f_chinuclXsection = new TF1*[nFunctionsElastic];
 
 		/*This part is really critical. The cross-section is a function of the final state recoil energy, and as "parameter" needs the incoming
 		 * chi energy. However, if event-by-event we set this parameter, and then call a "GetRandom", we trigger the integration computation for ALL events,
 		 * and this is very time-consuming. Instead, if the integration is already performed, a second integration (even in a different range) is not time-consuming.
-		 * Instead, I "bin" wrt the incoming chi energy (100 bins), and then extract the random number from the function defining the energy in that bin!
+		 * Instead, I "bin" wrt the incoming chi energy (nFunctionsElastic bins), and then extract the random number from the function defining the energy in that bin!
 		 *
 		 * MINIMUM value of the recoil total energy: its mass + threshold + binding energy
 		 * MAXIMUM value: the actual form of the maximum value is complicated (see below), but a very upper limit is: primary e- beam energy + its mass - chi mass.
@@ -46,9 +47,17 @@ Alpha(1./137.){
 			f_chieXsection[ii]->SetNpx(1000);
 			f_chieXsection[ii]->FixParameter(0, (ii + 1) * Ebeam / nFunctionsElastic);
 
+			//Here the VARIABLE is the KINETIC energy of the scattered nucleus. We integrate this from threshold to Ebeam-Mchi
+			f_chinuclXsection[ii] = new TF1(Form("f_chinuclXsection_%i", ii),this,&KinUtils::Er_chinuclXsection, Nuclthr, Ebeam-Mchi, 1);
+			f_chinuclXsection[ii]->SetNpx(1000);
+			f_chinuclXsection[ii]->FixParameter(0, (ii + 1) * Ebeam / nFunctionsElastic);
+
+
+
 			/*Cache the integrals*/
 			if ((Pbinding+Pthr)<(Ebeam-Mchi))	f_chipXsection[ii]->Integral(Pthr+Pbinding+Mn,Ebeam+Mn-Mchi);
 			if (Ethr<(Ebeam-Mchi)) 				f_chieXsection[ii]->Integral(Ethr+Me,Ebeam+Me-Mchi);
+			if (Nuclthr<(Ebeam-Mchi)) 			f_chinuclXsection[ii]->Integral(Nuclthr,Ebeam-Mchi);
 		}
 
 		cout<<"KinUtils::KinUtils created"<<endl;fflush(stdout);
@@ -68,6 +77,9 @@ void KinUtils::PrintParameters(){
 			cout<<"AlphaDark: \t \t"<<AlphaDark<<endl;
 			cout<<"e- threshold: \t \t"<<Ethr<<endl;
 			cout<<"p threshold: \t \t"<<Pthr<<endl;
+
+			cout<<"Nuclear mass: \t \t"<<Mnucl<<endl;
+			cout<<"Nuclear charge: \t\t"<<Znucl<<endl;
 }
 
 /*double Tr_chipXsection
@@ -184,6 +196,45 @@ double KinUtils::Er_chieXsection(double *x,double *par){
 	dsigma *=GeVm2cm2;
 	return dsigma;
 }
+
+
+
+/*double Er_chinuclXsection
+ Returns the chi Nucl -> chi nucl DIFFERENTIAL cross section, dsigma/dTr, where Tr is the recoil nucleus KINETIC energy (note the difference wrt previous cases)
+ Parameters: x[0]: recoil nucleus kinetic energy Tr
+           par[0]: E0, kinetic energy of incoming chi
+*/
+double KinUtils::Er_chinuclXsection(double *x,double *par){
+	double Tr=x[0];
+	double E0=par[0];
+
+	//1: Use eq. 38 of 1607.01390
+	double dsigma;
+	dsigma = 8*PI*Alpha*AlphaDark*Epsilon*Epsilon * Mnucl * Znucl * Znucl;
+	dsigma = dsigma / (pow(Maprime*Maprime+2*Mnucl*Tr,2)); // this is in GeV^-3
+
+	//2: cconvert in cm2 / GeV
+	dsigma *=GeVm2cm2;
+	return dsigma;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /*This is the routine that, given the cross-section for the ELASTIC interaction chi-e --> chi-e OR chi-p --> chi-p

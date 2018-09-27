@@ -41,8 +41,9 @@ public:
 	 * Copy-constructor.
 	 */
 	HEPRUP(const HEPRUP & x) :
-			IDBMUP(x.IDBMUP), EBMUP(x.EBMUP), PDFGUP(x.PDFGUP), PDFSUP(x.PDFSUP), IDWTUP(x.IDWTUP), NPRUP(x.NPRUP), XSECUP(x.XSECUP), XERRUP(x.XERRUP), XMAXUP(x.XMAXUP), LPRUP(x.LPRUP), procid(x.procid), lx(x.lx), ly(x.ly), lz(x.lz), APMASS(x.APMASS), FMASS(x.FMASS), EBEAM(
-					x.EBEAM), SEED(x.SEED), eTHR(x.eTHR), pTHR(x.pTHR), pBINDING(x.pBINDING), ALPHAD(x.ALPHAD), EPSILON(x.EPSILON), MCcenterX(x.MCcenterX), MCcenterY(x.MCcenterY), MCcenterZ(x.MCcenterZ), NDET(x.NDET), NDUMP(x.NDUMP), LDUMP(x.LDUMP),displacement(x.displacement) {
+			IDBMUP(x.IDBMUP), EBMUP(x.EBMUP), PDFGUP(x.PDFGUP), PDFSUP(x.PDFSUP), IDWTUP(x.IDWTUP), NPRUP(x.NPRUP), XSECUP(x.XSECUP), XERRUP(x.XERRUP), XMAXUP(x.XMAXUP), LPRUP(x.LPRUP), procid(x.procid), lx(x.lx), ly(x.ly), lz(x.lz), APMASS(x.APMASS), FMASS(x.FMASS), NUCLMASS(
+					x.NUCLMASS), NUCLZ(x.NUCLZ), EBEAM(x.EBEAM), SEED(x.SEED), eTHR(x.eTHR), pTHR(x.pTHR), pBINDING(x.pBINDING),nuclTHR(x.nuclTHR), ALPHAD(x.ALPHAD), EPSILON(x.EPSILON), MCcenterX(x.MCcenterX), MCcenterY(x.MCcenterY), MCcenterZ(x.MCcenterZ), NDET(x.NDET), NDUMP(x.NDUMP), LDUMP(
+					x.LDUMP), displacement(x.displacement) {
 	}
 
 	/**
@@ -69,6 +70,8 @@ public:
 		displacement = x.displacement;
 		APMASS = x.APMASS;
 		FMASS = x.FMASS;
+		NUCLMASS = x.NUCLMASS;
+		NUCLZ = x.NUCLZ;
 		ALPHAD = x.ALPHAD;
 		EPSILON = x.EPSILON;
 		EBEAM = x.EBEAM;
@@ -76,6 +79,7 @@ public:
 		pTHR = x.pTHR;
 		pBINDING = x.pBINDING;
 		eTHR = x.eTHR;
+		nuclTHR = x.nuclTHR;
 		NDET = x.NDET;
 		NDUMP = x.NDUMP;
 		LDUMP = x.LDUMP;
@@ -195,11 +199,15 @@ public:
 	//alpha-dark and epsilon
 	double ALPHAD, EPSILON;
 	//the thresholds (GeV) for the scattered particles kinetic energies
-	double eTHR, pTHR;
+	double eTHR, pTHR, nuclTHR;
 	//the proton binding energy (GeV)
 	double pBINDING;
-	double NDET, NDUMP; //the number of targets per unit of volume (cm^-3) in the DETector and in the DUMP
-	double LDUMP;      //the dump radiation lenght (cm).
+	//nuclear part for Drift: nucleus mass in GeV and atomic number
+	double NUCLMASS, NUCLZ;
+	//the number of targets per unit of volume (cm^-3) in the DETector and in the DUMP
+	double NDET, NDUMP;
+	//the dump radiation lenght (cm).
+	double LDUMP;
 
 };
 
@@ -510,17 +518,13 @@ private:
 				heprup.ldet = atof(word.c_str());
 				std::cout << "ldet: " << heprup.ldet << std::endl;
 				headerBlock += currentLine + "\n";
-			}
-
-			else if (readingBDXComment && (currentLine.find("displacement") != std::string::npos)) {
+			} else if (readingBDXComment && (currentLine.find("displacement") != std::string::npos)) {
 				stream.str(currentLine);
 				stream >> word;
 				heprup.displacement = atof(word.c_str());
 				std::cout << "displacement: " << heprup.displacement << std::endl;
 				headerBlock += currentLine + "\n";
-			}
-
-			else if (readingBDXComment && (currentLine.find("MCx") != std::string::npos)) {
+			} else if (readingBDXComment && (currentLine.find("MCx") != std::string::npos)) {
 				stream.str(currentLine);
 				stream >> word;
 				heprup.MCcenterX = atof(word.c_str());
@@ -574,7 +578,26 @@ private:
 				heprup.pTHR = atof(word.c_str());
 				std::cout << "pTHR: " << heprup.pTHR << std::endl;
 				headerBlock += currentLine + "\n";
-			} else if (readingBDXComment && (currentLine.find("pBINDING") != std::string::npos)) {
+			} else if (readingBDXComment && (currentLine.find("nuclTHR") != std::string::npos)) {
+				stream.str(currentLine);
+				stream >> word;
+				heprup.nuclTHR = atof(word.c_str());
+				std::cout << "nuclTHR: " << heprup.nuclTHR << std::endl;
+				headerBlock += currentLine + "\n";
+			}else if (readingBDXComment && (currentLine.find("NUCLMASS") != std::string::npos)) {
+				stream.str(currentLine);
+				stream >> word;
+				heprup.NUCLMASS = atof(word.c_str());
+				std::cout << "NUCLMASS: " << heprup.NUCLMASS << std::endl;
+				headerBlock += currentLine + "\n";
+			} else if (readingBDXComment && (currentLine.find("NUCLZ") != std::string::npos)) {
+				stream.str(currentLine);
+				stream >> word;
+				heprup.NUCLZ = atof(word.c_str());
+				std::cout << "NUCLZ: " << heprup.NUCLZ << std::endl;
+				headerBlock += currentLine + "\n";
+			}
+			else if (readingBDXComment && (currentLine.find("pBINDING") != std::string::npos)) {
 				stream.str(currentLine);
 				stream >> word;
 				heprup.pBINDING = atof(word.c_str());
