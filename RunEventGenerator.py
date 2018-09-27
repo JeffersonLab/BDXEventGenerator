@@ -124,9 +124,9 @@ else:
 #2) Run MadGraph
 #3) Remove the Cards from the madgraph cards folder
 if (UseElectronShowering==False):
-    shutil.copy(run_card_name,MadGraphCardsLocation);
-    shutil.copy(proc_card_name,MadGraphCardsLocation);
-    shutil.copy(param_card_name,MadGraphCardsLocation);
+    shutil.copy(run_card_name,MadGraphCardsLocation+"/run_card.dat");
+    shutil.copy(proc_card_name,MadGraphCardsLocation+"/proc_card.dat");
+    shutil.copy(param_card_name,MadGraphCardsLocation+"/param_card.dat");
     os.chdir(MadGraphLocation)
     print bcolors.OKGREEN,"Calling MadGraph once for run name: ",run_name,bcolors.ENDC
     command = "./bin/generate_events_new 0 "+run_name;
