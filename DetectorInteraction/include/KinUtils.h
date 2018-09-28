@@ -48,13 +48,15 @@ class KinUtils{
 
 		KinUtils(const double &m_Ebeam,const double &m_Mchi,const double &m_Maprime,const double &m_Msplit,const double &m_Epsilon,const double &m_alphaD,const double &m_Pthr,const double &m_Pbinding,const double &m_Ethr,const int &m_Seed);
 		void PrintParameters();
+		void Setup();
+
 		void setAlpha(double m_Alpha){Alpha=m_Alpha;};
 		void setAlphaD(double m_AlphaDark){AlphaDark=m_AlphaDark;};
 		void setEpsilon(double m_Epsilon){Epsilon=m_Epsilon;};
 
 		void setMnucl(double m_Mnucl){Mnucl=m_Mnucl;};
 		void setZnucl(double m_Znucl){Znucl=m_Znucl;};
-
+		void setThrnucl(double m_Thrnucl){Nuclthr=m_Thrnucl;};
 
 		double doElasticRecoil(const TLorentzVector &chi,TLorentzVector &recoil,TLorentzVector &chiPrime,const int &procID);
 		double findInteractionPoint(const TLorentzVector &chi,const TVector3 &fiducialV,const TVector3 &vin,TVector3 &vout,TVector3 &vhit);
