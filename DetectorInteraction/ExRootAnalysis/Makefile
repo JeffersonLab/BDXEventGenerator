@@ -17,10 +17,10 @@ src/ExRootAnalysisDict.cc:
 	rootcint -f $@ -c include/ExRootAnalysisLinkDef.h
 #	mv src/ExRootAnalysisDict.h ./include
 	mv src/ExRootAnalysisDict.cc src/ExRootAnalysisDict.cc.base	
-	echo "#define private public" > src/ExRootAnalysisDict.cc.arch
-	echo "#define protected public" >> src/ExRootAnalysisDict.cc.arch
-	cat src/ExRootAnalysisDict.cc.arch include/ExRootAnalysisLinkDef.h src/ExRootAnalysisDict.cc.base > src/ExRootAnalysisDict.cc
-	rm src/ExRootAnalysisDict.cc.arch src/ExRootAnalysisDict.cc.base
+#	echo "#define private public" > src/ExRootAnalysisDict.cc.arch
+#	echo "#define protected public" >> src/ExRootAnalysisDict.cc.arch
+	cat include/ExRootAnalysisLinkDef.h src/ExRootAnalysisDict.cc.base > src/ExRootAnalysisDict.cc
+	rm src/ExRootAnalysisDict.cc.base
 	$(CC) -c -o obj/ExRootAnalysisDict.o src/ExRootAnalysisDict.cc $(ROOT_INC) $(INC_PATH)
 	rm src/ExRootAnalysisDict.cc
 

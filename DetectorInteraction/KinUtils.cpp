@@ -18,17 +18,18 @@ void KinUtils::Setup() {
 	/*This part is really critical. The cross-section is a function of the final state recoil energy, and as "parameter" needs the incoming
 	 * chi energy. However, if event-by-event we set this parameter, and then call a "GetRandom", we trigger the integration computation for ALL events,
 	 * and this is very time-consuming. Instead, if the integration is already performed, a second integration (even in a different range) is not time-consuming.
-	 * Instead, I "bin" wrt the incoming chi energy (nFunctionsElastic bins), and then extract the random number from the function defining the energy in that bin!
+	 * Instead, I "bin" wrt the incoming chi kinetic energy (nFunctionsElastic bins), and then extract the random number from the function defining the energy in that bin!
 	 *
 	 * MINIMUM value of the recoil total energy: its mass + threshold + binding energy
 	 * MAXIMUM value: the actual form of the maximum value is complicated (see below), but a very upper limit is: primary e- beam energy + its mass - chi mass.
+	 * A.C. 13/3/2019: shouldn't it be: chi energy in this bin + chi mass - e- mass??? Not critical, since the actual integral is computed below in the xsection functions..
 	 *
 	 * It should be fine to use this MAX value to cache integrals, the actual max value is seen below.
 	 */
 
 	cout << "KinUtils::KinUtils setting the cross-section functions" << endl;
 	fflush(stdout);
-	double Trmax_protonElastic, Trmax_electronElastic;
+	double Trmax_protonElastic, Trmax_electronElastic,thisEbeam;
 	for (int ii = 0; ii < nFunctionsElastic; ii++) {
 
 		f_chipXsection[ii] = new TF1(Form("f_chipXsection_%i", ii), this, &KinUtils::Er_chipXsection, Pthr + Pbinding + Mn, (ii + 1) * Ebeam / nFunctionsElastic + Mn - Mchi, 1);
@@ -45,9 +46,13 @@ void KinUtils::Setup() {
 		f_chinuclXsection[ii]->FixParameter(0, (ii + 1) * Ebeam / nFunctionsElastic);
 
 		/*Cache the integrals*/
-		if ((Pbinding + Pthr) < (Ebeam - Mchi)) f_chipXsection[ii]->Integral(Pthr + Pbinding + Mn, Ebeam + Mn - Mchi);
-		if (Ethr < (Ebeam - Mchi)) f_chieXsection[ii]->Integral(Ethr + Me, Ebeam + Me - Mchi);
-		if (Nuclthr < (Ebeam - Mchi)) f_chinuclXsection[ii]->Integral(Nuclthr, Ebeam - Mchi);
+		thisEbeam= (ii + 1) * Ebeam / nFunctionsElastic;
+
+		if ((Pbinding + Pthr) < (thisEbeam - Mchi)) f_chipXsection[ii]->Integral(Pthr + Pbinding + Mn, thisEbeam + Mn - Mchi);
+		if (Ethr < (thisEbeam - Mchi)) f_chieXsection[ii]->Integral(Ethr + Me, thisEbeam + Me - Mchi);
+		if (Nuclthr < (thisEbeam - Mchi)) f_chinuclXsection[ii]->Integral(Nuclthr, thisEbeam - Mchi);
+
+
 	}
 
 	cout << "KinUtils::KinUtils created" << endl;
@@ -354,3 +359,69 @@ double KinUtils::findInteractionPoint(const TLorentzVector &chi, const TVector3 
 
 	return L;
 }
+
+//This is the function to determine the interaction point in case of a cylinder (case1), for BDXmini.
+//The cylinder is with the axis along y(vertical), center at x=0,y=0,z=ldet, radius is R,height is h
+double KinUtils::findInteractionPointCylinder1(const TLorentzVector &chi,double ldet,double h,double R,TVector3 &vin,TVector3 &vout,TVector3 &vhit){
+
+	double tIN,tOUT,t2,t3,t,L;
+
+	double px=chi.Px();
+	double py=chi.Py();
+	double pz=chi.Pz();
+
+	double delta=pz*pz*ldet*ldet-(pz*pz+px*px)*(ldet*ldet-R*R);
+	if (delta<0){
+		cout<<"KinUtils::findInteractionPointCylinder1 error, the delta is: "<<delta<<endl;
+		return 0;
+	}
+
+	//entry point
+	tIN = (pz*ldet - sqrt(delta))/(px*px+pz*pz);
+	t2 = (pz*ldet + sqrt(delta))/(px*px+pz*pz);
+
+	t3 = (h/2)/py;
+
+
+	if ((t3>0)&&(t3<t2)&&(t3>tIN)){
+		tOUT=t3;
+	}else{
+		tOUT=t2;
+	}
+
+	t=Rand.Uniform(tIN,tOUT);
+
+	vin.SetXYZ(tIN*px,tIN*py,tIN*pz);
+	vout.SetXYZ(tOUT*px,tOUT*py,tOUT*pz);
+
+	vhit.SetXYZ(t*px,t*py,t*pz);
+
+
+	L = (vout - vin).Mag();
+
+	return L;
+}
+
+bool KinUtils::intersectsCylinder1(const TLorentzVector &chi,double ldet,double h,double R){
+
+	double t1,y;
+
+	double px=chi.Px();
+	double py=chi.Py();
+	double pz=chi.Pz();
+
+	double delta=pz*pz*ldet*ldet-(pz*pz+px*px)*(ldet*ldet-R*R);
+	if (delta<0) return false;
+
+	t1 = (pz*ldet - sqrt(delta))/(px*px+pz*pz); //this is where it enters
+
+	y = t1*py;
+	if ((y>h/2)||(y<-h/2)) return false;
+
+	return true;
+
+
+}
+
+
+

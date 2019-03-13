@@ -132,57 +132,97 @@ std::pair<double, double> AnalyseParticles(LHEF::Reader *reader) {
 	vector<int> ii_inside;
 	n_inside = 0;
 
-	xmin = -heprup.lx / 2 + heprup.displacement;
-	xmax = heprup.lx / 2 + heprup.displacement;
-	ymin = -heprup.ly / 2;
-	ymax = heprup.ly / 2;
-
-	//set the fiducial volume "box", with respect to the z axis.
-	fiducialV.SetXYZ(heprup.lx, heprup.ly, heprup.lz);
-	//init vhit
-	vhit.SetXYZ(0., 0., 0.);
-	//init vin
-	vin.SetXYZ(0., 0., 0.);
-	//init vout
-	vout.SetXYZ(0., 0., 0.);
-
-	//Set the coordinate of the fiducial volume front face center in MC-Geant4 coordinates
-	vMC.SetXYZ(heprup.MCcenterX, heprup.MCcenterY, heprup.MCcenterZ); //by definition this point, in the "MadGraph" reference, is at (0,0,ldet)
-
 	w = hepeup.XWGTUP; //this is the event weight, in pbarn, as given by Madgraph. --> Cross section is the sum over the events of the event weight
 	ndet = heprup.NDET;
-	for (particle = 0; particle < hepeup.NUP; ++particle) {
 
-		PID = hepeup.IDUP[particle];
-		if ((PID != -611) && (PID != 611)) {
-			continue; //We are not interested in other particles. Go on
+	//This is the original case
+	if (heprup.isCylinder == 0) {
+
+		xmin = -heprup.lx / 2 + heprup.displacement;
+		xmax = heprup.lx / 2 + heprup.displacement;
+		ymin = -heprup.ly / 2;
+		ymax = heprup.ly / 2;
+
+		//set the fiducial volume "box", with respect to the z axis.
+		fiducialV.SetXYZ(heprup.lx, heprup.ly, heprup.lz);
+		//init vhit
+		vhit.SetXYZ(0., 0., 0.);
+		//init vin
+		vin.SetXYZ(0., 0., 0.);
+		//init vout
+		vout.SetXYZ(0., 0., 0.);
+
+		//Set the coordinate of the fiducial volume front face center in MC-Geant4 coordinates
+		vMC.SetXYZ(heprup.MCcenterX, heprup.MCcenterY, heprup.MCcenterZ); //by definition this point, in the "MadGraph" reference, is at (0,0,ldet)
+
+		for (particle = 0; particle < hepeup.NUP; ++particle) {
+
+			PID = hepeup.IDUP[particle];
+			if ((PID != -611) && (PID != 611)) {
+				continue; //We are not interested in other particles. Go on
+			}
+			M = hepeup.PUP[particle][4];
+			chi.SetPxPyPzE(hepeup.PUP[particle][0], hepeup.PUP[particle][1], hepeup.PUP[particle][2], hepeup.PUP[particle][3]);
+			cosTheta = TMath::Abs(chi.CosTheta());
+			sinTheta = sqrt(1 - cosTheta * cosTheta);
+
+			cosPhi = cos(chi.Phi());
+			sinPhi = sin(chi.Phi());
+
+			x = heprup.ldet * (sinTheta / cosTheta) * cosPhi;
+			y = heprup.ldet * (sinTheta / cosTheta) * sinPhi;
+
+			signPz = (chi.Pz() >= 0.0) ? 1.0 : -1.0;
+			/* I need now to apply the fiducial cuts.
+			 I need to find which of the chis are inside (if more than one), and use that for the interaction.
+			 If both are inside, I take only one.*/
+
+			if ((x > xmin) && (x < xmax) && (y > ymin) && (y < ymax)) {
+				n_inside++;
+				ii_inside.push_back(particle);
+				hepeup.ISTUP[particle] = 1;
+			}
+
+			else { //for now, just mark this chi out of the fiducial volume with a status "0"
+				hepeup.ISTUP[particle] = 0;
+				continue;
+			}
 		}
-		M = hepeup.PUP[particle][4];
-		chi.SetPxPyPzE(hepeup.PUP[particle][0], hepeup.PUP[particle][1], hepeup.PUP[particle][2], hepeup.PUP[particle][3]);
-		cosTheta = TMath::Abs(chi.CosTheta());
-		sinTheta = sqrt(1 - cosTheta * cosTheta);
+	}
 
-		cosPhi = cos(chi.Phi());
-		sinPhi = sin(chi.Phi());
+	//This is the special case of a cylinder fiducial volume, for BDXmini.
+	//The cylinder is oriented along y, with center at x=0,y=0,z=ldet.
+	//lz is the cylinder RADIUS
+	//ly is the cylinder HEIGHT
+	//lx is NOT USED
+	//displacement is NOT used
+	else if (heprup.isCylinder == 1) {
+		xmin = -heprup.lz; //correct, x goes from -radius to +radius
+		xmax = heprup.lz;
+		ymin = -heprup.ly / 2;
+		ymax = heprup.ly / 2;
 
-		x = heprup.ldet * (sinTheta / cosTheta) * cosPhi;
-		y = heprup.ldet * (sinTheta / cosTheta) * sinPhi;
+		//Set the coordinate of the cylinder center in MC coordinates
+		vMC.SetXYZ(heprup.MCcenterX, heprup.MCcenterY, heprup.MCcenterZ); //by definition this point, in the "MadGraph" reference, is at (0,0,ldet)
 
-		signPz = (chi.Pz() >= 0.0) ? 1.0 : -1.0;
-		/* I need now to apply the fiducial cuts.
-		 I need to find which of the chis are inside (if more than one), and use that for the interaction.
-		 If both are inside, I take only one.*/
+		for (particle = 0; particle < hepeup.NUP; ++particle) {
 
-		if ((x > xmin) && (x < xmax) && (y > ymin) && (y < ymax)) {
-			n_inside++;
-			ii_inside.push_back(particle);
-			hepeup.ISTUP[particle] = 1;
+			PID = hepeup.IDUP[particle];
+			if ((PID != -611) && (PID != 611)) {
+				continue; //We are not interested in other particles. Go on
+			}
+			M = hepeup.PUP[particle][4];
+			chi.SetPxPyPzE(hepeup.PUP[particle][0], hepeup.PUP[particle][1], hepeup.PUP[particle][2], hepeup.PUP[particle][3]);
 
-		}
 
-		else { //for now, just mark this chi out of the fiducial volume with a status "0"
-			hepeup.ISTUP[particle] = 0;
-			continue;
+			if (m_utils->intersectsCylinder1(chi, heprup.ldet, heprup.ly, heprup.lz)){
+				n_inside++;
+				ii_inside.push_back(particle);
+				hepeup.ISTUP[particle] = 1;
+			} else { //for now, just mark this chi out of the fiducial volume with a status "0"
+				hepeup.ISTUP[particle] = 0;
+				continue;
+			}
 		}
 	}
 
@@ -190,6 +230,9 @@ std::pair<double, double> AnalyseParticles(LHEF::Reader *reader) {
 	if (n_inside != 0) {
 		std::random_shuffle(ii_inside.begin(), ii_inside.end());
 		chi.SetPxPyPzE(hepeup.PUP[ii_inside.at(0)][0], hepeup.PUP[ii_inside.at(0)][1], hepeup.PUP[ii_inside.at(0)][2], hepeup.PUP[ii_inside.at(0)][3]);
+
+
+
 
 		cosTheta = TMath::Abs(chi.CosTheta());
 		sinTheta = sqrt(1 - cosTheta * cosTheta);
@@ -220,14 +263,20 @@ std::pair<double, double> AnalyseParticles(LHEF::Reader *reader) {
 				hepeup.ISTUP[ii_inside.at(0)] = -11; //mark this negative
 				break;
 			} else {
-
 				/*No need to re-write displacement routine!*/
-				vin.SetX(vin.X() - heprup.displacement);
-				L = m_utils->findInteractionPoint(chi, fiducialV, vin, vout, vhit);
 
-				vin.SetX(vin.X() + heprup.displacement);
-				vout.SetX(vout.X() + heprup.displacement);
-				vhit.SetX(vhit.X() + heprup.displacement);
+				if (heprup.isCylinder == 0) {
+					vin.SetX(vin.X() - heprup.displacement);
+					L = m_utils->findInteractionPoint(chi, fiducialV, vin, vout, vhit);
+					vin.SetX(vin.X() + heprup.displacement);
+					vout.SetX(vout.X() + heprup.displacement);
+					vhit.SetX(vhit.X() + heprup.displacement);
+				} else if (heprup.isCylinder == 1) {
+
+					L = m_utils->findInteractionPointCylinder1(chi, heprup.ldet, heprup.ly, heprup.lz, vin, vout, vhit);
+
+				}
+
 				L = L * 100; //since the above returns it in m;
 				mL += L;
 				w = w * L * heprup.NDET * sigma; /*Multiply the total cross-section * interaction length of this event * weight (pbarn) of this event*/
@@ -236,6 +285,8 @@ std::pair<double, double> AnalyseParticles(LHEF::Reader *reader) {
 				vin.SetXYZ(vin.X() + vMC.X(), vin.Y() + vMC.Y(), vin.Z() + vMC.Z() - heprup.ldet);
 				vout.SetXYZ(vout.X() + vMC.X(), vout.Y() + vMC.Y(), vout.Z() + vMC.Z() - heprup.ldet);
 				vhit.SetXYZ(vhit.X() + vMC.X(), vhit.Y() + vMC.Y(), vhit.Z() + vMC.Z() - heprup.ldet);
+
+
 
 				//add particles to hepeup
 				//final state chi

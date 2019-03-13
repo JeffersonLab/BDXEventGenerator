@@ -41,9 +41,8 @@ public:
 	 * Copy-constructor.
 	 */
 	HEPRUP(const HEPRUP & x) :
-			IDBMUP(x.IDBMUP), EBMUP(x.EBMUP), PDFGUP(x.PDFGUP), PDFSUP(x.PDFSUP), IDWTUP(x.IDWTUP), NPRUP(x.NPRUP), XSECUP(x.XSECUP), XERRUP(x.XERRUP), XMAXUP(x.XMAXUP), LPRUP(x.LPRUP), procid(x.procid), lx(x.lx), ly(x.ly), lz(x.lz), APMASS(x.APMASS), FMASS(x.FMASS), NUCLMASS(
-					x.NUCLMASS), NUCLZ(x.NUCLZ), EBEAM(x.EBEAM), SEED(x.SEED), eTHR(x.eTHR), pTHR(x.pTHR), pBINDING(x.pBINDING),nuclTHR(x.nuclTHR), ALPHAD(x.ALPHAD), EPSILON(x.EPSILON), MCcenterX(x.MCcenterX), MCcenterY(x.MCcenterY), MCcenterZ(x.MCcenterZ), NDET(x.NDET), NDUMP(x.NDUMP), LDUMP(
-					x.LDUMP), displacement(x.displacement) {
+			IDBMUP(x.IDBMUP), EBMUP(x.EBMUP), PDFGUP(x.PDFGUP), PDFSUP(x.PDFSUP), IDWTUP(x.IDWTUP), NPRUP(x.NPRUP), XSECUP(x.XSECUP), XERRUP(x.XERRUP), XMAXUP(x.XMAXUP), LPRUP(x.LPRUP), procid(x.procid), lx(x.lx), ly(x.ly), lz(x.lz), APMASS(x.APMASS), FMASS(x.FMASS), NUCLMASS(x.NUCLMASS), NUCLZ(x.NUCLZ), EBEAM(x.EBEAM), SEED(x.SEED), eTHR(x.eTHR), pTHR(
+					x.pTHR), pBINDING(x.pBINDING), nuclTHR(x.nuclTHR), ALPHAD(x.ALPHAD), EPSILON(x.EPSILON), MCcenterX(x.MCcenterX), MCcenterY(x.MCcenterY), MCcenterZ(x.MCcenterZ), NDET(x.NDET), NDUMP(x.NDUMP), LDUMP(x.LDUMP), displacement(x.displacement), isCylinder(x.isCylinder) {
 	}
 
 	/**
@@ -68,6 +67,7 @@ public:
 		MCcenterY = x.MCcenterY;
 		MCcenterZ = x.MCcenterZ;
 		displacement = x.displacement;
+		isCylinder = x.isCylinder;
 		APMASS = x.APMASS;
 		FMASS = x.FMASS;
 		NUCLMASS = x.NUCLMASS;
@@ -189,6 +189,14 @@ public:
 	double MCcenterZ;
 
 	double displacement; //displacement lateral (m)
+
+	//if this is 1, then the fiducial volume is a cylinder, oriented along y (for BDXmini)
+	//ly is the height of the cylinder
+	//lz is the radius of the cylinder
+	//lx is NOT used in this case
+	//displacement is NOT used in this case.
+	//By definition, the cylinder center is at x=0,y=0 and at ldet along z.
+	int isCylinder;
 
 	// the Aprime and the chi mass. We need them before starting to read events!
 	double APMASS; //GeV
@@ -446,6 +454,7 @@ private:
 		heprup.MCcenterY = 0;
 		heprup.MCcenterZ = 0;
 		heprup.procid = 0;
+		heprup.isCylinder = 0;
 
 		bool readingHeader = false;
 		bool readingInit = false;
@@ -528,19 +537,19 @@ private:
 				stream.str(currentLine);
 				stream >> word;
 				heprup.MCcenterX = atof(word.c_str());
-				std::cout << "MCcenterX: " << heprup.MCcenterX << std::endl;
+				std::cout << "MC centerX: " << heprup.MCcenterX << std::endl;
 				headerBlock += currentLine + "\n";
 			} else if (readingBDXComment && (currentLine.find("MCy") != std::string::npos)) {
 				stream.str(currentLine);
 				stream >> word;
 				heprup.MCcenterY = atof(word.c_str());
-				std::cout << "MCcenterY: " << heprup.MCcenterY << std::endl;
+				std::cout << "MC centerY: " << heprup.MCcenterY << std::endl;
 				headerBlock += currentLine + "\n";
 			} else if (readingBDXComment && (currentLine.find("MCz") != std::string::npos)) {
 				stream.str(currentLine);
 				stream >> word;
 				heprup.MCcenterZ = atof(word.c_str());
-				std::cout << "MCcenterZ: " << heprup.MCcenterZ << std::endl;
+				std::cout << "MC centerZ: " << heprup.MCcenterZ << std::endl;
 				headerBlock += currentLine + "\n";
 			} else if (readingBDXComment && (currentLine.find("fiduciallx") != std::string::npos)) {
 				stream.str(currentLine);
@@ -559,6 +568,12 @@ private:
 				stream >> word;
 				heprup.lz = atof(word.c_str());
 				std::cout << "lz: " << heprup.lz << std::endl;
+				headerBlock += currentLine + "\n";
+			} else if (readingBDXComment && (currentLine.find("isCylinder") != std::string::npos)) {
+				stream.str(currentLine);
+				stream >> word;
+				heprup.isCylinder = atoi(word.c_str());
+				std::cout << "isCylinder: " << heprup.isCylinder << std::endl;
 				headerBlock += currentLine + "\n";
 			} else if (readingBDXComment && (currentLine.find("procid") != std::string::npos)) {
 				stream.str(currentLine);
@@ -584,7 +599,7 @@ private:
 				heprup.nuclTHR = atof(word.c_str());
 				std::cout << "nuclTHR: " << heprup.nuclTHR << std::endl;
 				headerBlock += currentLine + "\n";
-			}else if (readingBDXComment && (currentLine.find("NUCLMASS") != std::string::npos)) {
+			} else if (readingBDXComment && (currentLine.find("NUCLMASS") != std::string::npos)) {
 				stream.str(currentLine);
 				stream >> word;
 				heprup.NUCLMASS = atof(word.c_str());
@@ -596,8 +611,7 @@ private:
 				heprup.NUCLZ = atof(word.c_str());
 				std::cout << "NUCLZ: " << heprup.NUCLZ << std::endl;
 				headerBlock += currentLine + "\n";
-			}
-			else if (readingBDXComment && (currentLine.find("pBINDING") != std::string::npos)) {
+			} else if (readingBDXComment && (currentLine.find("pBINDING") != std::string::npos)) {
 				stream.str(currentLine);
 				stream >> word;
 				heprup.pBINDING = atof(word.c_str());
@@ -721,8 +735,7 @@ public:
 		for (int i = 0; i < hepeup.NUP; ++i) {
 			if (!getline()) return false;
 			std::istringstream iss(currentLine);
-			if (!(iss >> hepeup.IDUP[i] >> hepeup.ISTUP[i] >> hepeup.MOTHUP[i].first >> hepeup.MOTHUP[i].second >> hepeup.ICOLUP[i].first >> hepeup.ICOLUP[i].second >> hepeup.PUP[i][0] >> hepeup.PUP[i][1] >> hepeup.PUP[i][2] >> hepeup.PUP[i][3] >> hepeup.PUP[i][4]
-					>> hepeup.VTIMUP[i] >> hepeup.SPINUP[i])) return false;
+			if (!(iss >> hepeup.IDUP[i] >> hepeup.ISTUP[i] >> hepeup.MOTHUP[i].first >> hepeup.MOTHUP[i].second >> hepeup.ICOLUP[i].first >> hepeup.ICOLUP[i].second >> hepeup.PUP[i][0] >> hepeup.PUP[i][1] >> hepeup.PUP[i][2] >> hepeup.PUP[i][3] >> hepeup.PUP[i][4] >> hepeup.VTIMUP[i] >> hepeup.SPINUP[i])) return false;
 		}
 
 		// Now read any additional comments.
@@ -904,8 +917,8 @@ public:
 			file << headerBlock;
 			if (headerBlock.find("</header>") == std::string::npos) file << "</header>\n";
 		}
-		file << "<init>\n" << " " << setw(8) << heprup.IDBMUP.first << " " << setw(8) << heprup.IDBMUP.second << " " << setw(14) << heprup.EBMUP.first << " " << setw(14) << heprup.EBMUP.second << " " << setw(4) << heprup.PDFGUP.first << " " << setw(4) << heprup.PDFGUP.second
-				<< " " << setw(4) << heprup.PDFSUP.first << " " << setw(4) << heprup.PDFSUP.second << " " << setw(4) << heprup.IDWTUP << " " << setw(4) << heprup.NPRUP << std::endl;
+		file << "<init>\n" << " " << setw(8) << heprup.IDBMUP.first << " " << setw(8) << heprup.IDBMUP.second << " " << setw(14) << heprup.EBMUP.first << " " << setw(14) << heprup.EBMUP.second << " " << setw(4) << heprup.PDFGUP.first << " " << setw(4) << heprup.PDFGUP.second << " " << setw(4) << heprup.PDFSUP.first << " " << setw(4)
+				<< heprup.PDFSUP.second << " " << setw(4) << heprup.IDWTUP << " " << setw(4) << heprup.NPRUP << std::endl;
 		heprup.resize();
 		for (int i = 0; i < heprup.NPRUP; ++i)
 			file << " " << setw(14) << heprup.XSECUP[i] << " " << setw(14) << heprup.XERRUP[i] << " " << setw(14) << heprup.XMAXUP[i] << " " << setw(6) << heprup.LPRUP[i] << std::endl;
@@ -926,9 +939,8 @@ public:
 		hepeup.resize();
 
 		for (int i = 0; i < hepeup.NUP; ++i)
-			file << " " << setw(8) << hepeup.IDUP[i] << " " << setw(2) << hepeup.ISTUP[i] << " " << setw(4) << hepeup.MOTHUP[i].first << " " << setw(4) << hepeup.MOTHUP[i].second << " " << setw(4) << hepeup.ICOLUP[i].first << " " << setw(4) << hepeup.ICOLUP[i].second << " "
-					<< setw(14) << hepeup.PUP[i][0] << " " << setw(14) << hepeup.PUP[i][1] << " " << setw(14) << hepeup.PUP[i][2] << " " << setw(14) << hepeup.PUP[i][3] << " " << setw(14) << hepeup.PUP[i][4] << " " << setw(1) << hepeup.VTIMUP[i] << " " << setw(1)
-					<< hepeup.SPINUP[i] << std::endl;
+			file << " " << setw(8) << hepeup.IDUP[i] << " " << setw(2) << hepeup.ISTUP[i] << " " << setw(4) << hepeup.MOTHUP[i].first << " " << setw(4) << hepeup.MOTHUP[i].second << " " << setw(4) << hepeup.ICOLUP[i].first << " " << setw(4) << hepeup.ICOLUP[i].second << " " << setw(14) << hepeup.PUP[i][0] << " " << setw(14) << hepeup.PUP[i][1]
+					<< " " << setw(14) << hepeup.PUP[i][2] << " " << setw(14) << hepeup.PUP[i][3] << " " << setw(14) << hepeup.PUP[i][4] << " " << setw(1) << hepeup.VTIMUP[i] << " " << setw(1) << hepeup.SPINUP[i] << std::endl;
 
 		file << hashline(eventStream.str()) << "</event>\n";
 

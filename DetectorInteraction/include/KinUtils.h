@@ -60,6 +60,10 @@ class KinUtils{
 
 		double doElasticRecoil(const TLorentzVector &chi,TLorentzVector &recoil,TLorentzVector &chiPrime,const int &procID);
 		double findInteractionPoint(const TLorentzVector &chi,const TVector3 &fiducialV,const TVector3 &vin,TVector3 &vout,TVector3 &vhit);
+
+		bool intersectsCylinder1(const TLorentzVector &chi,double ldet,double h,double R);
+		double findInteractionPointCylinder1(const TLorentzVector &chi,double ldet,double h,double R,TVector3 &vin,TVector3 &vout,TVector3 &vhit);
+
 		double Er_chipXsection(double *x,double *par);
 		double Er_chieXsection(double *x,double *par);
 		double Er_chinuclXsection(double *x,double *par);
