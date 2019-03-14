@@ -13,6 +13,10 @@
 #include "TF1.h"
 #include "TRandom3.h"
 
+#include "TH2D.h"
+#include "TFile.h"
+
+
 enum ProcID{
 	Proc_nothing=0,
 	Proc_Pelastic=1,
@@ -43,10 +47,13 @@ class KinUtils{
 		static const int nFunctionsElastic = 1000;
 
 
+
 	public:
 
 
 		KinUtils(const double &m_Ebeam,const double &m_Mchi,const double &m_Maprime,const double &m_Msplit,const double &m_Epsilon,const double &m_alphaD,const double &m_Pthr,const double &m_Pbinding,const double &m_Ethr,const int &m_Seed);
+
+		~KinUtils();
 		void PrintParameters();
 		void Setup();
 

@@ -8,6 +8,15 @@ KinUtils::KinUtils(const double &m_Ebeam, const double &m_Mchi, const double &m_
 		Ebeam(m_Ebeam), Mchi(m_Mchi), Maprime(m_Maprime), Msplit(m_Msplit), Seed(m_Seed), Ethr(m_Ethr), Pthr(m_Pthr), Pbinding(m_Pbinding), Epsilon(m_Epsilon), AlphaDark(m_alphaD), Alpha(1. / 137.) {
 
 	Rand.SetSeed(m_Seed);
+
+
+}
+
+KinUtils::~KinUtils(){
+	cout<<"KinUtils::~KinUtils"<<endl;fflush(stdout);
+
+	cout<<"KinUtils::~KinUtils done"<<endl;fflush(stdout);
+
 }
 
 void KinUtils::Setup() {
@@ -419,6 +428,8 @@ bool KinUtils::intersectsCylinder1(const TLorentzVector &chi,double ldet,double 
 
 	y = t1*py;
 	if ((y>h/2)||(y<-h/2)) return false;
+
+
 
 	return true;
 

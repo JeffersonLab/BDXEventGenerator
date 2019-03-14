@@ -40,7 +40,7 @@ double mL = 0;
 
 /*These are here for writeLund*/
 TVector3 vin, vhit, vout, fiducialV, vMC;
-
+TApplication gui("GUI",0,NULL);
 //---------------------------------------------------------------------------
 
 //Weight is the TOTAL weight of the event:
@@ -219,7 +219,6 @@ std::pair<double, double> AnalyseParticles(LHEF::Reader *reader) {
 			}
 			M = hepeup.PUP[particle][4];
 			chi.SetPxPyPzE(hepeup.PUP[particle][0], hepeup.PUP[particle][1], hepeup.PUP[particle][2], hepeup.PUP[particle][3]);
-
 			if (m_utils->intersectsCylinder1(chi, heprup.ldet, heprup.ly, heprup.lz)) {
 				n_inside++;
 				ii_inside.push_back(particle);
@@ -235,7 +234,6 @@ std::pair<double, double> AnalyseParticles(LHEF::Reader *reader) {
 	if (n_inside != 0) {
 		std::random_shuffle(ii_inside.begin(), ii_inside.end());
 		chi.SetPxPyPzE(hepeup.PUP[ii_inside.at(0)][0], hepeup.PUP[ii_inside.at(0)][1], hepeup.PUP[ii_inside.at(0)][2], hepeup.PUP[ii_inside.at(0)][3]);
-
 		cosTheta = TMath::Abs(chi.CosTheta());
 		sinTheta = sqrt(1 - cosTheta * cosTheta);
 		cosPhi = cos(chi.Phi());
@@ -279,16 +277,6 @@ std::pair<double, double> AnalyseParticles(LHEF::Reader *reader) {
 
 				}
 
-				if (fabs(chi.Px() - 0.010192609) < 1E-4) {
-					cout << "AAA" << endl;
-					chi.Print();
-					vin.Print();
-					vout.Print();
-					vhit.Print();
-					cout << L << endl;
-					cin.get();
-				}
-
 				L = L * 100; //since the above returns it in m;
 				mL += L;
 				w = w * L * heprup.NDET * sigma; /*Multiply the total cross-section * interaction length of this event * weight (pbarn) of this event*/
@@ -296,7 +284,10 @@ std::pair<double, double> AnalyseParticles(LHEF::Reader *reader) {
 				//correct the particles positions in Geant4-MC format//
 				vin.SetXYZ(vin.X() + vMC.X(), vin.Y() + vMC.Y(), vin.Z() + vMC.Z() - heprup.ldet);
 				vout.SetXYZ(vout.X() + vMC.X(), vout.Y() + vMC.Y(), vout.Z() + vMC.Z() - heprup.ldet);
+
 				vhit.SetXYZ(vhit.X() + vMC.X(), vhit.Y() + vMC.Y(), vhit.Z() + vMC.Z() - heprup.ldet);
+
+
 
 				//add particles to hepeup
 				//final state chi
@@ -450,20 +441,18 @@ int main(int argc, char *argv[]) {
 				m_utils->setAlpha(inputReader->hepeup.AQEDUP); //set alpha_EM.
 				gRandom->SetSeed(inputReader->heprup.SEED);
 				std::srand(inputReader->heprup.SEED);
-
 			}
 			//This is the function that triggers the interaction in the fiducial volume.
 			thisW = 0;
 			thisSigma = 0;
 			if (inputReader->heprup.procid) {
-
 				retVal = AnalyseParticles(inputReader); //this also returns the "corrected" event weight (production weight * interaction probability * dump luminosity)
 				thisW = retVal.second;
 				thisSigma = retVal.first;
 			}
 			W += thisW;
 			Sigma += thisSigma;
-			if (thisW > 0) {
+			if (thisW > 0) { //it means also sigma is > 0
 				Nin++;
 			}
 
@@ -500,6 +489,8 @@ int main(int argc, char *argv[]) {
 
 	delete inputReader;
 	delete outputWriter;
+	delete m_utils;
+
 
 }
 
