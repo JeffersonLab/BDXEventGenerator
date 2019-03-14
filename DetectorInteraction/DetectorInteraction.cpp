@@ -359,6 +359,8 @@ std::pair<double, double> AnalyseParticles(LHEF::Reader *reader) {
 	//also write the PRODUCTION cross section, multiplied by NDUMP and LDUMP, to have the number of total chi-chibar pairs produced by summing over this number
 	sigma = hepeup.XWGTUP * heprup.NDUMP * heprup.LDUMP * 1E-36; 	//the factor 1E-36 is the conversion pbarn ---> cm2
 
+
+
 	reader->eventComments = Form("IN: %f %f %f \n", vin.X(), vin.Y(), vin.Z());
 	reader->eventComments += Form("OUT: %f %f %f \n", vout.X(), vout.Y(), vout.Z());
 	reader->eventComments += Form("HIT: %f %f %f \n", vhit.X(), vhit.Y(), vhit.Z());
@@ -464,6 +466,12 @@ int main(int argc, char *argv[]) {
 			if (thisW > 0) {
 				Nin++;
 			}
+
+			/*A.C. on 14/3/2019:
+			 * I set the AQCDUP to the TOTAL event weight. This variable is never used by us!
+			*/
+			inputReader->hepeup.AQCDUP = thisW;
+
 			outputWriter->hepeup = inputReader->hepeup;
 			outputWriter->eventStream.str(inputReader->eventComments);
 			outputWriter->writeEvent();
