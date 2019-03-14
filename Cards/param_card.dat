@@ -100,6 +100,5 @@ DECAY        25     6.79485838E-03   # H   width
      1.20906932E-03    2          22        22   # BR( H -> A   A    )
 BLOCK MGUSER
  1  3.87E-4  #  epsilon  ,mixing  coefficient  
-# 2  0.5  #  alphaD  ,the  interaction  aprime-chi  
- 2  7.3E-3 #alphaD
+ 2  0.1  #  alphaD  ,the  interaction  aprime-chi  
  3  13.0000000e+00  #  Znuc  ,nuclear  charge  

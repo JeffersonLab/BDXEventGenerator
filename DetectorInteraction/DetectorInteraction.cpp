@@ -43,7 +43,12 @@ TVector3 vin, vhit, vout, fiducialV, vMC;
 
 //---------------------------------------------------------------------------
 
-void writeLund(ofstream &ofile, LHEF::HEPEUP &data) {
+//Weight is the TOTAL weight of the event:
+// W=SigmaI * L * Win
+// SigmaI is the TOTAL interaction xsection for the chi - in the given channel - for this event impinging chi kinematics
+// L is the path lenght within the fiducial volume
+// Win is the input weight from MG4 - these are ALL the same.
+void writeLund(ofstream &ofile, LHEF::HEPEUP &data, double weight) {
 	int nparticles = data.IDUP.size();
 	int pdg;
 	int isGood = 0;
@@ -82,7 +87,7 @@ void writeLund(ofstream &ofile, LHEF::HEPEUP &data) {
 	if (isGood != 7) {
 		return; /*For same reasons, in this events not all the particles where there??*/
 	} else {
-		ofile << "3 0 0 0 0 0 0 0 0 0" << endl; //lund header. 10 numbers, first is number of particles (the only relevant!)
+		ofile << "3 0 0 0 0 0 0 0 0 " <<weight<<endl; //lund header. 10 numbers, first is number of particles, last is event weight
 
 		/*The initial state chi*/
 		Px = data.PUP[idInitialChi][0];
@@ -135,6 +140,13 @@ std::pair<double, double> AnalyseParticles(LHEF::Reader *reader) {
 	w = hepeup.XWGTUP; //this is the event weight, in pbarn, as given by Madgraph. --> Cross section is the sum over the events of the event weight
 	ndet = heprup.NDET;
 
+	//init vhit
+	vhit.SetXYZ(0., 0., 0.);
+	//init vin
+	vin.SetXYZ(0., 0., 0.);
+	//init vout
+	vout.SetXYZ(0., 0., 0.);
+
 	//This is the original case
 	if (heprup.isCylinder == 0) {
 
@@ -145,12 +157,6 @@ std::pair<double, double> AnalyseParticles(LHEF::Reader *reader) {
 
 		//set the fiducial volume "box", with respect to the z axis.
 		fiducialV.SetXYZ(heprup.lx, heprup.ly, heprup.lz);
-		//init vhit
-		vhit.SetXYZ(0., 0., 0.);
-		//init vin
-		vin.SetXYZ(0., 0., 0.);
-		//init vout
-		vout.SetXYZ(0., 0., 0.);
 
 		//Set the coordinate of the fiducial volume front face center in MC-Geant4 coordinates
 		vMC.SetXYZ(heprup.MCcenterX, heprup.MCcenterY, heprup.MCcenterZ); //by definition this point, in the "MadGraph" reference, is at (0,0,ldet)
@@ -214,8 +220,7 @@ std::pair<double, double> AnalyseParticles(LHEF::Reader *reader) {
 			M = hepeup.PUP[particle][4];
 			chi.SetPxPyPzE(hepeup.PUP[particle][0], hepeup.PUP[particle][1], hepeup.PUP[particle][2], hepeup.PUP[particle][3]);
 
-
-			if (m_utils->intersectsCylinder1(chi, heprup.ldet, heprup.ly, heprup.lz)){
+			if (m_utils->intersectsCylinder1(chi, heprup.ldet, heprup.ly, heprup.lz)) {
 				n_inside++;
 				ii_inside.push_back(particle);
 				hepeup.ISTUP[particle] = 1;
@@ -230,9 +235,6 @@ std::pair<double, double> AnalyseParticles(LHEF::Reader *reader) {
 	if (n_inside != 0) {
 		std::random_shuffle(ii_inside.begin(), ii_inside.end());
 		chi.SetPxPyPzE(hepeup.PUP[ii_inside.at(0)][0], hepeup.PUP[ii_inside.at(0)][1], hepeup.PUP[ii_inside.at(0)][2], hepeup.PUP[ii_inside.at(0)][3]);
-
-
-
 
 		cosTheta = TMath::Abs(chi.CosTheta());
 		sinTheta = sqrt(1 - cosTheta * cosTheta);
@@ -277,6 +279,16 @@ std::pair<double, double> AnalyseParticles(LHEF::Reader *reader) {
 
 				}
 
+				if (fabs(chi.Px() - 0.010192609) < 1E-4) {
+					cout << "AAA" << endl;
+					chi.Print();
+					vin.Print();
+					vout.Print();
+					vhit.Print();
+					cout << L << endl;
+					cin.get();
+				}
+
 				L = L * 100; //since the above returns it in m;
 				mL += L;
 				w = w * L * heprup.NDET * sigma; /*Multiply the total cross-section * interaction length of this event * weight (pbarn) of this event*/
@@ -285,8 +297,6 @@ std::pair<double, double> AnalyseParticles(LHEF::Reader *reader) {
 				vin.SetXYZ(vin.X() + vMC.X(), vin.Y() + vMC.Y(), vin.Z() + vMC.Z() - heprup.ldet);
 				vout.SetXYZ(vout.X() + vMC.X(), vout.Y() + vMC.Y(), vout.Z() + vMC.Z() - heprup.ldet);
 				vhit.SetXYZ(vhit.X() + vMC.X(), vhit.Y() + vMC.Y(), vhit.Z() + vMC.Z() - heprup.ldet);
-
-
 
 				//add particles to hepeup
 				//final state chi
@@ -458,7 +468,7 @@ int main(int argc, char *argv[]) {
 			outputWriter->eventStream.str(inputReader->eventComments);
 			outputWriter->writeEvent();
 			/*Now write the LUND block*/
-			if (thisW > 0) writeLund(outputFileLund, inputReader->hepeup);
+			if (thisW > 0) writeLund(outputFileLund, inputReader->hepeup,thisW);
 
 			progressBar.Update(entry);
 			++entry;

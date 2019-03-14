@@ -58,6 +58,7 @@ c
       double precision  alphas, alfa, alfaw, mfrun
 c     following line added by Rouven
       double precision aval, dval, apval, tval, Anuc, fullcoupling 
+      double precision amassa
 c
       external          alphas, alfa, alfaw, mfrun
 c
@@ -239,14 +240,16 @@ c      apval = 571.4/( elemass*Znuc**(2.0/3.0) ) ! Beryllium
      $     Znuc * apval**4 * tval**2 * (1+1.9276*tval)**2 /
      $     ((1+apval**2*tval)*(1+1.40845*tval)**4)**2 )**0.5
 
-C$$$      do i=1,7
-C$$$         write(*,*) "P" , i,"= ", 
-C$$$     $       " {" , pp(0,i), ", " , pp(1,i),
-C$$$     $        ", " , pp(2,i), ", " , pp(3,i), "}"
-C$$$      enddo
+c      do i=1,7
+c         write(*,*) "P" , i,"= ", 
+c     $       " {" , pp(0,i), ", " , pp(1,i),
+c     $        ", " , pp(2,i), ", " , pp(3,i), "}"
+c         amassa=pp(0,i)**2-pp(1,i)**2-pp(2,i)**2-pp(3,i)**2 
+c         write (*,*) "Mass: ",amassa
+c      enddo
 
-C$$$      write(*,*) "   (t=(P",Nin,"-P",Nout,")^2=", tval, ")",
-C$$$     $      "...   coupl=",fullcoupling
+c      write(*,*) "   (t=(P",Nin,"-P",Nout,")^2=", tval, ")",
+c     $      "...   coupl=",fullcoupling
 
 
       GAN(1)=dcmplx(fullcoupling, Zero) 

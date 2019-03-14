@@ -1,5 +1,6 @@
 #!/bin/tcsh -f
 
+
 #$1: tag name.
 #File name with the parameters is: run/$1.txt
 
@@ -8,9 +9,9 @@ if ($#argv != 1) then
         goto done
 endif
 
-#set rootfile="2p2GeV.Al.root"
+set rootfile="2p2GeV.Al.root"
 #set rootfile="6GeV.Al.root"
-set rootfile="11GeV.Al.root"
+#set rootfile="11GeV.Al.root"
 #set rootfile="4p315GeV.Al.root"
 
 echo "go to work dir"

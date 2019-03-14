@@ -4,7 +4,7 @@ import string,math,os,sys,subprocess,shutil
 import argparse
 
 from CardsUtils import *
-from LHEUtils import *
+import LHEUtils 
 #from DumpUtils import *
 from ROOT import *
 
@@ -41,7 +41,7 @@ parser.add_argument('--proc_card',type=str,help='Proc card to use',default='Card
 parser.add_argument('--max_attempts',type=int,default=3,help="Number of attempts per bin");
 parser.set_defaults(no_showering=False);
 parser.add_argument('--force_no_showering',dest='no_showering',action='store_true',help='Ignore showering effects, no matter what is used in the run_card');
-parser.add_argument('--root_file',type=str,default="dump.root",help="The root file with the data from the beam-dump simulation. In particular, the histogram (named hEall) containing dN/dE per incident electron and the histogram (named hE_angle_all) with the dN/dEdcosTheta. These two MUST have same binning wrt to x axis (energy axis)")
+parser.add_argument('--root_file',type=str,required=True,help="The root file with the data from the beam-dump simulation. In particular, the histogram (named hEall) containing dN/dE per incident electron and the histogram (named hE_angle_all) with the dN/dEdcosTheta. These two MUST have same binning wrt to x axis (energy axis)")
 args = parser.parse_args()
 
 no_showering = args.no_showering;
@@ -72,6 +72,8 @@ deltaE=0;
 rootFile=0;
 hEall=0;
 hE_angle_all=0;
+
+BigNumber=9999999999;
 
 #Check if the cards exist
 if (os.path.isfile(run_card_name)==False):
@@ -140,7 +142,7 @@ if (UseElectronShowering==False):
     os.remove(MadGraphCardsLocation+"/proc_card.dat");
     os.remove(MadGraphCardsLocation+"/param_card.dat");
     
-    nGeneratedEventsThisRun,sigmaThisRun = GetGeneratedEventsNandSigma(lhefname)
+    nGeneratedEventsThisRun,sigmaThisRun = LHEUtils.GetGeneratedEventsNandSigma(lhefname)
     print bcolors.OKGREEN,"DONE: number of generated events is: ",nGeneratedEventsThisRun," cross section pb is: ",sigmaThisRun,bcolors.ENDC
     nGeneratedEvents.append(nGeneratedEventsThisRun);
     Sigmas.append(sigmaThisRun);
@@ -153,7 +155,6 @@ if (UseElectronShowering==False):
 #In this case, one needs to call MadGraph more than once, by changing the primary beam energy 
 else:
     print bcolors.OKGREEN,"Calling MadGraph ",nbins," times for run name: ",run_name,bcolors.ENDC
-    
     for ii in range(nbins):
 
         flagThisLoopIteration=True;
@@ -167,6 +168,27 @@ else:
             shutil.copy(param_card_name,MadGraphCardsLocation);
             os.chdir(MadGraphLocation)
             this_run_name=run_name+"_"+str(ii)
+#check the kinematics
+            mChi = GetChiMass(param_card_name);
+            mN   = GetTargetMass(run_card_name);
+            Ethr = 2*mChi*(1+mChi/mN);
+            print bcolors.OKGREEN,"Chi mass: ",mChi," N mass:",mN,"thr: ",Ethr,bcolors.ENDC
+            if (Ethr > Ei):
+                Energy.append(Ei);
+                DensityThisRun = hEall.GetBinContent(hEall.FindBin(Ei))*deltaE;    #This is for histogram
+                nGeneratedEvents.append(0); #No events this run
+                Sigmas.append(0.);          #No events this run
+                Density.append(DensityThisRun);
+                WeightThisRun =0.;
+                Weights.append(WeightThisRun);
+                print bcolors.WARNING,"Kinematic constraint for Ei: ",Ei," not satisfied, emin: ",Ethr,bcolors.ENDC
+                os.chdir(EventGeneratorLocation)  
+                os.remove(MadGraphCardsLocation+"/run_card.dat");
+                os.remove(MadGraphCardsLocation+"/proc_card.dat");
+                os.remove(MadGraphCardsLocation+"/param_card.dat");
+                flagThisLoopIteration=False;  #This will break the while loop
+                continue;#This will break the while loop
+
             command = "./bin/generate_events_new 0 "+this_run_name;  
             os.system(command)  
             command = "cd Events ; gzip -d "+this_run_name+"_unweighted_events.lhe.gz"     #Ok, this seems stupid since I am using gzip -d after MadGraph did a gzip. But I do not want to touch madgraph  
@@ -176,9 +198,9 @@ else:
             os.chdir(EventGeneratorLocation)  
             os.remove(MadGraphCardsLocation+"/run_card.dat");
             os.remove(MadGraphCardsLocation+"/proc_card.dat");
-            os.remove(MadGraphCardsLocation+"/param_card.dat");
-            
-            nGeneratedEventsThisRun,sigmaThisRun = GetGeneratedEventsNandSigma(lhefname)
+            os.remove(MadGraphCardsLocation+"/param_card.dat");     
+            print "AAAAAAAA",lhefname,os.getcwd()
+            nGeneratedEventsThisRun,sigmaThisRun = LHEUtils.GetGeneratedEventsNandSigma(lhefname);
             if (nGeneratedEventsThisRun==0):
                 print bcolors.WARNING,"Error! 0 events generated. Trying again this bin. Next attempt is: ",str(attemptsThisBin),bcolors.ENDC
                 attemptsThisBin = attemptsThisBin+1
@@ -202,7 +224,7 @@ else:
                 print bcolors.OKGREEN,"Now rotate events. Projecting bin: ",ii," Check, bin center is: ",hE_angle_all.GetXaxis().GetBinCenter(ii+1),bcolors.ENDC
                 hAngleTMP=hE_angle_all.ProjectionY("_py",ii+1,ii+1)
                 print lhefname
-                RotateLHEFEvents(lhefname,hAngleTMP)
+                LHEUtils.RotateLHEFEvents(lhefname,hAngleTMP)
 
                 print bcolors.OKGREEN,"DONE. This attempt was: ",str(attemptsThisBin),bcolors.ENDC
                 print bcolors.OKGREEN,"DONE: number of generated events is: ",nGeneratedEventsThisRun," cross section pb is: ",sigmaThisRun," density is: ",DensityThisRun,bcolors.ENDC
@@ -220,8 +242,12 @@ else:
     
     #Compute requested events per bin. Actually, I want to maximize the number of events!!
     for ii in range(nbins):
-         nIdeallyTotalEvents.append(nGeneratedEvents[ii]/NormWeights[ii])
-         print bcolors.OKBLUE,"Bin ",ii," nIdeallyTotalevents: ",nIdeallyTotalEvents[ii],bcolors.ENDC            
+        if (Weights[ii]<=0.): #case of bins with no xsection due to threshold
+            nIdeallyTotalEvents.append(BigNumber)
+            print bcolors.OKBLUE,"Bin ",ii," nIdeallyTotalevents: ",BigNumber," BIG NUMBER TO AVOID bin",bcolors.ENDC            
+        else:
+            nIdeallyTotalEvents.append(nGeneratedEvents[ii]/NormWeights[ii])
+            print bcolors.OKBLUE,"Bin ",ii," nIdeallyTotalevents: ",nIdeallyTotalEvents[ii],bcolors.ENDC            
     nRequestedMAX=min(nIdeallyTotalEvents)
     nRequestedMAX=(int)(nRequestedMAX-1) #just for safety
     print bcolors.OKGREEN,"Min is: ",nRequestedMAX
@@ -250,12 +276,20 @@ else:
     #Now, create the FINAL events file in LHE format, by keeping only the first nRequestedEvents from each file
     #First, create the LHE file, copying the header from the FIRST produced file
     lhefname = MadGraphEventsLocation+"/"+run_name+"_unweighted_events.lhe"
-    lhefnameThisRun = MadGraphEventsLocation+"/"+run_name+"_0_unweighted_events.lhe"
-    CreateLHEFileHeaderOnly(Emax,NTOT,totalWeight,lhefnameThisRun, lhefname)
+    lhefnameThisRun="";
     for ii in range(nbins):    
-         lhefnameThisRun = MadGraphEventsLocation+"/"+run_name+"_"+str(ii)+"_unweighted_events.lhe"
-         AppendEventsToLHEFileNewWeight(nRequestedEvents[ii],totalWeight/NTOT,lhefnameThisRun,lhefname)
-    CloseLHEFile(lhefname)
+        if (nRequestedEvents[ii]>0):
+            lhefnameThisRun = MadGraphEventsLocation+"/"+run_name+"_"+str(ii)+"_unweighted_events.lhe"
+            break;
+    if (lhefnameThisRun==""):
+        print bcolors.FAIL,"Error can't get a good header! EXIT",bcolors.ENDC
+        exit(1);
+    LHEUtils.CreateLHEFileHeaderOnly(Emax,NTOT,totalWeight,lhefnameThisRun, lhefname)
+    for ii in range(nbins):    
+        if (nRequestedEvents[ii]>0):
+            lhefnameThisRun = MadGraphEventsLocation+"/"+run_name+"_"+str(ii)+"_unweighted_events.lhe"
+            LHEUtils.AppendEventsToLHEFileNewWeight(nRequestedEvents[ii],totalWeight/NTOT,lhefnameThisRun,lhefname)
+    LHEUtils.CloseLHEFile(lhefname)
     print bcolors.OKGREEN,"LHE file was written...",bcolors.ENDC         
 
 #    At this point, we have generated chi-chi events in MadGraph, and we have also computed correctly the total cross-section.

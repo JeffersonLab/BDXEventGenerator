@@ -44,7 +44,7 @@ for line in lines:
 		runfile.write("cd $BDX_EVENT_GENERATOR \n")
 		runfile.write("pwd \n")
 	#	runfile.write("python RunEventGenerator.py --run_name "+tag+" --run_card Cards/run_card.dat --param_card Cards/param_card.dat --root_file 11GeV.Al.root \n")
-		runfile.write("python RunEventGenerator.py --run_name "+tag+" --run_card Cards/run_card.dat --param_card Cards/param_card.dat --force_no_showering \n")
+		runfile.write("python RunEventGenerator.py --run_name "+tag+" --run_card Cards/run_card.dat --param_card Cards/param_card.dat --force_no_showering --root_file 11GeV.Al.root \n")
 		runfile.close()
 		os.chmod("run/tmp.csh",0755)
 		subprocess.call("run/tmp.csh",shell=True)

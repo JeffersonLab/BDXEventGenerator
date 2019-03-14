@@ -157,7 +157,7 @@ def RotateLHEFEvents(src_lhe_filename,hAngleTMP):
             vector=TVector3(px,py,pz)
             if (isFirstParticle):
                 ctheta=hAngleTMP.GetRandom()
-                theta=TMath.ACos(ctheta)
+                theta=TMath.ACos(ctheta)           #This returns 0 if ctheta > 1
                 phi=random.Uniform(0,2*TMath.Pi())
                 isFirstParticle=False
             vector.RotateY(theta)

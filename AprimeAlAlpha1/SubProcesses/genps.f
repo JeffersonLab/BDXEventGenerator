@@ -38,7 +38,9 @@ c
       integer mincfig,maxcfig                  !Range of configurations
       integer invar
       double precision wgt                     !(input and output)
-      double precision x(maxdim),p(maxdim)     !x,p (output) [p(0:3,nexternal)]
+c     A.C. fixing this after gcc 8 on 11/2018
+c     double precision x(maxdim),p(maxdim)     !x,p (output) [p(0:3,nexternal)]
+      double precision x(maxdim),p(*)          !x,p (output) [p(0:3,nexternal)]
 c
 c     Local
 c
@@ -90,7 +92,9 @@ c     Arguments
 c
       integer iconfig,mincfig,maxcfig,invar
       double precision p1(0:3,nexternal+1)
-      double precision x(maxinvar)
+c      double precision x(maxinvar)
+c     A.C. fixing this after gcc 8 11/2018
+      double precision x(*)  
       double precision wgt
 c
 c     Local
@@ -483,7 +487,9 @@ c
 c      double precision spole(-max_branch:0),swidth(-max_branch:0)
       double precision jac,pswgt
       integer nbranch
-      double precision x(21)
+c     A.C. fixing this after gcc8 11/2018
+c      double precision x(21)
+      double precision x(*)
 c
 c     Local
 c

@@ -29,6 +29,42 @@ def GetRequestedEvents(run_card_name):
                 break
     return nevt
 
+def GetTargetMass(run_card_name,verbose=False):
+    name = ""
+    run_card=open(run_card_name,"r")
+    lines = run_card.readlines()
+    for line in lines:
+        x = line.split()
+        if (len(x)==0):
+            continue;
+        if (is_number(x[0])and(len(x)>=2)): #This line reads a number
+            val = x[0];
+            name = x[2];
+        if (name=="mbeam2"):
+            M = float(val);
+            return M
+    if (verbose):
+        print "Error in GetTargetMass"
+        return 0.
+
+    
+def GetChiMass(param_card_name,verbose=False):
+    name = ""
+    param_card=open(param_card_name,"r")
+    lines = param_card.readlines();
+    for line in lines:
+        x = line.split()
+        if (len(x)==0):
+            continue;
+        if ((is_number(x[0])==True) and (is_number(x[1])==True) and (x[2]=="#")):
+            parName=x[3]
+            if (parName=="FMASS"):
+                M=float(x[1])
+                return M
+    if (verbose):
+        print "Error in getChiMass"
+    return 0.
+
 
 #This function reads the provided run_card, and checks if the electron showering option was asked for - or not.
 #The relevant informations are in the "<BDX>" section

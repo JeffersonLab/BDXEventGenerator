@@ -6,7 +6,7 @@ EventGeneratorLocation=os.environ['BDX_EVENT_GENERATOR']
 os.chdir(EventGeneratorLocation)
 runList=open("run/runs.dat", "r")
 lines = runList.readlines()
-#each line must be written as:
+	#each line must be written as:
 #TAG Ma Mchi epsilon alphaD Nevents Ebeam Ldump Lx Ly Lz procid
 #each line starting with "#" is a comment
 command = "rm run/log*"
@@ -38,6 +38,6 @@ for line in lines:
 		runfile = open(fname,"w")
 		runfile.write(x[0]+" "+x[1]+" "+x[2]+" "+x[3]+" "+x[4]+" "+x[5]+" "+x[6]+" "+x[7]+" "+x[8]+" "+x[9]+" "+x[10]+" "+x[11]+"\n")
 		runfile.close()
-		command = "bsub -q old -P sl6_64 -o run/log"+tag+".o -e run/log"+tag+".e -R \"hname!=jlab01 rusage[mem=2000,swp=2000]\" ./job.csh "+tag
+		command = "bsub -q long -P sl6_64 -o run/log"+tag+".o -e run/log"+tag+".e -R \"rusage[mem=2000,swp=2000]\" ./job.csh "+tag
 		print command
 		os.system(command)
