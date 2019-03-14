@@ -38,9 +38,10 @@ KinUtils *m_utils;
 double msigma = 0;
 double mL = 0;
 
+
 /*These are here for writeLund*/
 TVector3 vin, vhit, vout, fiducialV, vMC;
-TApplication gui("GUI",0,NULL);
+TApplication gui("GUI", 0, NULL);
 //---------------------------------------------------------------------------
 
 //Weight is the TOTAL weight of the event:
@@ -87,7 +88,7 @@ void writeLund(ofstream &ofile, LHEF::HEPEUP &data, double weight) {
 	if (isGood != 7) {
 		return; /*For same reasons, in this events not all the particles where there??*/
 	} else {
-		ofile << "3 0 0 0 0 0 0 0 0 " <<weight<<endl; //lund header. 10 numbers, first is number of particles, last is event weight
+		ofile << "3 0 0 0 0 0 0 0 0 " << weight << endl; //lund header. 10 numbers, first is number of particles, last is event weight
 
 		/*The initial state chi*/
 		Px = data.PUP[idInitialChi][0];
@@ -284,10 +285,7 @@ std::pair<double, double> AnalyseParticles(LHEF::Reader *reader) {
 				//correct the particles positions in Geant4-MC format//
 				vin.SetXYZ(vin.X() + vMC.X(), vin.Y() + vMC.Y(), vin.Z() + vMC.Z() - heprup.ldet);
 				vout.SetXYZ(vout.X() + vMC.X(), vout.Y() + vMC.Y(), vout.Z() + vMC.Z() - heprup.ldet);
-
 				vhit.SetXYZ(vhit.X() + vMC.X(), vhit.Y() + vMC.Y(), vhit.Z() + vMC.Z() - heprup.ldet);
-
-
 
 				//add particles to hepeup
 				//final state chi
@@ -345,12 +343,10 @@ std::pair<double, double> AnalyseParticles(LHEF::Reader *reader) {
 	 */
 	w = w * n_inside * 1E-36; //by multiplying per n_inside, automatically I correct for the fact I have two chis, potentially both in the detector.
 	//the factor 1E-36 is the conversion pbarn ---> cm2
-	w *= heprup.NDUMP * heprup.LDUMP;
+	w = w * heprup.NDUMP * heprup.LDUMP;
 
 	//also write the PRODUCTION cross section, multiplied by NDUMP and LDUMP, to have the number of total chi-chibar pairs produced by summing over this number
 	sigma = hepeup.XWGTUP * heprup.NDUMP * heprup.LDUMP * 1E-36; 	//the factor 1E-36 is the conversion pbarn ---> cm2
-
-
 
 	reader->eventComments = Form("IN: %f %f %f \n", vin.X(), vin.Y(), vin.Z());
 	reader->eventComments += Form("OUT: %f %f %f \n", vout.X(), vout.Y(), vout.Z());
@@ -375,6 +371,8 @@ int main(int argc, char *argv[]) {
 		cout << " output_file is also used to write the number of events per EOT, as output_file.txt" << endl;
 		return 1;
 	}
+
+
 
 	gROOT->SetBatch();
 
@@ -458,14 +456,14 @@ int main(int argc, char *argv[]) {
 
 			/*A.C. on 14/3/2019:
 			 * I set the AQCDUP to the TOTAL event weight. This variable is never used by us!
-			*/
+			 */
 			inputReader->hepeup.AQCDUP = thisW;
 
 			outputWriter->hepeup = inputReader->hepeup;
 			outputWriter->eventStream.str(inputReader->eventComments);
 			outputWriter->writeEvent();
 			/*Now write the LUND block*/
-			if (thisW > 0) writeLund(outputFileLund, inputReader->hepeup,thisW);
+			if (thisW > 0) writeLund(outputFileLund, inputReader->hepeup, thisW);
 
 			progressBar.Update(entry);
 			++entry;
@@ -490,7 +488,6 @@ int main(int argc, char *argv[]) {
 	delete inputReader;
 	delete outputWriter;
 	delete m_utils;
-
 
 }
 
