@@ -65,6 +65,56 @@ def GetChiMass(param_card_name,verbose=False):
         print "Error in getChiMass"
     return 0.
 
+def GetAprimeMass(param_card_name,verbose=False):
+    name = ""
+    param_card=open(param_card_name,"r")
+    lines = param_card.readlines();
+    for line in lines:
+        x = line.split()
+        if (len(x)==0):
+            continue;
+        if ((is_number(x[0])==True) and (is_number(x[1])==True) and (x[2]=="#")):
+            parName=x[3]
+            if (parName=="APMASS"):
+                M=float(x[1])
+                return M
+    if (verbose):
+        print "Error in getAprimeMass"
+    return 0.
+
+def GetAlphaDark(param_card_name,verbose=False):
+    name = ""
+    param_card=open(param_card_name,"r")
+    lines = param_card.readlines();
+    for line in lines:
+        x = line.split()
+        if (len(x)==0):
+            continue;
+        if ((is_number(x[0])==True) and (is_number(x[1])==True) and (x[2]=="#")):
+            parName=x[3]
+            if (parName=="alphaD"):
+                alphaD=float(x[1])
+                return alphaD
+    if (verbose):
+        print "Error in GetAlphaDark"
+    return 0.
+
+def GetEpsilon(param_card_name,verbose=False):
+    name = ""
+    param_card=open(param_card_name,"r")
+    lines = param_card.readlines();
+    for line in lines:
+        x = line.split()
+        if (len(x)==0):
+            continue;
+        if ((is_number(x[0])==True) and (is_number(x[1])==True) and (x[2]=="#")):
+            parName=x[3]
+            if (parName=="epsilon"):
+                eps=float(x[1])
+                return eps
+    if (verbose):
+        print "Error in GetEpsilon"
+    return 0.
 
 #This function reads the provided run_card, and checks if the electron showering option was asked for - or not.
 #The relevant informations are in the "<BDX>" section

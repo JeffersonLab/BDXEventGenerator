@@ -64,7 +64,7 @@ void writeLund(ofstream &ofile, LHEF::HEPEUP &data, double weight) {
 	/*1: preliminary check to see we have all the particles*/
 	for (int ip = 0; ip < nparticles; ip++) {
 		pdg = data.IDUP[ip];
-		if ((pdg == 92212) || (pdg == 911)) {
+		if ((pdg == 92212) || (pdg == 911)) { /*Final state e- or proton*/
 			isGood += 1;
 			idParticle = ip;
 			if (pdg == 911) charge = -1;
@@ -74,10 +74,10 @@ void writeLund(ofstream &ofile, LHEF::HEPEUP &data, double weight) {
 			vy = vhit.Y() * 100;
 			vz = vhit.Z() * 100; /*in cm*/
 
-		} else if (pdg == 9611) {
+		} else if (pdg == 9611) { /*Final stateChi*/
 			isGood += 2;
 			idFinalChi = ip;
-		} else if ((pdg == 611) | (pdg == -611)) {
+		} else if ((pdg == 611) | (pdg == -611)) { /*Inistial stateChi*/
 			status = data.ISTUP[ip];
 			if (status == 11) {
 				isGood += 4;
@@ -129,7 +129,7 @@ std::pair<double, double> AnalyseParticles(LHEF::Reader *reader) {
 	Int_t particle, n_inside;
 
 	Double_t signPz, cosTheta, sinTheta, cosPhi, sinPhi, M;
-	Double_t w, L, ndet, sigma;
+	Double_t w, L, ndet, sigma,sigmaProd;
 	Double_t xmin, xmax, ymin, ymax;
 	Double_t x, y;
 	TLorentzVector chi, recoil_chi, recoil_elastic;
@@ -218,8 +218,11 @@ std::pair<double, double> AnalyseParticles(LHEF::Reader *reader) {
 			if ((PID != -611) && (PID != 611)) {
 				continue; //We are not interested in other particles. Go on
 			}
+
+
 			M = hepeup.PUP[particle][4];
 			chi.SetPxPyPzE(hepeup.PUP[particle][0], hepeup.PUP[particle][1], hepeup.PUP[particle][2], hepeup.PUP[particle][3]);
+
 			if (m_utils->intersectsCylinder1(chi, heprup.ldet, heprup.ly, heprup.lz)) {
 				n_inside++;
 				ii_inside.push_back(particle);
@@ -257,13 +260,14 @@ std::pair<double, double> AnalyseParticles(LHEF::Reader *reader) {
 		case Proc_Eelastic: //electron elastic
 		case Proc_Nuclelastic: //nuclear elastic (coherent)
 			sigma = m_utils->doElasticRecoil(chi, recoil_elastic, recoil_chi, heprup.procid);
-			msigma += sigma;
 
 			if (sigma == 0) {
+				sigma = 0;
 				w = 0;
 				hepeup.ISTUP[ii_inside.at(0)] = -11; //mark this negative
 				break;
 			} else {
+				msigma += sigma;
 				/*No need to re-write displacement routine!*/
 
 				if (heprup.isCylinder == 0) {
@@ -346,16 +350,18 @@ std::pair<double, double> AnalyseParticles(LHEF::Reader *reader) {
 	w = w * heprup.NDUMP * heprup.LDUMP;
 
 	//also write the PRODUCTION cross section, multiplied by NDUMP and LDUMP, to have the number of total chi-chibar pairs produced by summing over this number
-	sigma = hepeup.XWGTUP * heprup.NDUMP * heprup.LDUMP * 1E-36; 	//the factor 1E-36 is the conversion pbarn ---> cm2
+	sigmaProd = hepeup.XWGTUP * heprup.NDUMP * heprup.LDUMP * 1E-36; 	//the factor 1E-36 is the conversion pbarn ---> cm2
 
-	reader->eventComments = Form("IN: %f %f %f \n", vin.X(), vin.Y(), vin.Z());
-	reader->eventComments += Form("OUT: %f %f %f \n", vout.X(), vout.Y(), vout.Z());
-	reader->eventComments += Form("HIT: %f %f %f \n", vhit.X(), vhit.Y(), vhit.Z());
-	reader->eventComments += Form("L: %f \n", L);
-	reader->eventComments += Form("W: %e \n", w);
-	reader->eventComments += Form("Sigma: %e", sigma);
-
-	std::pair<double, double> ret = std::make_pair(sigma, w);
+	reader->eventComments = Form("SigmaProd: %e\n", sigmaProd);
+	if (n_inside!=0){
+		reader->eventComments += Form("IN: %f %f %f \n", vin.X(), vin.Y(), vin.Z());
+		reader->eventComments += Form("OUT: %f %f %f \n", vout.X(), vout.Y(), vout.Z());
+		reader->eventComments += Form("HIT: %f %f %f \n", vhit.X(), vhit.Y(), vhit.Z());
+		reader->eventComments += Form("L: %f \n", L);
+		reader->eventComments += Form("W: %e \n", w);
+		reader->eventComments += Form("SigmaInt: %e\n", sigma);
+	}
+	std::pair<double, double> ret = std::make_pair(sigmaProd, w);
 	return ret;
 }
 
@@ -445,8 +451,8 @@ int main(int argc, char *argv[]) {
 			thisSigma = 0;
 			if (inputReader->heprup.procid) {
 				retVal = AnalyseParticles(inputReader); //this also returns the "corrected" event weight (production weight * interaction probability * dump luminosity)
-				thisW = retVal.second;
-				thisSigma = retVal.first;
+				thisW = retVal.second;                 //this is the event weight
+				thisSigma = retVal.first;              //this is the production cross-section divided by the number of events.
 			}
 			W += thisW;
 			Sigma += thisSigma;

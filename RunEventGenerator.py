@@ -6,7 +6,9 @@ import argparse
 from CardsUtils import *
 import LHEUtils 
 #from DumpUtils import *
+from PositronAnnihilationUtils import *
 from ROOT import *
+
 
 
 class bcolors:
@@ -42,9 +44,11 @@ parser.add_argument('--max_attempts',type=int,default=3,help="Number of attempts
 parser.set_defaults(no_showering=False);
 parser.add_argument('--force_no_showering',dest='no_showering',action='store_true',help='Ignore showering effects, no matter what is used in the run_card');
 parser.add_argument('--root_file',type=str,required=True,help="The root file with the data from the beam-dump simulation. In particular, the histogram (named hEall) containing dN/dE per incident electron and the histogram (named hE_angle_all) with the dN/dEdcosTheta. These two MUST have same binning wrt to x axis (energy axis)")
+parser.add_argument('--add_annihilation',dest="annihilation",action='store_true',help='Add also the contribution from e+e- -> Aprime -> chi chiBar if set. It requires to run the showering code')
 args = parser.parse_args()
 
 no_showering = args.no_showering;
+annihilation = args.annihilation;
 
 run_name = args.run_name;
 run_card_name=args.run_card;
@@ -52,6 +56,12 @@ param_card_name=args.param_card;
 proc_card_name=args.proc_card;
 max_attempts=args.max_attempts;
 
+#Write in a global var the Mchi,Ma,eps,alphaD
+mN = 0; #Target nucleous mass
+mChi=0;
+mA=0;
+eps=0;
+alphaD=0;
  
 Energy = [];               #Array  of bin-center energy (GeV)
 nGeneratedEvents = [];     #Array  of number of generated events per energy bin
@@ -66,12 +76,20 @@ NrequestedTOT=0;
 NrequestedMAX=0;
 NTOT = 0;
 
+#A.C. 25/3/2019: quantities for the annihilation
+WeightsAnnihilation=[];
+totalWeightAnnihilation=0;
+nRequestedEventsAnnihilation = [];
+NTOTAnnihilation = 0;
+
 deltaE=0;
 
 #root stuff
 rootFile=0;
 hEall=0;
 hE_angle_all=0;
+hEallP=0;
+hE_angle_allP=0;
 
 BigNumber=9999999999;
 
@@ -100,12 +118,16 @@ UseElectronShowering,Ebeam = CheckElectronShoweringNew(run_card_name,True)
 if (no_showering==True):
     print bcolors.WARNING,"Overriding electron showering, not using it",bcolors.ENDC
     UseElectronShowering=False
-
+    if (annihilation==True):
+        print bcolors.FAIL,"ERROR, can't compute annihilation when not using showering. End",bcolors.ENDC
+        exit
 #Get from the provided root files the histogram with the <dN/dE> - integrated over t - , normalized to incident electrons
 else:
     rootFile=TFile(args.root_file);
     hEall=rootFile.Get("hEall");
+    hEallP=rootFile.Get("hEallP");
     hE_angle_all=rootFile.Get("hE_angle_all")
+    hE_angle_allP=rootFile.Get("hE_angle_allP")
     deltaE = hEall.GetXaxis().GetBinWidth(1) #this is the bin width
     nbins = hEall.GetNbinsX(); #this is the number of bins
     Emin= hEall.GetBinCenter(1)-deltaE/2;
@@ -155,6 +177,17 @@ if (UseElectronShowering==False):
 #In this case, one needs to call MadGraph more than once, by changing the primary beam energy 
 else:
     print bcolors.OKGREEN,"Calling MadGraph ",nbins," times for run name: ",run_name,bcolors.ENDC
+    
+    #check the kinematics
+    mChi = GetChiMass(param_card_name);
+    mA   = GetAprimeMass(param_card_name);
+    mN   = GetTargetMass(run_card_name);
+    alphaD = GetAlphaDark(param_card_name);
+    eps    = GetEpsilon(param_card_name);
+    
+    print bcolors.OKGREEN,"mCHI: ",mChi,"mA: ",mA,"mN: ",mN,"alphaD: ",alphaD,"eps: ",eps,bcolors.ENDC
+    
+    
     for ii in range(nbins):
 
         flagThisLoopIteration=True;
@@ -168,9 +201,6 @@ else:
             shutil.copy(param_card_name,MadGraphCardsLocation);
             os.chdir(MadGraphLocation)
             this_run_name=run_name+"_"+str(ii)
-#check the kinematics
-            mChi = GetChiMass(param_card_name);
-            mN   = GetTargetMass(run_card_name);
             Ethr = 2*mChi*(1+mChi/mN);
             print bcolors.OKGREEN,"Chi mass: ",mChi," N mass:",mN,"thr: ",Ethr,bcolors.ENDC
             if (Ethr > Ei):
@@ -199,7 +229,6 @@ else:
             os.remove(MadGraphCardsLocation+"/run_card.dat");
             os.remove(MadGraphCardsLocation+"/proc_card.dat");
             os.remove(MadGraphCardsLocation+"/param_card.dat");     
-            print "AAAAAAAA",lhefname,os.getcwd()
             nGeneratedEventsThisRun,sigmaThisRun = LHEUtils.GetGeneratedEventsNandSigma(lhefname);
             if (nGeneratedEventsThisRun==0):
                 print bcolors.WARNING,"Error! 0 events generated. Trying again this bin. Next attempt is: ",str(attemptsThisBin),bcolors.ENDC
@@ -215,7 +244,7 @@ else:
                 Energy.append(Ei);
                 Sigmas.append(sigmaThisRun);
                 DensityThisRun =  hEall.GetBinContent(hEall.FindBin(Ei))*deltaE;    #This is for histogram
-          ##      DensityThisRun = dNdEIntegral(Ei)*deltaE;                             #This is for analytical
+          ##      DensityThisRun = dNdEIntegral(Ei)*deltaE;                         #This is for analytical
                 WeightThisRun = DensityThisRun * sigmaThisRun;
                 Density.append(DensityThisRun);
                 Weights.append(WeightThisRun);
@@ -231,11 +260,20 @@ else:
                 print ""
         
     #At this point, we have generated madgraph events for all the energies Ei. We also have ALL the cross-sections and all the dn/dE|E=Ei    
- 
+    
+    #A.C. on 25/3/2019: adding e+ e- -> A' -> chi chiBar
+    if (annihilation==True):
+        annihilationHandler=PositronAnnihilationSpectra(mA,mChi,eps,alphaD,hEallP)
+        for ii in range(nbins):
+            WeightsAnnihilation.append(annihilationHandler.xsectionAvg[ii]); #this is the annihilation xsection integrated over T(E) for this bin
+            totalWeightAnnihilation+=WeightsAnnihilation[ii];  #This is the annihilation xsection integrated over T(E) for all bins
+            
+            
+            
     #Compute total weight: this is the total cross-section in pbarn per incident electron
     for ii in range(nbins):
         totalWeight +=Weights[ii];
-   
+
     #Compute normalized weight per bin
     for ii in range(nbins):
         NormWeights.append(Weights[ii]/totalWeight)
@@ -256,7 +294,7 @@ else:
          nRequestedEvents.append(int(NormWeights[ii]*nRequestedMAX));
          print bcolors.OKGREEN,"Bin ",ii," with energy ",Energy[ii],"sigma: ",Sigmas[ii],"normweight: ",NormWeights[ii]," density: ",Density[ii]," requested: ",nRequestedEvents[ii]," events, available: ",nGeneratedEvents[ii]," events ",bcolors.ENDC
      
-    #Now check if ALL the bins have the necessary events. If not, we need to rescale.
+    #Now check if ALL the bins have the necessary events (should always be!). If not, we need to rescale.
     frac=1.
     fracMin=1.
     for ii in range(nbins):
@@ -269,10 +307,32 @@ else:
         for ii in range(nbins):
             nRequestedEvents[ii]=int(nRequestedEvents[ii]*fracMin-1);  #The -1 is a conservative rounding
 
+    #At this point, I know the number of requested events per each bin.
     for ii in range(nbins):
         NTOT+=nRequestedEvents[ii];
+    print bcolors.OKGREEN,"TOTAL Bremmstrahlung events written to LHE: ",NTOT,bcolors.ENDC   
+    print bcolors.OKBLUE,"Mediated Bremmstrahlung cross-section per incident electron: ",totalWeight," (pbarn) ",bcolors.ENDC     
+    
+     #A.C. 25/3/2019: compute the number of requested events per bin for the annihilation
+    if (annihilation == True):
+        for ii in range(nbins):
+            if (Weights[ii]>0):
+                nRequestedEventsAnnihilation.append(int(nRequestedEvents[ii]*WeightsAnnihilation[ii]/Weights[ii]))
+            else:
+                nRequestedEventsAnnihilation.append(0)
+            NTOTAnnihilation+=nRequestedEventsAnnihilation[ii];
+            print bcolors.OKGREEN,"Bin ",ii," annihilation required: ",nRequestedEventsAnnihilation[ii]
+            
+        print bcolors.OKGREEN,"TOTAL Annihilation events written to LHE: ",NTOTAnnihilation,bcolors.ENDC   
+        print bcolors.OKBLUE,"Mediated Annihilation cross-section per incident electron: ",totalWeightAnnihilation," (pbarn) ",bcolors.ENDC     
+      
+        #Very important: if annihilation is enabled, sum the corresponding total weight and the number of events
+        NTOT = NTOT + NTOTAnnihilation;
+        totalWeight = totalWeight + totalWeightAnnihilation
+    
     print bcolors.OKGREEN,"TOTAL events written to LHE: ",NTOT,bcolors.ENDC   
     print bcolors.OKBLUE,"Mediated cross-section per incident electron: ",totalWeight," (pbarn) ",bcolors.ENDC     
+    
     #Now, create the FINAL events file in LHE format, by keeping only the first nRequestedEvents from each file
     #First, create the LHE file, copying the header from the FIRST produced file
     lhefname = MadGraphEventsLocation+"/"+run_name+"_unweighted_events.lhe"
@@ -289,6 +349,11 @@ else:
         if (nRequestedEvents[ii]>0):
             lhefnameThisRun = MadGraphEventsLocation+"/"+run_name+"_"+str(ii)+"_unweighted_events.lhe"
             LHEUtils.AppendEventsToLHEFileNewWeight(nRequestedEvents[ii],totalWeight/NTOT,lhefnameThisRun,lhefname)
+        if (annihilation == True):
+            if (nRequestedEventsAnnihilation[ii]>0):   
+                hAngleTMP=hE_angle_allP.ProjectionY("_py",ii+1,ii+1)
+                annihilationHandler.generateAndWriteEventsWRotation(nRequestedEventsAnnihilation[ii],ii,totalWeight/NTOT,hAngleTMP,lhefname)
+            
     LHEUtils.CloseLHEFile(lhefname)
     print bcolors.OKGREEN,"LHE file was written...",bcolors.ENDC         
 

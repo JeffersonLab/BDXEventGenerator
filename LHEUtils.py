@@ -100,6 +100,9 @@ def AppendEventsToLHEFile(Nevents,src_lhe_filename,dest_lhe_filename):
             dest_lhefile.write(line)
         if (NwrittenEvents==Nevents):
             break;
+        
+    dest_lhefile.close()
+    src_lhefile.close()
 
 #The following function appends to dest_lhe_filename the first Nevents of src_lhe_filename.
 #For EACH event, the event weight is modified, and set to weight
@@ -127,7 +130,10 @@ def AppendEventsToLHEFileNewWeight(Nevents,weight,src_lhe_filename,dest_lhe_file
         if (isEvent==True):
             dest_lhefile.write(line)
         if (NwrittenEvents==Nevents):
-            break;        
+            break;    
+
+    dest_lhefile.close()
+    src_lhefile.close()    
 
 def RotateLHEFEvents(src_lhe_filename,hAngleTMP):
     src_lhefile=open(src_lhe_filename,"r");
