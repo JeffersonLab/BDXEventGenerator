@@ -184,8 +184,8 @@ else:
     mN   = GetTargetMass(run_card_name);
     alphaD = GetAlphaDark(param_card_name);
     eps    = GetEpsilon(param_card_name);
-    
-    print bcolors.OKGREEN,"mCHI: ",mChi,"mA: ",mA,"mN: ",mN,"alphaD: ",alphaD,"eps: ",eps,bcolors.ENDC
+    Znuc   = GetZnuc(param_card_name);
+    print bcolors.OKGREEN,"mCHI: ",mChi,"mA: ",mA,"mN: ",mN,"alphaD: ",alphaD,"eps: ","Znuc: ",Znuc,eps,bcolors.ENDC
     
     
     for ii in range(nbins):
@@ -265,9 +265,9 @@ else:
     if (annihilation==True):
         annihilationHandler=PositronAnnihilationSpectra(mA,mChi,eps,alphaD,hEallP)
         for ii in range(nbins):
-            WeightsAnnihilation.append(annihilationHandler.xsectionAvg[ii]); #this is the annihilation xsection integrated over T(E) for this bin
+            WeightsAnnihilation.append(annihilationHandler.xsectionAvg[ii]*Znuc); #this is the annihilation xsection integrated over T(E) for this bin. IMPORTANT: this is multiplied by Znuc - since the code handles normalization has Nav/A for the Breem. coherent process.
             totalWeightAnnihilation+=WeightsAnnihilation[ii];  #This is the annihilation xsection integrated over T(E) for all bins
-            
+        print bcolors.OKGREEN,"TOTAL Int(sigmaE*T(E))= ",totalWeightAnnihilation," (pbarn)",bcolors.ENDC
             
             
     #Compute total weight: this is the total cross-section in pbarn per incident electron
